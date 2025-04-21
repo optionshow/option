@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>智能交易首頁</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #f5f5f5;
+    }
+    header {
+      background-color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      border-bottom: 1px solid #ddd;
+    }
+    .container {
+      display: flex;
+      flex-direction: row;
+      max-width: 1000px;
+      margin: 30px auto;
+      gap: 20px;
+    }
+    .left, .right {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .left {
+      width: 30%;
+    }
+    .right {
+      width: 70%;
+    }
+    .section {
+      flex: 1;
+      background-color: white;
+      border: 2px solid #d9534f;
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .section:hover {
+      background-color: rgba(255, 255, 128, 0.4);
+    }
+    .section h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #222;
+    }
+    .placeholder {
+      font-size: 14px;
+      color: #666;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      padding-bottom: 30px;
+    }
+    footer a {
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>智能交易介面解說</header>
+  <div class="container">
+    <div class="left">
+      <div class="section" onclick="location.href='交易總覽.html'" title="前往交易總覽">
+        <h3>交易總覽</h3>
+        <div class="placeholder">點擊查看交易總覽內容</div>
+      </div>
+      <div class="section" onclick="location.href='智能報價.html'" title="前往智能報價">
+        <h3>智能報價</h3>
+        <div class="placeholder">點擊查看智能報價內容</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="section" onclick="location.href='基本設定.html'" title="前往基本設定">
+        <h3>基本設定</h3>
+        <div class="placeholder">點擊查看基本參數設定</div>
+      </div>
+      <div class="section" onclick="location.href='方向判斷.html'" title="前往方向判斷">
+        <h3>方向判斷</h3>
+        <div class="placeholder">點擊查看多空方向設定</div>
+      </div>
+      <div class="section" onclick="location.href='多空溫度調整.html'" title="前往多空溫度調整">
+        <h3>多空溫度調整</h3>
+        <div class="placeholder">點擊查看溫度條件設定</div>
+      </div>
+      <div class="section" onclick="location.href='交易條件.html'" title="前往交易條件">
+        <h3>交易條件</h3>
+        <div class="placeholder">點擊查看生命條件設定</div>
+      </div>
+      <div class="section" onclick="location.href='停損停利設定.html'" title="前往停損停利設定">
+        <h3>停損停利設定</h3>
+        <div class="placeholder">點擊查看平倉條件設定</div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
+  </footer>
+</body>
+</html>
