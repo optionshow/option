@@ -17,25 +17,29 @@
       gap: 20px;
       padding: 40px 0;
     }
-    .image-box {
+    .back-box {
       border: 2px solid #d9534f;
       border-radius: 8px;
-      padding: 4px;
+      overflow: hidden;
       background-color: white;
-      height: fit-content;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 300px;
       text-align: center;
     }
-    .image-box a {
-      text-decoration: none;
+    .back-box:hover {
+      background-color: rgba(255, 255, 128, 0.4);
+    }
+    .back-box img {
+      width: 100%;
       display: block;
+    }
+    .back-box-text {
+      padding: 10px;
       color: #d9534f;
       font-weight: bold;
-    }
-    .image-box img {
-      display: block;
-      max-width: 300px;
-      height: auto;
-      border-radius: 4px;
+      font-size: 14px;
+      text-decoration: none;
     }
     .container {
       width: 360px;
@@ -126,11 +130,9 @@
 <body>
 
   <div class="main-wrapper">
-    <div class="image-box">
-      <a href="index.html">
-        <img src="011.png" alt="交易總覽圖片">
-        <div style="margin-top: 10px;">回到智能交易介面解說</div>
-      </a>
+    <div onclick="location.href='index.html'" class="back-box" title="點我回首頁">
+      <img src="011.png" alt="交易總覽圖片">
+      <div class="back-box-text">回到智能交易介面解說</div>
     </div>
 
     <div class="container">
