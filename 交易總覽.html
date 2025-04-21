@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>交易總覽</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #f9f9f9;
+    }
+    .container {
+      width: 320px;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      font-size: 14px;
+      color: #333;
+    }
+    .title {
+      font-weight: bold;
+      font-size: 16px;
+      text-align: left;
+      margin-bottom: 6px;
+    }
+    .time {
+      font-size: 12px;
+      color: #666;
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    .divider {
+      height: 1px;
+      background-color: #ddd;
+      margin: 10px 0;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-top: 1px solid #eee;
+    }
+    .row:first-of-type {
+      border-top: none;
+    }
+    .highlight-red {
+      color: #d9534f;
+      font-weight: bold;
+    }
+    .highlight-blue {
+      color: #337ab7;
+      font-weight: bold;
+    }
+    .highlight-green {
+      color: #5cb85c;
+      font-weight: bold;
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: help;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 160px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -80px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">交易總覽</div>
+    <div class="time">2025/04/21 10:01:32</div>
+    <div class="divider"></div>
+    <div class="row"><div>連線狀態</div><div class="tooltip highlight-blue">連線中<span class="tooltiptext">與交易系統連線正常</span></div></div>
+    <div class="row"><div>交易狀態</div><div class="tooltip highlight-blue">交易中<span class="tooltiptext">正在進行交易</span></div></div>
+    <div class="row"><div>權益總值</div><div class="tooltip highlight-red">410,620 (2.7%)<span class="tooltiptext">目前總資產（淨獲利％）</span></div></div>
+    <div class="row"><div>可用金額</div><div class="tooltip">224,150 (55%)<span class="tooltiptext">可動用資金（佔比％），當大於保留可用餘額，條件符合交易條件會佈局下單。小於保留可用餘額不下單。</span></div></div>
+    <div class="row"><div>損益點數</div><div class="tooltip">291<span class="tooltiptext">目前盈虧換算點數（僅紀錄程式交易）</span></div></div>
+    <div class="row"><div>持倉成本</div><div class="tooltip">361<span class="tooltiptext">目前持倉多空合計成本</span></div></div>
+    <div class="row"><div>即時總點</div><div class="tooltip">48<span class="tooltiptext">目前即時市價總點數（SCBC+SPBP）</span></div></div>
+    <div class="row"><div>SCBC 總點</div><div class="tooltip">48<span class="tooltiptext">SCBC 市價點數</span></div></div>
+    <div class="row"><div>SPBP 總點</div><div class="tooltip">0<span class="tooltiptext">SPBP 市價點數</span></div></div>
+    <div class="row"><div>持倉溫度</div><div class="tooltip highlight-green">0%<span class="tooltiptext">目前庫存倉位合計溫度（100％偏多，0％偏空，50％中性）</span></div></div>
+    <div class="row"><div>持倉數量</div><div class="tooltip">SC:33 BC:33<span class="tooltiptext">目前持有部位數量</span></div></div>
+    <div class="row"><div>平倉次數</div><div class="tooltip">停利: 13 停損: 28<span class="tooltiptext">已完成平倉的次數</span></div></div>
+  </div>
+  </div>
+  </div>
+  <footer>
+    聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
+  </footer>
+</body>
+</html>
+
