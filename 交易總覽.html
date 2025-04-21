@@ -7,20 +7,22 @@
     body {
       font-family: "Microsoft JhengHei", sans-serif;
       background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
     }
     .container {
-      width: 320px;
+      width: 360px;
       padding: 20px;
       border-radius: 10px;
       background-color: white;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin: 20px auto;
+      margin: 40px auto 20px;
       font-size: 14px;
       color: #333;
     }
     .title {
       font-weight: bold;
-      font-size: 16px;
+      font-size: 18px;
       text-align: left;
       margin-bottom: 6px;
     }
@@ -63,7 +65,7 @@
     }
     .tooltip .tooltiptext {
       visibility: hidden;
-      width: 160px;
+      width: 220px;
       background-color: #555;
       color: #fff;
       text-align: center;
@@ -73,13 +75,24 @@
       z-index: 1;
       bottom: 125%;
       left: 50%;
-      margin-left: -80px;
+      margin-left: -110px;
       opacity: 0;
       transition: opacity 0.3s;
     }
     .tooltip:hover .tooltiptext {
       visibility: visible;
       opacity: 1;
+    }
+    footer {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+    footer a {
+      color: #0066cc;
+      font-weight: bold;
+      text-decoration: none;
     }
   </style>
 </head>
@@ -88,6 +101,7 @@
     <div class="title">交易總覽</div>
     <div class="time">2025/04/21 10:01:32</div>
     <div class="divider"></div>
+
     <div class="row"><div>連線狀態</div><div class="tooltip highlight-blue">連線中<span class="tooltiptext">與交易系統連線正常</span></div></div>
     <div class="row"><div>交易狀態</div><div class="tooltip highlight-blue">交易中<span class="tooltiptext">正在進行交易</span></div></div>
     <div class="row"><div>權益總值</div><div class="tooltip highlight-red">410,620 (2.7%)<span class="tooltiptext">目前總資產（淨獲利％）</span></div></div>
@@ -101,11 +115,9 @@
     <div class="row"><div>持倉數量</div><div class="tooltip">SC:33 BC:33<span class="tooltiptext">目前持有部位數量</span></div></div>
     <div class="row"><div>平倉次數</div><div class="tooltip">停利: 13 停損: 28<span class="tooltiptext">已完成平倉的次數</span></div></div>
   </div>
-  </div>
-  </div>
+
   <footer>
     聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
   </footer>
 </body>
 </html>
-
