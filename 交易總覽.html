@@ -10,13 +10,32 @@
       margin: 0;
       padding: 0;
     }
+    .main-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 40px 0;
+    }
+    .image-box {
+      border: 2px solid #d9534f;
+      border-radius: 8px;
+      padding: 4px;
+      background-color: white;
+      height: fit-content;
+    }
+    .image-box img {
+      display: block;
+      max-width: 300px;
+      height: auto;
+      border-radius: 4px;
+    }
     .container {
       width: 360px;
       padding: 20px;
       border-radius: 10px;
       background-color: white;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin: 40px auto 20px;
       font-size: 14px;
       color: #333;
     }
@@ -87,6 +106,7 @@
       text-align: center;
       font-size: 14px;
       color: #555;
+      margin-top: 30px;
       margin-bottom: 30px;
     }
     footer a {
@@ -97,27 +117,35 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="title">交易總覽</div>
-    <div class="time">2025/04/21 10:01:32</div>
-    <div class="divider"></div>
 
-    <div class="row"><div>連線狀態</div><div class="tooltip highlight-blue">連線中<span class="tooltiptext">與交易系統連線正常</span></div></div>
-    <div class="row"><div>交易狀態</div><div class="tooltip highlight-blue">交易中<span class="tooltiptext">正在進行交易</span></div></div>
-    <div class="row"><div>權益總值</div><div class="tooltip highlight-red">410,620 (2.7%)<span class="tooltiptext">目前總資產（淨獲利％）</span></div></div>
-    <div class="row"><div>可用金額</div><div class="tooltip">224,150 (55%)<span class="tooltiptext">可動用資金（佔比％），當大於保留可用餘額，條件符合交易條件會佈局下單。小於保留可用餘額不下單。</span></div></div>
-    <div class="row"><div>損益點數</div><div class="tooltip">291<span class="tooltiptext">目前盈虧換算點數（僅紀錄程式交易）</span></div></div>
-    <div class="row"><div>持倉成本</div><div class="tooltip">361<span class="tooltiptext">目前持倉多空合計成本</span></div></div>
-    <div class="row"><div>即時總點</div><div class="tooltip">48<span class="tooltiptext">目前即時市價總點數（SCBC+SPBP）</span></div></div>
-    <div class="row"><div>SCBC 總點</div><div class="tooltip">48<span class="tooltiptext">SCBC 市價點數</span></div></div>
-    <div class="row"><div>SPBP 總點</div><div class="tooltip">0<span class="tooltiptext">SPBP 市價點數</span></div></div>
-    <div class="row"><div>持倉溫度</div><div class="tooltip highlight-green">0%<span class="tooltiptext">目前庫存倉位合計溫度（100％偏多，0％偏空，50％中性）</span></div></div>
-    <div class="row"><div>持倉數量</div><div class="tooltip">SC:33 BC:33<span class="tooltiptext">目前持有部位數量</span></div></div>
-    <div class="row"><div>平倉次數</div><div class="tooltip">停利: 13 停損: 28<span class="tooltiptext">已完成平倉的次數</span></div></div>
+  <div class="main-wrapper">
+    <div class="image-box">
+      <img src="011.png" alt="交易總覽圖片">
+    </div>
+
+    <div class="container">
+      <div class="title">交易總覽</div>
+      <div class="time">2025/04/21 10:01:32</div>
+      <div class="divider"></div>
+
+      <div class="row"><div>連線狀態</div><div class="tooltip highlight-blue">連線中<span class="tooltiptext">與券商系統連線正常</span></div></div>
+      <div class="row"><div>交易狀態</div><div class="tooltip highlight-blue">交易中<span class="tooltiptext">下單機正常交易中</span></div></div>
+      <div class="row"><div>權益總值</div><div class="tooltip highlight-red">410,620 (2.7%)<span class="tooltiptext">目前真實總資產（淨獲利％），已扣除手續費及稅金</span></div></div>
+      <div class="row"><div>可用金額</div><div class="tooltip">224,150 (55%)<span class="tooltiptext">可動用資金（佔比％），當大於保留可用餘額設定時，又條件符合交易條件會佈局下單。小於保留可用餘額不下單。</span></div></div>
+      <div class="row"><div>損益點數</div><div class="tooltip">291<span class="tooltiptext">目前盈虧換算點數（僅紀錄程式交易），1點50元</span></div></div>
+      <div class="row"><div>持倉成本</div><div class="tooltip">361<span class="tooltiptext">目前庫存合計成本點數（SCBC+SPBP）</span></div></div>
+      <div class="row"><div>即時總點</div><div class="tooltip">48<span class="tooltiptext">目前庫存市價總點數（SCBC+SPBP）</span></div></div>
+      <div class="row"><div>SCBC 總點</div><div class="tooltip">48<span class="tooltiptext">SCBC 市價點數</span></div></div>
+      <div class="row"><div>SPBP 總點</div><div class="tooltip">0<span class="tooltiptext">SPBP 市價點數</span></div></div>
+      <div class="row"><div>持倉溫度</div><div class="tooltip highlight-green">0%<span class="tooltiptext">目前庫存合計溫度（100％偏多，0％偏空，50％中性），可運用到多空溫度調整</span></div></div>
+      <div class="row"><div>持倉數量</div><div class="tooltip">SC:33 BC:33<span class="tooltiptext">目前庫存部位數量</span></div></div>
+      <div class="row"><div>平倉次數</div><div class="tooltip">停利: 13 停損: 28<span class="tooltiptext">程式已完成平倉的次數</span></div></div>
+    </div>
   </div>
 
   <footer>
     聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
   </footer>
+
 </body>
 </html>
