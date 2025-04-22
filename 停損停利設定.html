@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>停損停利設定</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 40px 20px 80px;
+    }
+    .main-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .back-box {
+      border: 2px solid #d9534f;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 300px;
+      text-align: center;
+    }
+    .back-box:hover {
+      background-color: rgba(255, 255, 128, 0.4);
+    }
+    .back-box img {
+      width: 100%;
+      display: block;
+    }
+    .back-box-text {
+      padding: 10px;
+      color: #d9534f;
+      font-weight: bold;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .card {
+      flex: 1;
+      background-color: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-section {
+      display: flex;
+      gap: 20px;
+    }
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .orange-box {
+      background-color: #f0ad4e;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      border-radius: 4px;
+      padding: 6px 12px;
+      text-align: center;
+      white-space: nowrap;
+      position: relative;
+      cursor: help;
+    }
+    .orange-box:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 1;
+      z-index: 99;
+    }
+    .input-row input[type="text"],
+    .input-row select {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 70px;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-top: 60px;
+    }
+    footer a {
+      color: #0066cc;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <div onclick="location.href='index.html'" class="back-box" title="點我回首頁">
+      <img src="017.png" alt="返回首頁圖片">
+      <div class="back-box-text">回到智能交易介面解說</div>
+    </div>
+
+    <div class="card">
+      <div class="title">停損停利設定</div>
+      <div class="form-section">
+        <!-- 左側設定 -->
+        <div class="column">
+          <div class="input-group">
+            <div class="input-row">
+              <label class="checkbox-label"><input type="checkbox">SC+BC 停損</label>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="SC+BC 各別價差的虧損點數（負數）除以成本點數，舉例虧損-14點除成本10點＝-140％，停損價≧24點（避免滑價委託+30％＝委託價31.2）">虧損 / 成交價 <=</div>
+              <input type="text" value="-140">
+              <div class="orange-box">%</div>
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-row">
+              <label class="checkbox-label"><input type="checkbox">SC+BC 停利 (Max 100%)</label>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="SC+BC 各別價差的獲利點數除以成本點數，舉例獲利8.5點除成本10點＝85％，停利價≦2.5點（避免滑價委託+30％＝委託價3.3）">獲利 / 成交價 >=</div>
+              <input type="text" value="85">
+              <div class="orange-box">%</div>
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-row">
+              <label class="checkbox-label"><input type="checkbox">日盤定時平倉最高價</label>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="設定觸發時間（當盤有效，隔天自動取消勾選）">時間</div>
+              <select><option>12</option></select>
+              <select><option>55</option></select>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="【交易總覽】的即時總點，大於等於設定點數時，平倉庫存最高價部位（每次一組價差）">即時總點 >=</div>
+              <input type="text" value="38">
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-row">
+              <label class="checkbox-label"><input type="checkbox" checked>即時總點停損</label>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="【交易總覽】的即時總點，大於等於設定條件點數時，平倉庫存最高價部位（每次一組價差）">即時總點 >=</div>
+              <input type="text" value="1194">
+              <div class="orange-box" data-tooltip="平倉庫存最高價部位（每次一組價差，平倉次數統計不一定是停損）">平倉最高價</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右側設定 -->
+        <div class="column">
+          <div class="input-group">
+            <div class="input-row">
+              <label class="checkbox-label"><input type="checkbox">SP+BP 停損</label>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="SP+BP 各別價差的虧損點數（負數）除以成本點數，舉例虧損-14點除成本10點＝-140％，停損價≧24點（避免滑價委託+30％＝委託價31.2">虧損 / 成交價 <=</div>
+              <input type="text" value="-140">
+              <div class="orange-box">%</div>
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-row">
+              <label class="checkbox-label"><input type="checkbox">SP+BP 停利 (Max 100%)</label>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="SP+BP 各別價差的獲利點數除以成本點數，舉例獲利8.5點除成本10點＝85％，停利價≦2.5點（避免滑價委託+30％＝委託價3.3）">獲利 / 成交價 >=</div>
+              <input type="text" value="85">
+              <div class="orange-box">%</div>
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-row">
+              <label class="checkbox-label"><input type="checkbox">夜盤定時平倉最高價</label>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="設定觸發時間（當盤有效，隔天自動取消勾選）">時間</div>
+              <select><option>03</option></select>
+              <select><option>05</option></select>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="【交易總覽】的即時總點，大於等於設定點數時，平倉庫存最高價部位（每次一組價差）">即時總點 >=</div>
+              <input type="text" value="212">
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-row">
+              <label class="checkbox-label"><input type="checkbox" checked>保利降部位</label>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="【交易總覽】的權益總值（％）大於等於設定保利門檻">獲利 % >=</div>
+              <input type="text" value="2.5">
+              <div class="orange-box"平倉庫存最高價部位（每次一組價差）">% 平倉最高價</div>
+            </div>
+            <div class="input-row">
+              <div class="orange-box" data-tooltip="各別價差點數保留條件設定">保留</div>
+              <input type="text" value="12">
+              <div class="orange-box">點以下不平倉</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+ 
+<!-- 名詞解釋區塊 -->
+<div style="max-width: 700px; margin: 40px auto 0; font-size: 16px; color: #333; padding: 0 20px;">
+  <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 14px;">【名詞解釋】</h3>
+  <p><strong>平倉最高價：</strong>，平倉次數統計不一定是停損，也可能是停利。</p>
+  <p><strong>保利降部位：</strong>，達到條件不再建立新部位；只平倉一組最大價差。下次平倉間格秒數後再次檢查，又符合再平倉一組，以達最佳獲利。</p>
+</div>
+
+
+  <footer>
+    聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
+  </footer>
+
+</body>
+</html>
