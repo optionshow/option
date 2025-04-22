@@ -18,6 +18,24 @@
       font-weight: bold;
       color: #333;
       border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .report-link {
+      font-size: 14px;
+      background-color: #000;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .report-link:hover {
+      background-color: #333;
     }
     .container {
       display: flex;
@@ -76,10 +94,28 @@
       text-decoration: none;
       font-weight: bold;
     }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .container {
+        flex-direction: column;
+      }
+      .left, .right {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <header>智能交易介面解說</header>
+  <header>
+    <div>智能交易介面解說</div>
+    <a class="report-link" href="performance.html">📊 績效報表連結</a>
+  </header>
+
   <div class="container">
     <div class="left">
       <div class="section" onclick="location.href='交易總覽.html'" title="前往交易總覽">
@@ -121,6 +157,7 @@
       </div>
     </div>
   </div>
+
   <footer>
     聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
   </footer>
