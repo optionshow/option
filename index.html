@@ -21,8 +21,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       max-width: 1000px;
       margin: auto;
+      gap: 10px;
+    }
+    .header-title {
+      flex: 1;
+      min-width: 200px;
+    }
+    .header-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     .report-link {
       font-size: 14px;
@@ -33,6 +44,7 @@
       text-decoration: none;
       font-weight: bold;
       transition: background-color 0.3s;
+      white-space: nowrap;
     }
     .report-link:hover {
       background-color: #333;
@@ -94,13 +106,7 @@
       text-decoration: none;
       font-weight: bold;
     }
-
     @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-      }
       .container {
         flex-direction: column;
       }
@@ -112,8 +118,11 @@
 </head>
 <body>
   <header>
-    <div>智能交易介面解說</div>
-    <a class="report-link" href="performance.html">📊 績效報表連結</a>
+    <div class="header-title">智能交易介面解說</div>
+    <div class="header-links">
+      <a class="report-link" href="options_intro.html">📘 選擇權入門說明</a>
+      <a class="report-link" href="performance.html">📊 績效報表連結</a>
+    </div>
   </header>
 
   <div class="container">
