@@ -114,10 +114,15 @@
             font-size: 1.1rem;
             color: #333; /* 將拖曳選項文字改為黑色 */
             font-weight: 600;
+            display: inline-block;
         }
         
         .draggable:active {
             cursor: grabbing;
+        }
+        
+        .draggable.hidden {
+            display: none;
         }
         
         .drop-zone {
@@ -577,16 +582,16 @@
                     <div>
                         <div class="direction-label">多空溫度</div>
                         <div class="temp-meter">
-                            <div class="temp-indicator" id="tempIndicator" style="left: 25%;"></div>
+                            <div class="temp-indicator" id="tempIndicator" style="left: 75%"></div>
                         </div>
                     </div>
-                    <div class="direction-value text-green-600" id="tempDirectionValue">25%</div>
+                    <div class="direction-value text-green-600" id="tempDirectionValue">75%</div>
                 </div>
                 
                 <!-- 當盤數值 -->
                 <div class="direction-item" id="currentDirection">
                     <div class="direction-label">當盤數值</div>
-                    <div class="direction-value text-red-500" id="currentDirectionValue">13225</div>
+                    <div class="direction-value text-red-500" id="currentDirectionValue">18042</div>
                 </div>
             </div>
             
@@ -649,7 +654,7 @@
                 
                 <div class="mb-4">
                     <p class="text-orange-700 mb-3 text-larger">可用選項（拖曳到下方）：</p>
-                    <div class="flex flex-wrap">
+                    <div class="flex flex-wrap" id="optionsContainer">
                         <div class="draggable bg-red-200" draggable="true" data-type="stop-loss">停損</div>
                         <div class="draggable bg-green-200" draggable="true" data-type="take-profit">停利</div>
                         <div class="draggable bg-blue-200" draggable="true" data-type="day-close">日盤定時平倉</div>
@@ -809,10 +814,14 @@
             }
         });
         
-        // 停損停利拖曳功能
+        // 停損停利拖曳功能 - 修改為拖曳後原選項消失，刪除後恢復
         const draggables = document.querySelectorAll('.draggable');
         const dropZone = document.getElementById('dropZone');
         const dropHint = document.getElementById('dropHint');
+        const optionsContainer = document.getElementById('optionsContainer');
+        
+        // 用於追蹤已使用的選項
+        const usedOptions = new Set();
         
         // 為每個可拖曳元素添加事件監聽器
         draggables.forEach(draggable => {
@@ -843,15 +852,22 @@
             const type = e.dataTransfer.getData('text/plain');
             const draggable = document.querySelector(`[data-type="${type}"]`);
             
-            if (draggable) {
+            if (draggable && !usedOptions.has(type)) {
                 // 隱藏提示文字
                 if (dropHint) {
                     dropHint.style.display = 'none';
                 }
                 
+                // 隱藏原選項
+                draggable.classList.add('hidden');
+                
+                // 添加到已使用選項集合
+                usedOptions.add(type);
+                
                 // 創建已放置的項目
                 const droppedItem = document.createElement('div');
                 droppedItem.className = `dropped-item ${getColorClass(type)}`;
+                droppedItem.dataset.type = type;
                 droppedItem.innerHTML = `
                     <span>${draggable.textContent}</span>
                     <span class="remove-btn">×</span>
@@ -860,6 +876,16 @@
                 // 添加刪除按鈕功能
                 const removeBtn = droppedItem.querySelector('.remove-btn');
                 removeBtn.addEventListener('click', function() {
+                    // 恢復原選項
+                    const originalOption = document.querySelector(`.draggable[data-type="${type}"]`);
+                    if (originalOption) {
+                        originalOption.classList.remove('hidden');
+                    }
+                    
+                    // 從已使用選項集合中移除
+                    usedOptions.delete(type);
+                    
+                    // 移除已放置的項目
                     droppedItem.remove();
                     
                     // 如果沒有項目了，顯示提示文字
@@ -991,5 +1017,5 @@
         setCurrentDay(); // 設置當前星期
         updateDirectionData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93754ad7458af1b8',t:'MTc0NTgzMDAyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93755d7fc607f218',t:'MTc0NTgzMDc4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 </body></html>
