@@ -42,7 +42,6 @@
       font-size: 14px;
       text-decoration: none;
     }
-
     .card {
       flex: 1;
       background-color: white;
@@ -118,6 +117,28 @@
       font-size: 14px;
       width: 70px;
       text-align: center;
+    }
+    .quick-tool {
+      max-width: 700px;
+      margin: 40px auto 20px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .quick-tool input {
+      width: 80px;
+      padding: 6px 10px;
+      margin: 0 5px;
+      font-size: 16px;
+      text-align: center;
+    }
+    .warning-text {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 14px;
     }
     footer {
       text-align: center;
@@ -246,6 +267,29 @@
       </div>
     </div>
 </div>
+
+<!-- 即時總點換算小工具 -->
+<div class="quick-tool">
+  <h3>【即時總點換算小工具】</h3>
+  資金：<input type="number" id="funds" value="40">  價差：<input type="number" id="spread" step="0.1" value="11.9">
+  <br><br>
+  即時總點：<span id="totalPoints" style="font-size: 20px; font-weight: bold;">-</span>
+  <div class="warning-text">＊警語：即時總點結果僅供參考，投資人可自行調整，運用盈虧及風險應由投資人自行承擔。</div>
+</div>
+
+<script>
+function updateTotalPoints() {
+  const funds = parseFloat(document.getElementById('funds').value) || 0;
+  const spread = parseFloat(document.getElementById('spread').value) || 0;
+  const result = Math.round(funds * spread * 2.52);
+  document.getElementById('totalPoints').textContent = result;
+}
+
+updateTotalPoints();
+
+document.getElementById('funds').addEventListener('input', updateTotalPoints);
+document.getElementById('spread').addEventListener('input', updateTotalPoints);
+</script>
  
 <!-- 名詞解釋區塊 -->
 <div style="max-width: 700px; margin: 40px auto 0; font-size: 16px; color: #333; padding: 0 20px;">
@@ -253,7 +297,6 @@
   <p><strong>平倉最高價：</strong>平倉庫存最高價部位（每次一組價差），平倉次數統計不一定是停損，也可能是停利。</p>
   <p><strong>保利降部位：</strong>達到條件不再建立新部位；只平倉一組最大價差。下次 平倉間格秒數 後再次檢查，又符合再平倉一組，以達最佳獲利。</p>
 </div>
-
 
   <footer>
     聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
