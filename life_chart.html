@@ -135,7 +135,7 @@
         const currentValue = dataPoints[index];
         const prevValue = index > 0 ? dataPoints[index - 1] : currentValue;
         const diffPercent = (((currentValue - prevValue) / prevValue) * 100).toFixed(1);
-        info.innerHTML = `時間：${labels[index]}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;生命總值：${currentValue}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;與上一次比較：${diffPercent}%`;
+        info.innerHTML = `時間：${labels[index]}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;生命總值：${currentValue}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;生命總值與前期增減：${diffPercent}%`;
         basePrice.innerHTML = (currentValue / divider / 10).toFixed(1);
       }
     }
