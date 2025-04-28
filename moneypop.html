@@ -1,0 +1,2500 @@
+<html lang="zh-TW"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyPop! 智能交易</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #fdf6ff;
+            color: #4a4a4a;
+            overflow-x: hidden;
+        }
+        
+        .title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        
+        .title-decoration {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .number-animation {
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .number-animation.active {
+            transform: scale(1.2);
+            color: #ff6b6b;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            height: 15px;
+            border-radius: 10px;
+            background: #d3d3d3;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            cursor: pointer;
+        }
+        
+        .cute-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .draggable {
+            cursor: grab;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+            color: #333; /* 將拖曳選項文字改為黑色 */
+            font-weight: 600;
+        }
+        
+        .draggable:active {
+            cursor: grabbing;
+        }
+        
+        .drop-zone {
+            min-height: 100px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .drop-zone.highlight {
+            border-color: #ff6b6b;
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+        
+        .dropped-item {
+            margin: 5px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            width: 90%;
+            justify-content: space-between;
+            animation: popIn 0.3s forwards;
+            font-size: 1.1rem;
+            color: #333; /* 將已放置項目文字改為黑色 */
+            font-weight: 600;
+        }
+        
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .remove-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.7);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            color: #666; /* 確保刪除按鈕的X是深色的 */
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.8em;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        
+        .cute-select {
+            appearance: none;
+            padding-right: 30px;
+            font-size: 1.1rem;
+        }
+        
+        /* 方向判斷相關樣式 */
+        .direction-item {
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .direction-item:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+        
+        .direction-item.dimmed {
+            opacity: 0.1;
+        }
+        
+        .direction-label {
+            font-weight: bold;
+            color: #5b6ac4;
+            font-size: 1.2rem;
+        }
+        
+        .direction-value {
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 1.3rem;
+        }
+        
+        .temp-meter {
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(to right, #3b82f6, #60a5fa, #93c5fd, #dbeafe, #fecaca, #f87171, #ef4444);
+            border-radius: 6px;
+            position: relative;
+            margin-top: 8px;
+        }
+        
+        .temp-indicator {
+            width: 14px;
+            height: 20px;
+            background: white;
+            border: 2px solid #4b5563;
+            border-radius: 3px;
+            position: absolute;
+            top: -4px;
+            transform: translateX(-50%);
+            transition: left 0.5s ease;
+        }
+        
+        .temp-indicator::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 6px solid #4b5563;
+        }
+        
+        /* 金錢掉落動畫 - 修改為花瓣式掉落 */
+        .money {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatDown 3s ease-in-out forwards;
+            opacity: 1;
+            z-index: 1000;
+            top: 0;
+            left: 50%;
+        }
+        
+        @keyframes floatDown {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.8;
+            }
+            25% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(40vh) translateX(var(--tx)) rotate(180deg);
+                opacity: 0.9;
+            }
+            75% {
+                transform: translateY(70vh) translateX(calc(var(--tx) * 1.5)) rotate(270deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) translateX(calc(var(--tx) * 2)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .text-larger {
+            font-size: 1.2rem;
+        }
+        
+        .value-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        /* 修復選單箭頭重疊問題 */
+        .bp-select-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .bp-select-wrapper {
+            position: relative;
+            width: 100px;
+        }
+        
+        .bp-select {
+            width: 100%;
+            padding-right: 25px;
+        }
+        
+        
+        .dev-button:hover {
+            background-color: #4b5563;
+        }
+        
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .code-modal-content {
+            background-color: #f8fafc;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+        }
+        
+        .code-container {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+        
+        /* 閃亮標題效果 */
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 4s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) rotate(30deg);
+            }
+            20%, 100% {
+                transform: translateX(100%) rotate(30deg);
+            }
+        }
+        
+        /* 星期選單樣式 */
+        .day-selector {
+            display: inline-flex;
+            background-color: #f3e8ff;
+            border-radius: 20px;
+            padding: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .day-option {
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .day-option:hover {
+            background-color: #e9d5ff;
+        }
+        
+        .day-option.active {
+            background-color: #d8b4fe;
+            color: #4c1d95;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-2{margin-left:0.5rem}.ml-3{margin-left:0.75rem}.mr-2{margin-right:0.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.w-full{width:100%}.max-w-5xl{max-width:64rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-6{gap:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.border-2{border-width:2px}.border-purple-300{--tw-border-opacity:1;border-color:rgb(216 180 254 / var(--tw-border-opacity, 1))}.bg-blue-200{--tw-bg-opacity:1;background-color:rgb(191 219 254 / var(--tw-bg-opacity, 1))}.bg-green-200{--tw-bg-opacity:1;background-color:rgb(187 247 208 / var(--tw-bg-opacity, 1))}.bg-pink-200{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.bg-purple-200{--tw-bg-opacity:1;background-color:rgb(233 213 255 / var(--tw-bg-opacity, 1))}.bg-red-200{--tw-bg-opacity:1;background-color:rgb(254 202 202 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-200{--tw-bg-opacity:1;background-color:rgb(254 240 138 / var(--tw-bg-opacity, 1))}.bg-opacity-50{--tw-bg-opacity:0.5}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-blue-100{--tw-gradient-from:#dbeafe var(--tw-gradient-from-position);--tw-gradient-to:rgb(219 234 254 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-orange-100{--tw-gradient-from:#ffedd5 var(--tw-gradient-from-position);--tw-gradient-to:rgb(255 237 213 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-pink-100{--tw-gradient-from:#fce7f3 var(--tw-gradient-from-position);--tw-gradient-to:rgb(252 231 243 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-pink-500{--tw-gradient-from:#ec4899 var(--tw-gradient-from-position);--tw-gradient-to:rgb(236 72 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-purple-100{--tw-gradient-from:#f3e8ff var(--tw-gradient-from-position);--tw-gradient-to:rgb(243 232 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-blue-200{--tw-gradient-to:#bfdbfe var(--tw-gradient-to-position)}.to-orange-200{--tw-gradient-to:#fed7aa var(--tw-gradient-to-position)}.to-pink-200{--tw-gradient-to:#fbcfe8 var(--tw-gradient-to-position)}.to-purple-200{--tw-gradient-to:#e9d5ff var(--tw-gradient-to-position)}.to-purple-500{--tw-gradient-to:#a855f7 var(--tw-gradient-to-position)}.p-2{padding:0.5rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-4{padding-left:1rem;padding-right:1rem}.px-8{padding-left:2rem;padding-right:2rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-orange-500{--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity, 1))}.text-orange-600{--tw-text-opacity:1;color:rgb(234 88 12 / var(--tw-text-opacity, 1))}.text-orange-700{--tw-text-opacity:1;color:rgb(194 65 12 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-pink-700{--tw-text-opacity:1;color:rgb(190 24 93 / var(--tw-text-opacity, 1))}.text-pink-800{--tw-text-opacity:1;color:rgb(157 23 77 / var(--tw-text-opacity, 1))}.text-purple-500{--tw-text-opacity:1;color:rgb(168 85 247 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-purple-700{--tw-text-opacity:1;color:rgb(126 34 206 / var(--tw-text-opacity, 1))}.text-purple-800{--tw-text-opacity:1;color:rgb(107 33 168 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:shadow-xl:hover{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-purple-500:focus{--tw-border-opacity:1;border-color:rgb(168 85 247 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <header class="mb-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <span class="title-decoration mr-2">💸</span>
+                    <h1 class="text-4xl font-bold mb-2 shine">
+                        <span class="title-font text-pink-600">MoneyPop!</span>
+                        <span class="ml-2 text-purple-600">智能交易</span>
+                    </h1>
+                    <span class="title-decoration ml-2">💎</span>
+                </div>
+                
+                <!-- 星期選單 -->
+                <div class="day-selector">
+                    <div class="day-option" data-day="wed">星期三</div>
+                    <div class="day-option" data-day="thu">星期四</div>
+                    <div class="day-option" data-day="fri">星期五</div>
+                    <div class="day-option active" data-day="mon">星期一</div>
+                    <div class="day-option" data-day="tue">星期二</div>
+                </div>
+            </div>
+            <p class="text-xl text-purple-500 mt-2">讓交易變得簡單又有趣！</p>
+        </header>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 基本系統 -->
+            <div class="card bg-gradient-to-br from-pink-100 to-pink-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">💰</span>
+                    <h2 class="text-2xl font-bold text-pink-600">基本系統</h2>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-pink-700 mb-3 text-larger">保留可用餘額：</label>
+                    <div class="flex items-center">
+                        <input type="range" min="0" max="100" value="10" class="slider w-full" id="balanceSlider">
+                        <span class="ml-3 text-pink-800 value-text" id="balanceValue">10%</span>
+                    </div>
+                </div>
+                
+                <div class="bg-white bg-opacity-50 p-5 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="text-pink-700 text-larger">使用資金約：</span>
+                        <span class="text-pink-800 value-text text-2xl bounce" id="usableFunds">90%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 方向判斷 - 直列式 -->
+            <div class="card bg-gradient-to-br from-blue-100 to-blue-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">🧭</span>
+                    <h2 class="text-2xl font-bold text-blue-600">方向判斷</h2>
+                </div>
+                
+                <!-- 合計方向 -->
+                <div class="direction-item" id="totalDirection">
+                    <div class="direction-label">合計方向</div>
+                    <div class="direction-value text-red-500" id="totalDirectionValue">做多</div>
+                </div>
+                
+                <!-- 多空溫度 -->
+                <div class="direction-item" id="tempDirection">
+                    <div>
+                        <div class="direction-label">多空溫度</div>
+                        <div class="temp-meter">
+                            <div class="temp-indicator" id="tempIndicator" style="left: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="direction-value text-blue-600" id="tempDirectionValue">50%</div>
+                </div>
+                
+                <!-- 當盤數值 -->
+                <div class="direction-item" id="currentDirection">
+                    <div class="direction-label">當盤數值</div>
+                    <div class="direction-value text-red-500" id="currentDirectionValue">15138</div>
+                </div>
+            </div>
+            
+            <!-- 交易條件 -->
+            <div class="card bg-gradient-to-br from-purple-100 to-purple-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">📊</span>
+                    <h2 class="text-2xl font-bold text-purple-600">交易條件</h2>
+                </div>
+                
+                <div class="bg-white bg-opacity-50 p-5 rounded-lg mb-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-purple-700 text-larger">動態Sell價：</span>
+                        <span class="text-purple-800 value-text" id="dynamicSellPrice">13</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-purple-700 text-larger">複式單 BP 價外：</span>
+                        <div class="bp-select-container">
+                            <div class="bp-select-wrapper">
+                                <select id="bpPriceSelect" class="bp-select cute-select p-2 rounded-lg border-2 border-purple-300 focus:outline-none focus:border-purple-500 bg-white">
+                                    <option value="50">50</option>
+                                    <option value="100" selected="">100</option>
+                                    <option value="150">150</option>
+                                    <option value="200">200</option>
+                                    <option value="250">250</option>
+                                    <option value="300">300</option>
+                                </select>
+                            </div>
+                            <span class="ml-2 text-purple-800 value-text">點</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 停損停利設定 -->
+            <div class="card bg-gradient-to-br from-orange-100 to-orange-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">🛡️</span>
+                    <h2 class="text-2xl font-bold text-orange-600">停損停利設定</h2>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-orange-700 mb-3 text-larger">可用選項（拖曳到下方）：</p>
+                    <div class="flex flex-wrap">
+                        <div class="draggable bg-red-200" draggable="true" data-type="stop-loss">停損</div>
+                        <div class="draggable bg-green-200" draggable="true" data-type="take-profit">停利</div>
+                        <div class="draggable bg-blue-200" draggable="true" data-type="day-close">日盤定時平倉</div>
+                        <div class="draggable bg-purple-200" draggable="true" data-type="night-close">夜盤定時平倉</div>
+                        <div class="draggable bg-yellow-200" draggable="true" data-type="total-points">即時總點</div>
+                        <div class="draggable bg-pink-200" draggable="true" data-type="reduce-position">保利降部位</div>
+                    </div>
+                </div>
+                
+                <div class="mb-2 text-orange-700 text-larger">已選擇的設定：</div>
+                <div id="dropZone" class="drop-zone bg-white bg-opacity-50">
+                    <p class="text-orange-500 text-center text-larger" id="dropHint">拖曳選項到此處</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="https://ost.capitalfutures.com.tw/" target="_blank" class="inline-block bg-gradient-to-r from-pink-500 to-purple-500 text-white px-8 py-4 rounded-full text-xl font-bold shadow-lg hover:shadow-xl transition-all">
+                <span class="mr-2">✨</span>開始智能交易<span class="ml-2">✨</span>
+            </a>
+            
+            <!-- 開發者按鈕 -->
+            <div class="flex justify-center mt-4">
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 程式碼顯示模態框 -->
+    <div id="codeModal" class="code-modal" style="display: none;">
+        <div class="code-modal-content">
+            <span class="close-modal" id="closeModal">×</span>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">程式碼</h2>
+            <div class="code-container" id="codeContainer"><html lang="zh-TW"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyPop! 智能交易</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #fdf6ff;
+            color: #4a4a4a;
+            overflow-x: hidden;
+        }
+        
+        .title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        
+        .title-decoration {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .number-animation {
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .number-animation.active {
+            transform: scale(1.2);
+            color: #ff6b6b;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            height: 15px;
+            border-radius: 10px;
+            background: #d3d3d3;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            cursor: pointer;
+        }
+        
+        .cute-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .draggable {
+            cursor: grab;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+            color: #333; /* 將拖曳選項文字改為黑色 */
+            font-weight: 600;
+        }
+        
+        .draggable:active {
+            cursor: grabbing;
+        }
+        
+        .drop-zone {
+            min-height: 100px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .drop-zone.highlight {
+            border-color: #ff6b6b;
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+        
+        .dropped-item {
+            margin: 5px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            width: 90%;
+            justify-content: space-between;
+            animation: popIn 0.3s forwards;
+            font-size: 1.1rem;
+            color: #333; /* 將已放置項目文字改為黑色 */
+            font-weight: 600;
+        }
+        
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .remove-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.7);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            color: #666; /* 確保刪除按鈕的X是深色的 */
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.8em;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        
+        .cute-select {
+            appearance: none;
+            padding-right: 30px;
+            font-size: 1.1rem;
+        }
+        
+        /* 方向判斷相關樣式 */
+        .direction-item {
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .direction-item:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+        
+        .direction-item.dimmed {
+            opacity: 0.1;
+        }
+        
+        .direction-label {
+            font-weight: bold;
+            color: #5b6ac4;
+            font-size: 1.2rem;
+        }
+        
+        .direction-value {
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 1.3rem;
+        }
+        
+        .temp-meter {
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(to right, #3b82f6, #60a5fa, #93c5fd, #dbeafe, #fecaca, #f87171, #ef4444);
+            border-radius: 6px;
+            position: relative;
+            margin-top: 8px;
+        }
+        
+        .temp-indicator {
+            width: 14px;
+            height: 20px;
+            background: white;
+            border: 2px solid #4b5563;
+            border-radius: 3px;
+            position: absolute;
+            top: -4px;
+            transform: translateX(-50%);
+            transition: left 0.5s ease;
+        }
+        
+        .temp-indicator::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 6px solid #4b5563;
+        }
+        
+        /* 金錢掉落動畫 - 修改為花瓣式掉落 */
+        .money {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatDown 3s ease-in-out forwards;
+            opacity: 1;
+            z-index: 1000;
+            top: 0;
+            left: 50%;
+        }
+        
+        @keyframes floatDown {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.8;
+            }
+            25% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(40vh) translateX(var(--tx)) rotate(180deg);
+                opacity: 0.9;
+            }
+            75% {
+                transform: translateY(70vh) translateX(calc(var(--tx) * 1.5)) rotate(270deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) translateX(calc(var(--tx) * 2)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .text-larger {
+            font-size: 1.2rem;
+        }
+        
+        .value-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        /* 修復選單箭頭重疊問題 */
+        .bp-select-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .bp-select-wrapper {
+            position: relative;
+            width: 100px;
+        }
+        
+        .bp-select {
+            width: 100%;
+            padding-right: 25px;
+        }
+        
+        .dev-button:hover {
+            background-color: #4b5563;
+        }
+        
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .code-modal-content {
+            background-color: #f8fafc;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+        }
+        
+        .code-container {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+        
+        /* 閃亮標題效果 */
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 4s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) rotate(30deg);
+            }
+            20%, 100% {
+                transform: translateX(100%) rotate(30deg);
+            }
+        }
+        
+        /* 星期選單樣式 */
+        .day-selector {
+            display: inline-flex;
+            background-color: #f3e8ff;
+            border-radius: 20px;
+            padding: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .day-option {
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .day-option:hover {
+            background-color: #e9d5ff;
+        }
+        
+        .day-option.active {
+            background-color: #d8b4fe;
+            color: #4c1d95;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-2{margin-left:0.5rem}.ml-3{margin-left:0.75rem}.mr-2{margin-right:0.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.w-full{width:100%}.max-w-5xl{max-width:64rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-6{gap:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.border-2{border-width:2px}.border-purple-300{--tw-border-opacity:1;border-color:rgb(216 180 254 / var(--tw-border-opacity, 1))}.bg-blue-200{--tw-bg-opacity:1;background-color:rgb(191 219 254 / var(--tw-bg-opacity, 1))}.bg-green-200{--tw-bg-opacity:1;background-color:rgb(187 247 208 / var(--tw-bg-opacity, 1))}.bg-pink-200{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.bg-purple-200{--tw-bg-opacity:1;background-color:rgb(233 213 255 / var(--tw-bg-opacity, 1))}.bg-red-200{--tw-bg-opacity:1;background-color:rgb(254 202 202 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-200{--tw-bg-opacity:1;background-color:rgb(254 240 138 / var(--tw-bg-opacity, 1))}.bg-opacity-50{--tw-bg-opacity:0.5}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-blue-100{--tw-gradient-from:#dbeafe var(--tw-gradient-from-position);--tw-gradient-to:rgb(219 234 254 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-orange-100{--tw-gradient-from:#ffedd5 var(--tw-gradient-from-position);--tw-gradient-to:rgb(255 237 213 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-pink-100{--tw-gradient-from:#fce7f3 var(--tw-gradient-from-position);--tw-gradient-to:rgb(252 231 243 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-pink-500{--tw-gradient-from:#ec4899 var(--tw-gradient-from-position);--tw-gradient-to:rgb(236 72 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-purple-100{--tw-gradient-from:#f3e8ff var(--tw-gradient-from-position);--tw-gradient-to:rgb(243 232 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-blue-200{--tw-gradient-to:#bfdbfe var(--tw-gradient-to-position)}.to-orange-200{--tw-gradient-to:#fed7aa var(--tw-gradient-to-position)}.to-pink-200{--tw-gradient-to:#fbcfe8 var(--tw-gradient-to-position)}.to-purple-200{--tw-gradient-to:#e9d5ff var(--tw-gradient-to-position)}.to-purple-500{--tw-gradient-to:#a855f7 var(--tw-gradient-to-position)}.p-2{padding:0.5rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-4{padding-left:1rem;padding-right:1rem}.px-8{padding-left:2rem;padding-right:2rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-orange-500{--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity, 1))}.text-orange-600{--tw-text-opacity:1;color:rgb(234 88 12 / var(--tw-text-opacity, 1))}.text-orange-700{--tw-text-opacity:1;color:rgb(194 65 12 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-pink-700{--tw-text-opacity:1;color:rgb(190 24 93 / var(--tw-text-opacity, 1))}.text-pink-800{--tw-text-opacity:1;color:rgb(157 23 77 / var(--tw-text-opacity, 1))}.text-purple-500{--tw-text-opacity:1;color:rgb(168 85 247 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-purple-700{--tw-text-opacity:1;color:rgb(126 34 206 / var(--tw-text-opacity, 1))}.text-purple-800{--tw-text-opacity:1;color:rgb(107 33 168 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:shadow-xl:hover{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-purple-500:focus{--tw-border-opacity:1;border-color:rgb(168 85 247 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <header class="mb-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <span class="title-decoration mr-2">💸</span>
+                    <h1 class="text-4xl font-bold mb-2 shine">
+                        <span class="title-font text-pink-600">MoneyPop!</span>
+                        <span class="ml-2 text-purple-600">智能交易</span>
+                    </h1>
+                    <span class="title-decoration ml-2">💎</span>
+                </div>
+                
+                <!-- 星期選單 -->
+                <div class="day-selector">
+                    <div class="day-option" data-day="wed">星期三</div>
+                    <div class="day-option" data-day="thu">星期四</div>
+                    <div class="day-option" data-day="fri">星期五</div>
+                    <div class="day-option active" data-day="mon">星期一</div>
+                    <div class="day-option" data-day="tue">星期二</div>
+                </div>
+            </div>
+            <p class="text-xl text-purple-500 mt-2">讓交易變得簡單又有趣！</p>
+        </header>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 基本系統 -->
+            <div class="card bg-gradient-to-br from-pink-100 to-pink-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">💰</span>
+                    <h2 class="text-2xl font-bold text-pink-600">基本系統</h2>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-pink-700 mb-3 text-larger">保留可用餘額：</label>
+                    <div class="flex items-center">
+                        <input type="range" min="0" max="100" value="10" class="slider w-full" id="balanceSlider">
+                        <span class="ml-3 text-pink-800 value-text" id="balanceValue">10%</span>
+                    </div>
+                </div>
+                
+                <div class="bg-white bg-opacity-50 p-5 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="text-pink-700 text-larger">使用資金約：</span>
+                        <span class="text-pink-800 value-text text-2xl bounce" id="usableFunds">90%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 方向判斷 - 直列式 -->
+            <div class="card bg-gradient-to-br from-blue-100 to-blue-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">🧭</span>
+                    <h2 class="text-2xl font-bold text-blue-600">方向判斷</h2>
+                </div>
+                
+                <!-- 合計方向 -->
+                <div class="direction-item" id="totalDirection">
+                    <div class="direction-label">合計方向</div>
+                    <div class="direction-value text-green-500" id="totalDirectionValue">做空</div>
+                </div>
+                
+                <!-- 多空溫度 -->
+                <div class="direction-item" id="tempDirection">
+                    <div>
+                        <div class="direction-label">多空溫度</div>
+                        <div class="temp-meter">
+                            <div class="temp-indicator" id="tempIndicator" style="left: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="direction-value text-blue-600" id="tempDirectionValue">75%</div>
+                </div>
+                
+                <!-- 當盤數值 -->
+                <div class="direction-item" id="currentDirection">
+                    <div class="direction-label">當盤數值</div>
+                    <div class="direction-value text-green-500" id="currentDirectionValue">-9945</div>
+                </div>
+            </div>
+            
+            <!-- 交易條件 -->
+            <div class="card bg-gradient-to-br from-purple-100 to-purple-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">📊</span>
+                    <h2 class="text-2xl font-bold text-purple-600">交易條件</h2>
+                </div>
+                
+                <div class="bg-white bg-opacity-50 p-5 rounded-lg mb-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-purple-700 text-larger">動態Sell價：</span>
+                        <span class="text-purple-800 value-text" id="dynamicSellPrice">32</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-purple-700 text-larger">複式單 BP 價外：</span>
+                        <div class="bp-select-container">
+                            <div class="bp-select-wrapper">
+                                <select id="bpPriceSelect" class="bp-select cute-select p-2 rounded-lg border-2 border-purple-300 focus:outline-none focus:border-purple-500 bg-white">
+                                    <option value="50">50</option>
+                                    <option value="100" selected="">100</option>
+                                    <option value="150">150</option>
+                                    <option value="200">200</option>
+                                    <option value="250">250</option>
+                                    <option value="300">300</option>
+                                </select>
+                            </div>
+                            <span class="ml-2 text-purple-800 value-text">點</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 停損停利設定 -->
+            <div class="card bg-gradient-to-br from-orange-100 to-orange-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">🛡️</span>
+                    <h2 class="text-2xl font-bold text-orange-600">停損停利設定</h2>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-orange-700 mb-3 text-larger">可用選項（拖曳到下方）：</p>
+                    <div class="flex flex-wrap">
+                        <div class="draggable bg-red-200" draggable="true" data-type="stop-loss">停損</div>
+                        <div class="draggable bg-green-200" draggable="true" data-type="take-profit">停利</div>
+                        <div class="draggable bg-blue-200" draggable="true" data-type="day-close">日盤定時平倉</div>
+                        <div class="draggable bg-purple-200" draggable="true" data-type="night-close">夜盤定時平倉</div>
+                        <div class="draggable bg-yellow-200" draggable="true" data-type="total-points">即時總點</div>
+                        <div class="draggable bg-pink-200" draggable="true" data-type="reduce-position">保利降部位</div>
+                    </div>
+                </div>
+                
+                <div class="mb-2 text-orange-700 text-larger">已選擇的設定：</div>
+                <div id="dropZone" class="drop-zone bg-white bg-opacity-50">
+                    <p class="text-orange-500 text-center text-larger" id="dropHint">拖曳選項到此處</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="https://ost.capitalfutures.com.tw/" target="_blank" class="inline-block bg-gradient-to-r from-pink-500 to-purple-500 text-white px-8 py-4 rounded-full text-xl font-bold shadow-lg hover:shadow-xl transition-all">
+                <span class="mr-2">✨</span>開始智能交易<span class="ml-2">✨</span>
+            </a>
+            
+            </div>
+        </div>
+    </div>
+    
+    <!-- 程式碼顯示模態框 -->
+    <div id="codeModal" class="code-modal" style="display: none;">
+        <div class="code-modal-content">
+            <span class="close-modal" id="closeModal">×</span>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">程式碼</h2>
+            <div class="code-container" id="codeContainer"><html lang="zh-TW"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyPop! 智能交易</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #fdf6ff;
+            color: #4a4a4a;
+            overflow-x: hidden;
+        }
+        
+        .title-font {
+            font-family: 'Pacifico', cursive;
+        }
+        
+        .title-decoration {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .number-animation {
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .number-animation.active {
+            transform: scale(1.2);
+            color: #ff6b6b;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            height: 15px;
+            border-radius: 10px;
+            background: #d3d3d3;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            cursor: pointer;
+        }
+        
+        .cute-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .draggable {
+            cursor: grab;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+            color: #333; /* 將拖曳選項文字改為黑色 */
+            font-weight: 600;
+        }
+        
+        .draggable:active {
+            cursor: grabbing;
+        }
+        
+        .drop-zone {
+            min-height: 100px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .drop-zone.highlight {
+            border-color: #ff6b6b;
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+        
+        .dropped-item {
+            margin: 5px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            width: 90%;
+            justify-content: space-between;
+            animation: popIn 0.3s forwards;
+            font-size: 1.1rem;
+            color: #333; /* 將已放置項目文字改為黑色 */
+            font-weight: 600;
+        }
+        
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .remove-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.7);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            color: #666; /* 確保刪除按鈕的X是深色的 */
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.8em;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        
+        .cute-select {
+            appearance: none;
+            padding-right: 30px;
+            font-size: 1.1rem;
+        }
+        
+        /* 方向判斷相關樣式 */
+        .direction-item {
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .direction-item:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+        
+        .direction-item.dimmed {
+            opacity: 0.1;
+        }
+        
+        .direction-label {
+            font-weight: bold;
+            color: #5b6ac4;
+            font-size: 1.2rem;
+        }
+        
+        .direction-value {
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 1.3rem;
+        }
+        
+        .temp-meter {
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(to right, #3b82f6, #60a5fa, #93c5fd, #dbeafe, #fecaca, #f87171, #ef4444);
+            border-radius: 6px;
+            position: relative;
+            margin-top: 8px;
+        }
+        
+        .temp-indicator {
+            width: 14px;
+            height: 20px;
+            background: white;
+            border: 2px solid #4b5563;
+            border-radius: 3px;
+            position: absolute;
+            top: -4px;
+            transform: translateX(-50%);
+            transition: left 0.5s ease;
+        }
+        
+        .temp-indicator::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 6px solid #4b5563;
+        }
+        
+        /* 金錢掉落動畫 - 修改為花瓣式掉落 */
+        .money {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatDown 3s ease-in-out forwards;
+            opacity: 1;
+            z-index: 1000;
+            top: 0;
+            left: 50%;
+        }
+        
+        @keyframes floatDown {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.8;
+            }
+            25% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(40vh) translateX(var(--tx)) rotate(180deg);
+                opacity: 0.9;
+            }
+            75% {
+                transform: translateY(70vh) translateX(calc(var(--tx) * 1.5)) rotate(270deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) translateX(calc(var(--tx) * 2)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .text-larger {
+            font-size: 1.2rem;
+        }
+        
+        .value-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        /* 修復選單箭頭重疊問題 */
+        .bp-select-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .bp-select-wrapper {
+            position: relative;
+            width: 100px;
+        }
+        
+        .bp-select {
+            width: 100%;
+            padding-right: 25px;
+        }
+        .dev-button:hover {
+            background-color: #4b5563;
+        }
+        
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .code-modal-content {
+            background-color: #f8fafc;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+        }
+        
+        .code-container {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+        
+        /* 閃亮標題效果 */
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 4s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) rotate(30deg);
+            }
+            20%, 100% {
+                transform: translateX(100%) rotate(30deg);
+            }
+        }
+        
+        /* 星期選單樣式 */
+        .day-selector {
+            display: inline-flex;
+            background-color: #f3e8ff;
+            border-radius: 20px;
+            padding: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .day-option {
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .day-option:hover {
+            background-color: #e9d5ff;
+        }
+        
+        .day-option.active {
+            background-color: #d8b4fe;
+            color: #4c1d95;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-2{margin-left:0.5rem}.ml-3{margin-left:0.75rem}.mr-2{margin-right:0.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.w-full{width:100%}.max-w-5xl{max-width:64rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-6{gap:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.border-2{border-width:2px}.border-purple-300{--tw-border-opacity:1;border-color:rgb(216 180 254 / var(--tw-border-opacity, 1))}.bg-blue-200{--tw-bg-opacity:1;background-color:rgb(191 219 254 / var(--tw-bg-opacity, 1))}.bg-green-200{--tw-bg-opacity:1;background-color:rgb(187 247 208 / var(--tw-bg-opacity, 1))}.bg-pink-200{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.bg-purple-200{--tw-bg-opacity:1;background-color:rgb(233 213 255 / var(--tw-bg-opacity, 1))}.bg-red-200{--tw-bg-opacity:1;background-color:rgb(254 202 202 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-200{--tw-bg-opacity:1;background-color:rgb(254 240 138 / var(--tw-bg-opacity, 1))}.bg-opacity-50{--tw-bg-opacity:0.5}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-blue-100{--tw-gradient-from:#dbeafe var(--tw-gradient-from-position);--tw-gradient-to:rgb(219 234 254 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-orange-100{--tw-gradient-from:#ffedd5 var(--tw-gradient-from-position);--tw-gradient-to:rgb(255 237 213 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-pink-100{--tw-gradient-from:#fce7f3 var(--tw-gradient-from-position);--tw-gradient-to:rgb(252 231 243 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-pink-500{--tw-gradient-from:#ec4899 var(--tw-gradient-from-position);--tw-gradient-to:rgb(236 72 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-purple-100{--tw-gradient-from:#f3e8ff var(--tw-gradient-from-position);--tw-gradient-to:rgb(243 232 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-blue-200{--tw-gradient-to:#bfdbfe var(--tw-gradient-to-position)}.to-orange-200{--tw-gradient-to:#fed7aa var(--tw-gradient-to-position)}.to-pink-200{--tw-gradient-to:#fbcfe8 var(--tw-gradient-to-position)}.to-purple-200{--tw-gradient-to:#e9d5ff var(--tw-gradient-to-position)}.to-purple-500{--tw-gradient-to:#a855f7 var(--tw-gradient-to-position)}.p-2{padding:0.5rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-4{padding-left:1rem;padding-right:1rem}.px-8{padding-left:2rem;padding-right:2rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-orange-500{--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity, 1))}.text-orange-600{--tw-text-opacity:1;color:rgb(234 88 12 / var(--tw-text-opacity, 1))}.text-orange-700{--tw-text-opacity:1;color:rgb(194 65 12 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-pink-700{--tw-text-opacity:1;color:rgb(190 24 93 / var(--tw-text-opacity, 1))}.text-pink-800{--tw-text-opacity:1;color:rgb(157 23 77 / var(--tw-text-opacity, 1))}.text-purple-500{--tw-text-opacity:1;color:rgb(168 85 247 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-purple-700{--tw-text-opacity:1;color:rgb(126 34 206 / var(--tw-text-opacity, 1))}.text-purple-800{--tw-text-opacity:1;color:rgb(107 33 168 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:shadow-xl:hover{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-purple-500:focus{--tw-border-opacity:1;border-color:rgb(168 85 247 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <header class="mb-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <span class="title-decoration mr-2">💸</span>
+                    <h1 class="text-4xl font-bold mb-2 shine">
+                        <span class="title-font text-pink-600">MoneyPop!</span>
+                        <span class="ml-2 text-purple-600">智能交易</span>
+                    </h1>
+                    <span class="title-decoration ml-2">💎</span>
+                </div>
+                
+                <!-- 星期選單 -->
+                <div class="day-selector">
+                    <div class="day-option" data-day="wed">星期三</div>
+                    <div class="day-option" data-day="thu">星期四</div>
+                    <div class="day-option" data-day="fri">星期五</div>
+                    <div class="day-option active" data-day="mon">星期一</div>
+                    <div class="day-option" data-day="tue">星期二</div>
+                </div>
+            </div>
+            <p class="text-xl text-purple-500 mt-2">讓交易變得簡單又有趣！</p>
+        </header>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 基本系統 -->
+            <div class="card bg-gradient-to-br from-pink-100 to-pink-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">💰</span>
+                    <h2 class="text-2xl font-bold text-pink-600">基本系統</h2>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-pink-700 mb-3 text-larger">保留可用餘額：</label>
+                    <div class="flex items-center">
+                        <input type="range" min="0" max="100" value="10" class="slider w-full" id="balanceSlider">
+                        <span class="ml-3 text-pink-800 value-text" id="balanceValue">10%</span>
+                    </div>
+                </div>
+                
+                <div class="bg-white bg-opacity-50 p-5 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="text-pink-700 text-larger">使用資金約：</span>
+                        <span class="text-pink-800 value-text text-2xl bounce" id="usableFunds">90%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 方向判斷 - 直列式 -->
+            <div class="card bg-gradient-to-br from-blue-100 to-blue-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">🧭</span>
+                    <h2 class="text-2xl font-bold text-blue-600">方向判斷</h2>
+                </div>
+                
+                <!-- 合計方向 -->
+                <div class="direction-item" id="totalDirection">
+                    <div class="direction-label">合計方向</div>
+                    <div class="direction-value text-green-500" id="totalDirectionValue">做空</div>
+                </div>
+                
+                <!-- 多空溫度 -->
+                <div class="direction-item" id="tempDirection">
+                    <div>
+                        <div class="direction-label">多空溫度</div>
+                        <div class="temp-meter">
+                            <div class="temp-indicator" id="tempIndicator" style="left: 25%;"></div>
+                        </div>
+                    </div>
+                    <div class="direction-value text-blue-600" id="tempDirectionValue">25%</div>
+                </div>
+                
+                <!-- 當盤數值 -->
+                <div class="direction-item" id="currentDirection">
+                    <div class="direction-label">當盤數值</div>
+                    <div class="direction-value text-green-500" id="currentDirectionValue">-6342</div>
+                </div>
+            </div>
+            
+            <!-- 交易條件 -->
+            <div class="card bg-gradient-to-br from-purple-100 to-purple-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">📊</span>
+                    <h2 class="text-2xl font-bold text-purple-600">交易條件</h2>
+                </div>
+                
+                <div class="bg-white bg-opacity-50 p-5 rounded-lg mb-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-purple-700 text-larger">動態Sell價：</span>
+                        <span class="text-purple-800 value-text" id="dynamicSellPrice">61</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-purple-700 text-larger">複式單 BP 價外：</span>
+                        <div class="bp-select-container">
+                            <div class="bp-select-wrapper">
+                                <select id="bpPriceSelect" class="bp-select cute-select p-2 rounded-lg border-2 border-purple-300 focus:outline-none focus:border-purple-500 bg-white">
+                                    <option value="50">50</option>
+                                    <option value="100" selected="">100</option>
+                                    <option value="150">150</option>
+                                    <option value="200">200</option>
+                                    <option value="250">250</option>
+                                    <option value="300">300</option>
+                                </select>
+                            </div>
+                            <span class="ml-2 text-purple-800 value-text">點</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 停損停利設定 -->
+            <div class="card bg-gradient-to-br from-orange-100 to-orange-200 p-6 pulse">
+                <div class="flex items-center mb-4">
+                    <span class="cute-icon">🛡️</span>
+                    <h2 class="text-2xl font-bold text-orange-600">停損停利設定</h2>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-orange-700 mb-3 text-larger">可用選項（拖曳到下方）：</p>
+                    <div class="flex flex-wrap">
+                        <div class="draggable bg-red-200" draggable="true" data-type="stop-loss">停損</div>
+                        <div class="draggable bg-green-200" draggable="true" data-type="take-profit">停利</div>
+                        <div class="draggable bg-blue-200" draggable="true" data-type="day-close">日盤定時平倉</div>
+                        <div class="draggable bg-purple-200" draggable="true" data-type="night-close">夜盤定時平倉</div>
+                        <div class="draggable bg-yellow-200" draggable="true" data-type="total-points">即時總點</div>
+                        <div class="draggable bg-pink-200" draggable="true" data-type="reduce-position">保利降部位</div>
+                    </div>
+                </div>
+                
+                <div class="mb-2 text-orange-700 text-larger">已選擇的設定：</div>
+                <div id="dropZone" class="drop-zone bg-white bg-opacity-50">
+                    <p class="text-orange-500 text-center text-larger" id="dropHint">拖曳選項到此處</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="https://ost.capitalfutures.com.tw/" target="_blank" class="inline-block bg-gradient-to-r from-pink-500 to-purple-500 text-white px-8 py-4 rounded-full text-xl font-bold shadow-lg hover:shadow-xl transition-all">
+                <span class="mr-2">✨</span>開始智能交易<span class="ml-2">✨</span>
+            </a>
+            
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 程式碼顯示模態框 -->
+    <div id="codeModal" class="code-modal">
+        <div class="code-modal-content">
+            <span class="close-modal" id="closeModal">×</span>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">程式碼</h2>
+            <div class="code-container" id="codeContainer">
+                <!-- 程式碼將在這裡顯示 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 基本系統 - 餘額滑塊
+        const balanceSlider = document.getElementById('balanceSlider');
+        const balanceValue = document.getElementById('balanceValue');
+        const usableFunds = document.getElementById('usableFunds');
+        
+        balanceSlider.addEventListener('input', function() {
+            const value = this.value;
+            balanceValue.textContent = value + '%';
+            usableFunds.textContent = (100 - value) + '%';
+            
+            // 添加跳動動畫
+            usableFunds.classList.add('active');
+            setTimeout(() => {
+                usableFunds.classList.remove('active');
+            }, 300);
+        });
+        
+        // 方向判斷 - 點擊交互
+        const directionItems = document.querySelectorAll('.direction-item');
+        
+        directionItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('dimmed');
+            });
+        });
+        
+        // 更新方向判斷數據
+        function updateDirectionData() {
+            // 更新合計方向 - 簡化為只有做多和做空
+            const totalDirectionValue = document.getElementById('totalDirectionValue');
+            const directions = [
+                { text: '做多', class: 'text-red-500' },
+                { text: '做空', class: 'text-green-500' }
+            ];
+            const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+            totalDirectionValue.textContent = randomDirection.text;
+            totalDirectionValue.className = 'direction-value ' + randomDirection.class;
+            
+            // 更新多空溫度
+            const tempIndicator = document.getElementById('tempIndicator');
+            const tempDirectionValue = document.getElementById('tempDirectionValue');
+            const tempValues = [25, 50, 75];
+            const randomTemp = tempValues[Math.floor(Math.random() * tempValues.length)];
+            tempIndicator.style.left = randomTemp + '%';
+            tempDirectionValue.textContent = randomTemp + '%';
+            
+            // 更新當盤數值 - 使用整數而非百分比
+            const currentDirectionValue = document.getElementById('currentDirectionValue');
+            const isPositive = Math.random() > 0.5;
+            const randomValue = Math.floor(Math.random() * 20000) + 5000;
+            
+            if (isPositive) {
+                currentDirectionValue.textContent = randomValue;
+                currentDirectionValue.className = 'direction-value text-red-500';
+            } else {
+                currentDirectionValue.textContent = '-' + randomValue;
+                currentDirectionValue.className = 'direction-value text-green-500';
+            }
+            
+            // 更新動態Sell價
+            const dynamicSellPrice = document.getElementById('dynamicSellPrice');
+            const sellPrices = [77, 61, 45, 32, 22, 13];
+            dynamicSellPrice.textContent = sellPrices[Math.floor(Math.random() * sellPrices.length)];
+        }
+        
+        // 動態Sell價選擇器
+        const bpPriceSelect = document.getElementById('bpPriceSelect');
+        bpPriceSelect.addEventListener('change', function() {
+            // 添加跳動動畫
+            this.classList.add('active');
+            setTimeout(() => {
+                this.classList.remove('active');
+            }, 300);
+        });
+        
+        // 停損停利拖曳功能
+        const draggables = document.querySelectorAll('.draggable');
+        const dropZone = document.getElementById('dropZone');
+        const dropHint = document.getElementById('dropHint');
+        
+        // 為每個可拖曳元素添加事件監聽器
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', this.dataset.type);
+                this.classList.add('opacity-50');
+            });
+            
+            draggable.addEventListener('dragend', function() {
+                this.classList.remove('opacity-50');
+            });
+        });
+        
+        // 為放置區域添加事件監聽器
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('highlight');
+        });
+        
+        dropZone.addEventListener('dragleave', function() {
+            this.classList.remove('highlight');
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('highlight');
+            
+            const type = e.dataTransfer.getData('text/plain');
+            const draggable = document.querySelector(`[data-type="${type}"]`);
+            
+            if (draggable) {
+                // 隱藏提示文字
+                if (dropHint) {
+                    dropHint.style.display = 'none';
+                }
+                
+                // 創建已放置的項目
+                const droppedItem = document.createElement('div');
+                droppedItem.className = `dropped-item ${getColorClass(type)}`;
+                droppedItem.innerHTML = `
+                    <span>${draggable.textContent}</span>
+                    <span class="remove-btn">×</span>
+                `;
+                
+                // 添加刪除按鈕功能
+                const removeBtn = droppedItem.querySelector('.remove-btn');
+                removeBtn.addEventListener('click', function() {
+                    droppedItem.remove();
+                    
+                    // 如果沒有項目了，顯示提示文字
+                    if (dropZone.querySelectorAll('.dropped-item').length === 0) {
+                        dropHint.style.display = 'block';
+                    }
+                });
+                
+                this.appendChild(droppedItem);
+            }
+        });
+        
+        // 獲取顏色類別 - 修改為淺色背景，黑色文字
+        function getColorClass(type) {
+            const colorMap = {
+                'stop-loss': 'bg-red-200 text-gray-800',
+                'take-profit': 'bg-green-200 text-gray-800',
+                'day-close': 'bg-blue-200 text-gray-800',
+                'night-close': 'bg-purple-200 text-gray-800',
+                'total-points': 'bg-yellow-200 text-gray-800',
+                'reduce-position': 'bg-pink-200 text-gray-800'
+            };
+            
+            return colorMap[type] || 'bg-gray-200 text-gray-800';
+        }
+        
+        // 金錢掉落效果 - 修改為花瓣式掉落
+        document.body.addEventListener('click', function() {
+            createMoneyEffect();
+        });
+        
+        function createMoneyEffect() {
+            const moneySymbols = ['💰', '💵', '💸', '🪙', '💎', '💲'];
+            const count = 12; // 每次點擊產生的金錢數量
+            const windowWidth = window.innerWidth;
+            
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const money = document.createElement('div');
+                    money.className = 'money';
+                    money.textContent = moneySymbols[Math.floor(Math.random() * moneySymbols.length)];
+                    
+                    // 設置水平偏移變量
+                    const horizontalOffset = (Math.random() * 2 - 1) * (windowWidth * 0.4); // 左右偏移窗口寬度的40%
+                    money.style.setProperty('--tx', horizontalOffset + 'px');
+                    
+                    // 設置初始位置在頂部中間
+                    money.style.left = `calc(50% + ${Math.random() * 100 - 50}px)`;
+                    
+                    // 隨機動畫時間 - 更慢
+                    const duration = 3 + Math.random() * 2;
+                    money.style.animationDuration = duration + 's';
+                    
+                    document.body.appendChild(money);
+                    
+                    // 動畫結束後移除元素
+                    setTimeout(() => {
+                        money.remove();
+                    }, duration * 1000);
+                }, i * 100); // 錯開時間，讓效果更自然
+            }
+        }
+        
+            
+            return html
+                .replace(/</g, '<')
+                .replace(/>/g, '>');
+        }
+        
+        // 顯示代碼模態框
+        devButton.addEventListener('click', function() {
+            codeContainer.innerHTML = getCurrentPageCode();
+            codeModal.style.display = 'block';
+        });
+        
+        // 關閉模態框
+        closeModal.addEventListener('click', function() {
+            codeModal.style.display = 'none';
+        });
+        
+        // 點擊模態框外部關閉
+        window.addEventListener('click', function(event) {
+            if (event.target === codeModal) {
+                codeModal.style.display = 'none';
+            }
+        });
+        
+        // 星期選單功能
+        const dayOptions = document.querySelectorAll('.day-option');
+        
+        dayOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // 移除所有選項的活動狀態
+                dayOptions.forEach(opt => opt.classList.remove('active'));
+                
+                // 為當前選項添加活動狀態
+                this.classList.add('active');
+                
+                // 這裡可以添加切換不同星期的邏輯
+                const selectedDay = this.dataset.day;
+                console.log('選擇了:', selectedDay);
+                
+                // 模擬數據更新
+                updateDirectionData();
+            });
+        });
+        
+        // 每5秒更新一次方向判斷數據
+        setInterval(updateDirectionData, 5000);
+        
+        // 初始化
+        updateDirectionData();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'937469b3424df248',t:'MTc0NTgyMDc5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+</body></html></div>
+        </div>
+    </div>
+
+    <script>
+        // 基本系統 - 餘額滑塊
+        const balanceSlider = document.getElementById('balanceSlider');
+        const balanceValue = document.getElementById('balanceValue');
+        const usableFunds = document.getElementById('usableFunds');
+        
+        balanceSlider.addEventListener('input', function() {
+            const value = this.value;
+            balanceValue.textContent = value + '%';
+            usableFunds.textContent = (100 - value) + '%';
+            
+            // 添加跳動動畫
+            usableFunds.classList.add('active');
+            setTimeout(() => {
+                usableFunds.classList.remove('active');
+            }, 300);
+        });
+        
+        // 方向判斷 - 點擊交互
+        const directionItems = document.querySelectorAll('.direction-item');
+        
+        directionItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('dimmed');
+            });
+        });
+        
+        // 更新方向判斷數據
+        function updateDirectionData() {
+            // 更新合計方向 - 簡化為只有做多和做空
+            const totalDirectionValue = document.getElementById('totalDirectionValue');
+            const directions = [
+                { text: '做多', class: 'text-red-500' },
+                { text: '做空', class: 'text-green-500' }
+            ];
+            const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+            totalDirectionValue.textContent = randomDirection.text;
+            totalDirectionValue.className = 'direction-value ' + randomDirection.class;
+            
+            // 更新多空溫度
+            const tempIndicator = document.getElementById('tempIndicator');
+            const tempDirectionValue = document.getElementById('tempDirectionValue');
+            const tempValues = [25, 50, 75];
+            const randomTemp = tempValues[Math.floor(Math.random() * tempValues.length)];
+            tempIndicator.style.left = randomTemp + '%';
+            tempDirectionValue.textContent = randomTemp + '%';
+            
+            // 更新當盤數值 - 使用整數而非百分比
+            const currentDirectionValue = document.getElementById('currentDirectionValue');
+            const isPositive = Math.random() > 0.5;
+            const randomValue = Math.floor(Math.random() * 20000) + 5000;
+            
+            if (isPositive) {
+                currentDirectionValue.textContent = randomValue;
+                currentDirectionValue.className = 'direction-value text-red-500';
+            } else {
+                currentDirectionValue.textContent = '-' + randomValue;
+                currentDirectionValue.className = 'direction-value text-green-500';
+            }
+            
+            // 更新動態Sell價
+            const dynamicSellPrice = document.getElementById('dynamicSellPrice');
+            const sellPrices = [77, 61, 45, 32, 22, 13];
+            dynamicSellPrice.textContent = sellPrices[Math.floor(Math.random() * sellPrices.length)];
+        }
+        
+        // 動態Sell價選擇器
+        const bpPriceSelect = document.getElementById('bpPriceSelect');
+        bpPriceSelect.addEventListener('change', function() {
+            // 添加跳動動畫
+            this.classList.add('active');
+            setTimeout(() => {
+                this.classList.remove('active');
+            }, 300);
+        });
+        
+        // 停損停利拖曳功能
+        const draggables = document.querySelectorAll('.draggable');
+        const dropZone = document.getElementById('dropZone');
+        const dropHint = document.getElementById('dropHint');
+        
+        // 為每個可拖曳元素添加事件監聽器
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', this.dataset.type);
+                this.classList.add('opacity-50');
+            });
+            
+            draggable.addEventListener('dragend', function() {
+                this.classList.remove('opacity-50');
+            });
+        });
+        
+        // 為放置區域添加事件監聽器
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('highlight');
+        });
+        
+        dropZone.addEventListener('dragleave', function() {
+            this.classList.remove('highlight');
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('highlight');
+            
+            const type = e.dataTransfer.getData('text/plain');
+            const draggable = document.querySelector(`[data-type="${type}"]`);
+            
+            if (draggable) {
+                // 隱藏提示文字
+                if (dropHint) {
+                    dropHint.style.display = 'none';
+                }
+                
+                // 創建已放置的項目
+                const droppedItem = document.createElement('div');
+                droppedItem.className = `dropped-item ${getColorClass(type)}`;
+                droppedItem.innerHTML = `
+                    <span>${draggable.textContent}</span>
+                    <span class="remove-btn">×</span>
+                `;
+                
+                // 添加刪除按鈕功能
+                const removeBtn = droppedItem.querySelector('.remove-btn');
+                removeBtn.addEventListener('click', function() {
+                    droppedItem.remove();
+                    
+                    // 如果沒有項目了，顯示提示文字
+                    if (dropZone.querySelectorAll('.dropped-item').length === 0) {
+                        dropHint.style.display = 'block';
+                    }
+                });
+                
+                this.appendChild(droppedItem);
+            }
+        });
+        
+        // 獲取顏色類別 - 修改為淺色背景，黑色文字
+        function getColorClass(type) {
+            const colorMap = {
+                'stop-loss': 'bg-red-200 text-gray-800',
+                'take-profit': 'bg-green-200 text-gray-800',
+                'day-close': 'bg-blue-200 text-gray-800',
+                'night-close': 'bg-purple-200 text-gray-800',
+                'total-points': 'bg-yellow-200 text-gray-800',
+                'reduce-position': 'bg-pink-200 text-gray-800'
+            };
+            
+            return colorMap[type] || 'bg-gray-200 text-gray-800';
+        }
+        
+        // 金錢掉落效果 - 修改為花瓣式掉落
+        document.body.addEventListener('click', function() {
+            createMoneyEffect();
+        });
+        
+        function createMoneyEffect() {
+            const moneySymbols = ['💰', '💵', '💸', '🪙', '💎', '💲'];
+            const count = 12; // 每次點擊產生的金錢數量
+            const windowWidth = window.innerWidth;
+            
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const money = document.createElement('div');
+                    money.className = 'money';
+                    money.textContent = moneySymbols[Math.floor(Math.random() * moneySymbols.length)];
+                    
+                    // 設置水平偏移變量
+                    const horizontalOffset = (Math.random() * 2 - 1) * (windowWidth * 0.4); // 左右偏移窗口寬度的40%
+                    money.style.setProperty('--tx', horizontalOffset + 'px');
+                    
+                    // 設置初始位置在頂部中間
+                    money.style.left = `calc(50% + ${Math.random() * 100 - 50}px)`;
+                    
+                    // 隨機動畫時間 - 更慢
+                    const duration = 3 + Math.random() * 2;
+                    money.style.animationDuration = duration + 's';
+                    
+                    document.body.appendChild(money);
+                    
+                    // 動畫結束後移除元素
+                    setTimeout(() => {
+                        money.remove();
+                    }, duration * 1000);
+                }, i * 100); // 錯開時間，讓效果更自然
+            }
+        }
+        
+            return html
+                .replace(/</g, '<')
+                .replace(/>/g, '>');
+        }
+        
+        // 顯示代碼模態框
+        devButton.addEventListener('click', function() {
+            codeContainer.innerHTML = getCurrentPageCode();
+            codeModal.style.display = 'block';
+        });
+        
+        // 關閉模態框
+        closeModal.addEventListener('click', function() {
+            codeModal.style.display = 'none';
+        });
+        
+        // 點擊模態框外部關閉
+        window.addEventListener('click', function(event) {
+            if (event.target === codeModal) {
+                codeModal.style.display = 'none';
+            }
+        });
+        
+        // 星期選單功能
+        const dayOptions = document.querySelectorAll('.day-option');
+        
+        dayOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // 移除所有選項的活動狀態
+                dayOptions.forEach(opt => opt.classList.remove('active'));
+                
+                // 為當前選項添加活動狀態
+                this.classList.add('active');
+                
+                // 這裡可以添加切換不同星期的邏輯
+                const selectedDay = this.dataset.day;
+                console.log('選擇了:', selectedDay);
+                
+                // 模擬數據更新
+                updateDirectionData();
+            });
+        });
+        
+        // 每5秒更新一次方向判斷數據
+        setInterval(updateDirectionData, 5000);
+        
+        // 初始化
+        updateDirectionData();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'937469b3424df248',t:'MTc0NTgyMDc5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<div class="money" style="--tx: -296.885084651281px; left: calc(50% + 40.328px); animation-duration: 3.0101s;">💵</div><div class="money" style="--tx: -301.69394479130807px; left: calc(50% + 20.9963px); animation-duration: 4.01729s;">💎</div><div class="money" style="--tx: -121.4583084742654px; left: calc(50% + 16.9877px); animation-duration: 4.18031s;">💵</div><div class="money" style="--tx: 25.685166614958238px; left: calc(50% + 15.3786px); animation-duration: 4.08315s;">💲</div><div class="money" style="--tx: 362.3838288107114px; left: calc(50% - 47.2523px); animation-duration: 3.3279s;">💎</div><div class="money" style="--tx: -435.972090997081px; left: calc(50% - 38.9222px); animation-duration: 4.9918s;">💸</div><div class="money" style="--tx: -325.644679727159px; left: calc(50% + 43.37px); animation-duration: 3.74896s;">🪙</div><div class="money" style="--tx: 297.6989340062539px; left: calc(50% - 3.05322px); animation-duration: 3.9208s;">💰</div><div class="money" style="--tx: -196.13553414252357px; left: calc(50% - 41.7002px); animation-duration: 4.72852s;">💸</div><div class="money" style="--tx: -338.25270390449833px; left: calc(50% + 48.0268px); animation-duration: 3.80724s;">💲</div><div class="money" style="--tx: -226.3178100275285px; left: calc(50% - 10.6255px); animation-duration: 3.10471s;">💎</div><div class="money" style="--tx: -190.50289470108055px; left: calc(50% - 12.361px); animation-duration: 4.34289s;">💎</div></body></html></div>
+        </div>
+    </div>
+
+    <script>
+        // 基本系統 - 餘額滑塊
+        const balanceSlider = document.getElementById('balanceSlider');
+        const balanceValue = document.getElementById('balanceValue');
+        const usableFunds = document.getElementById('usableFunds');
+        
+        balanceSlider.addEventListener('input', function() {
+            const value = this.value;
+            balanceValue.textContent = value + '%';
+            usableFunds.textContent = (100 - value) + '%';
+            
+            // 添加跳動動畫
+            usableFunds.classList.add('active');
+            setTimeout(() => {
+                usableFunds.classList.remove('active');
+            }, 300);
+        });
+        
+        // 方向判斷 - 點擊交互
+        const directionItems = document.querySelectorAll('.direction-item');
+        
+        directionItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('dimmed');
+            });
+        });
+        
+        // 更新方向判斷數據
+        function updateDirectionData() {
+            // 更新合計方向 - 簡化為只有做多和做空
+            const totalDirectionValue = document.getElementById('totalDirectionValue');
+            const directions = [
+                { text: '做多', class: 'text-red-500' },
+                { text: '做空', class: 'text-green-500' }
+            ];
+            const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+            totalDirectionValue.textContent = randomDirection.text;
+            totalDirectionValue.className = 'direction-value ' + randomDirection.class;
+            
+            // 更新多空溫度
+            const tempIndicator = document.getElementById('tempIndicator');
+            const tempDirectionValue = document.getElementById('tempDirectionValue');
+            const tempValues = [25, 50, 75];
+            const randomTemp = tempValues[Math.floor(Math.random() * tempValues.length)];
+            tempIndicator.style.left = randomTemp + '%';
+            tempDirectionValue.textContent = randomTemp + '%';
+            
+            // 更新當盤數值 - 使用整數而非百分比
+            const currentDirectionValue = document.getElementById('currentDirectionValue');
+            const isPositive = Math.random() > 0.5;
+            const randomValue = Math.floor(Math.random() * 20000) + 5000;
+            
+            if (isPositive) {
+                currentDirectionValue.textContent = randomValue;
+                currentDirectionValue.className = 'direction-value text-red-500';
+            } else {
+                currentDirectionValue.textContent = '-' + randomValue;
+                currentDirectionValue.className = 'direction-value text-green-500';
+            }
+            
+            // 更新動態Sell價
+            const dynamicSellPrice = document.getElementById('dynamicSellPrice');
+            const sellPrices = [77, 61, 45, 32, 22, 13];
+            dynamicSellPrice.textContent = sellPrices[Math.floor(Math.random() * sellPrices.length)];
+        }
+        
+        // 動態Sell價選擇器
+        const bpPriceSelect = document.getElementById('bpPriceSelect');
+        bpPriceSelect.addEventListener('change', function() {
+            // 添加跳動動畫
+            this.classList.add('active');
+            setTimeout(() => {
+                this.classList.remove('active');
+            }, 300);
+        });
+        
+        // 停損停利拖曳功能
+        const draggables = document.querySelectorAll('.draggable');
+        const dropZone = document.getElementById('dropZone');
+        const dropHint = document.getElementById('dropHint');
+        
+        // 為每個可拖曳元素添加事件監聽器
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', this.dataset.type);
+                this.classList.add('opacity-50');
+            });
+            
+            draggable.addEventListener('dragend', function() {
+                this.classList.remove('opacity-50');
+            });
+        });
+        
+        // 為放置區域添加事件監聽器
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('highlight');
+        });
+        
+        dropZone.addEventListener('dragleave', function() {
+            this.classList.remove('highlight');
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('highlight');
+            
+            const type = e.dataTransfer.getData('text/plain');
+            const draggable = document.querySelector(`[data-type="${type}"]`);
+            
+            if (draggable) {
+                // 隱藏提示文字
+                if (dropHint) {
+                    dropHint.style.display = 'none';
+                }
+                
+                // 創建已放置的項目
+                const droppedItem = document.createElement('div');
+                droppedItem.className = `dropped-item ${getColorClass(type)}`;
+                droppedItem.innerHTML = `
+                    <span>${draggable.textContent}</span>
+                    <span class="remove-btn">×</span>
+                `;
+                
+                // 添加刪除按鈕功能
+                const removeBtn = droppedItem.querySelector('.remove-btn');
+                removeBtn.addEventListener('click', function() {
+                    droppedItem.remove();
+                    
+                    // 如果沒有項目了，顯示提示文字
+                    if (dropZone.querySelectorAll('.dropped-item').length === 0) {
+                        dropHint.style.display = 'block';
+                    }
+                });
+                
+                this.appendChild(droppedItem);
+            }
+        });
+        
+        // 獲取顏色類別 - 修改為淺色背景，黑色文字
+        function getColorClass(type) {
+            const colorMap = {
+                'stop-loss': 'bg-red-200 text-gray-800',
+                'take-profit': 'bg-green-200 text-gray-800',
+                'day-close': 'bg-blue-200 text-gray-800',
+                'night-close': 'bg-purple-200 text-gray-800',
+                'total-points': 'bg-yellow-200 text-gray-800',
+                'reduce-position': 'bg-pink-200 text-gray-800'
+            };
+            
+            return colorMap[type] || 'bg-gray-200 text-gray-800';
+        }
+        
+        // 金錢掉落效果 - 修改為花瓣式掉落
+        document.body.addEventListener('click', function() {
+            createMoneyEffect();
+        });
+        
+        function createMoneyEffect() {
+            const moneySymbols = ['💰', '💵', '💸', '🪙', '💎', '💲'];
+            const count = 12; // 每次點擊產生的金錢數量
+            const windowWidth = window.innerWidth;
+            
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const money = document.createElement('div');
+                    money.className = 'money';
+                    money.textContent = moneySymbols[Math.floor(Math.random() * moneySymbols.length)];
+                    
+                    // 設置水平偏移變量
+                    const horizontalOffset = (Math.random() * 2 - 1) * (windowWidth * 0.4); // 左右偏移窗口寬度的40%
+                    money.style.setProperty('--tx', horizontalOffset + 'px');
+                    
+                    // 設置初始位置在頂部中間
+                    money.style.left = `calc(50% + ${Math.random() * 100 - 50}px)`;
+                    
+                    // 隨機動畫時間 - 更慢
+                    const duration = 3 + Math.random() * 2;
+                    money.style.animationDuration = duration + 's';
+                    
+                    document.body.appendChild(money);
+                    
+                    // 動畫結束後移除元素
+                    setTimeout(() => {
+                        money.remove();
+                    }, duration * 1000);
+                }, i * 100); // 錯開時間，讓效果更自然
+            }
+        }
+        
+            return html
+                .replace(/</g, '<')
+                .replace(/>/g, '>');
+        }
+        
+        // 顯示代碼模態框
+        devButton.addEventListener('click', function() {
+            codeContainer.innerHTML = getCurrentPageCode();
+            codeModal.style.display = 'block';
+        });
+        
+        // 關閉模態框
+        closeModal.addEventListener('click', function() {
+            codeModal.style.display = 'none';
+        });
+        
+        // 點擊模態框外部關閉
+        window.addEventListener('click', function(event) {
+            if (event.target === codeModal) {
+                codeModal.style.display = 'none';
+            }
+        });
+        
+        // 星期選單功能
+        const dayOptions = document.querySelectorAll('.day-option');
+        
+        dayOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // 移除所有選項的活動狀態
+                dayOptions.forEach(opt => opt.classList.remove('active'));
+                
+                // 為當前選項添加活動狀態
+                this.classList.add('active');
+                
+                // 這裡可以添加切換不同星期的邏輯
+                const selectedDay = this.dataset.day;
+                console.log('選擇了:', selectedDay);
+                
+                // 模擬數據更新
+                updateDirectionData();
+            });
+        });
+        
+        // 每5秒更新一次方向判斷數據
+        setInterval(updateDirectionData, 5000);
+        
+        // 初始化
+        updateDirectionData();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'937469b3424df248',t:'MTc0NTgyMDc5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;">
+</iframe>
+<div class="money" style="--tx: -436.1460309350605px; left: calc(50% - 28.2868px); animation-duration: 4.18535s;">🪙</div><div class="money" style="--tx: -358.4618114432228px; left: calc(50% - 42.4601px); animation-duration: 3.81666s;">🪙</div><div class="money" style="--tx: 239.7184726045763px; left: calc(50% + 6.29077px); animation-duration: 4.93853s;">💲</div><div class="money" style="--tx: -443.88554125223214px; left: calc(50% + 16.4431px); animation-duration: 3.76299s;">💵</div><div class="money" style="--tx: 298.68384838648115px; left: calc(50% + 31.3692px); animation-duration: 3.78116s;">🪙</div><div class="money" style="--tx: 324.16249763054293px; left: calc(50% - 47.9722px); animation-duration: 3.07478s;">💎</div>
+<div class="money" style="--tx: -112.56463647418096px; left: calc(50% - 24.725px); animation-duration: 4.44311s;">🪙</div><div class="money" style="--tx: -230.71222232476558px; left: calc(50% + 30.5969px); animation-duration: 3.20795s;">💸</div>
+<div class="money" style="--tx: -406.2167122179457px; left: calc(50% + 26.4087px); animation-duration: 3.26066s;">🪙</div>
+<div class="money" style="--tx: -215.77461746390807px; left: calc(50% + 49.6669px); animation-duration: 4.77335s;">💲</div>
+<div class="money" style="--tx: 412.39230549143736px; left: calc(50% - 30.5573px); animation-duration: 4.25498s;">💸</div>
+<div class="money" style="--tx: 343.1471369111465px; left: calc(50% + 48.1454px); animation-duration: 3.99209s;">💵</div>
+</body>
+</html>
