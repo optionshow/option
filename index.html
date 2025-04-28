@@ -94,8 +94,25 @@
       font-size: 14px;
       color: #666;
     }
-    footer {
+    .moneypop-link {
+      display: inline-block;
       margin-top: 40px;
+      padding: 14px 24px;
+      font-size: 26px;
+      font-weight: bold;
+      background: linear-gradient(to right, #ff4d4d, #ffcc00);
+      color: #fff;
+      border-radius: 12px;
+      text-decoration: none;
+      animation: breathe 2.5s infinite;
+    }
+    @keyframes breathe {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    footer {
+      margin-top: 20px;
       text-align: center;
       font-size: 14px;
       color: #555;
@@ -167,6 +184,10 @@
         <div class="placeholder">點擊查看平倉條件設定</div>
       </div>
     </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 40px;">
+    <a class="moneypop-link" href="moneypop.html" target="_blank">💸 MoneyPop! 智能交易 💎</a>
   </div>
 
   <footer>
