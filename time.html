@@ -1,0 +1,380 @@
+<html lang="zh-TW"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸福時鐘</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .clock-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            /* 使用彩虹顏色 */
+            background: linear-gradient(135deg, 
+                rgba(255, 100, 100, 0.8), /* 紅 */
+                rgba(255, 165, 70, 0.8),  /* 橙 */
+                rgba(255, 255, 100, 0.8), /* 黃 */
+                rgba(100, 255, 100, 0.8), /* 綠 */
+                rgba(100, 180, 255, 0.8), /* 藍 */
+                rgba(120, 100, 255, 0.8), /* 靛 */
+                rgba(200, 100, 255, 0.8),  /* 紫 */
+                rgba(255, 100, 100, 0.8)  /* 回到紅色，使循環更順暢 */
+            );
+            background-size: 800% 800%;
+            /* 增加動畫時間，使顏色變化更順暢 */
+            animation: rainbowBG 120s linear infinite;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes rainbowBG {
+            0% { background-position: 0% 50% }
+            100% { background-position: 100% 50% }
+        }
+
+        .hour-text {
+            position: absolute;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 54px;
+            color: #333;
+            text-shadow: 1.5px 1.5px 3px rgba(255, 255, 255, 0.8);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .minute-mark {
+            position: absolute;
+            width: 3px;
+            height: 15px;
+            background-color: #777;
+            transform-origin: bottom center;
+        }
+
+        .hand {
+            position: absolute;
+            transform-origin: bottom center;
+            bottom: 50%;
+            border-radius: 15px;
+        }
+
+        .hour-hand {
+            width: 12px;
+            height: 150px;
+            background-color: #333;
+            z-index: 3;
+        }
+
+        .minute-hand {
+            width: 9px;
+            height: 210px;
+            background-color: #555;
+            z-index: 2;
+        }
+
+        .center-circle {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #555;
+            z-index: 4;
+        }
+
+        .time-display {
+            font-family: "微軟正黑體", "Microsoft JhengHei", sans-serif;
+            font-size: 32px;
+            color: #333;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .developer-link {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            font-family: "微軟正黑體", "Microsoft JhengHei", sans-serif;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.1); /* 10%的淡色 */
+            cursor: pointer;
+            z-index: 10;
+            text-decoration: none;
+        }
+
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            overflow: auto;
+        }
+
+        .code-content {
+            background-color: #f8f8f8;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 700px) {
+            .clock-container {
+                width: 450px;
+                height: 450px;
+            }
+            .hour-hand {
+                height: 112.5px;
+            }
+            .minute-hand {
+                height: 157.5px;
+            }
+            .hour-text {
+                font-size: 42px;
+            }
+            .time-display {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .clock-container {
+                width: 350px;
+                height: 350px;
+            }
+            .hour-hand {
+                height: 90px;
+            }
+            .minute-hand {
+                height: 120px;
+            }
+            .hour-text {
+                font-size: 32px;
+            }
+            .time-display {
+                font-size: 24px;
+            }
+            .code-content {
+                width: 90%;
+                margin: 10% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div id="hour-hand" class="hour-hand hand" style="transform: rotate(37deg);"></div>
+        <div id="minute-hand" class="minute-hand hand" style="transform: rotate(84deg);"></div>
+        <div class="center-circle"></div>
+    <div class="hour-text" style="left: calc(50% + 1.56142e-14px); top: calc(50% - 255px); transform: translate(-50%, -50%) rotate(0deg);">幸福</div><div class="hour-text" style="left: calc(50% + 127.5px); top: calc(50% - 220.836px); transform: translate(-50%, -50%) rotate(30deg);">快樂</div><div class="hour-text" style="left: calc(50% + 220.836px); top: calc(50% - 127.5px); transform: translate(-50%, -50%) rotate(60deg);">歡喜</div><div class="hour-text" style="left: calc(50% + 255px); top: calc(50% + 0px); transform: translate(-50%, -50%) rotate(90deg);">瀟灑</div><div class="hour-text" style="left: calc(50% + 220.836px); top: calc(50% + 127.5px); transform: translate(-50%, -50%) rotate(120deg);">開心</div><div class="hour-text" style="left: calc(50% + 127.5px); top: calc(50% + 220.836px); transform: translate(-50%, -50%) rotate(150deg);">心寧</div><div class="hour-text" style="left: calc(50% + 1.56142e-14px); top: calc(50% + 255px); transform: translate(-50%, -50%) rotate(180deg);">希望</div><div class="hour-text" style="left: calc(50% - 127.5px); top: calc(50% + 220.836px); transform: translate(-50%, -50%) rotate(210deg);">如意</div><div class="hour-text" style="left: calc(50% - 220.836px); top: calc(50% + 127.5px); transform: translate(-50%, -50%) rotate(240deg);">光明</div><div class="hour-text" style="left: calc(50% - 255px); top: calc(50% + 3.12285e-14px); transform: translate(-50%, -50%) rotate(270deg);">信心</div><div class="hour-text" style="left: calc(50% - 220.836px); top: calc(50% - 127.5px); transform: translate(-50%, -50%) rotate(300deg);">自在</div><div class="hour-text" style="left: calc(50% - 127.5px); top: calc(50% - 220.836px); transform: translate(-50%, -50%) rotate(330deg);">滿足</div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(6deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(12deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(18deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(24deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(36deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(42deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(48deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(54deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(66deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(72deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(78deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(84deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(96deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(102deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(108deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(114deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(126deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(132deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(138deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(144deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(156deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(162deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(168deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(174deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(186deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(192deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(198deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(204deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(216deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(222deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(228deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(234deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(246deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(252deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(258deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(264deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(276deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(282deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(288deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(294deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(306deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(312deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(318deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(324deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(336deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(342deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(348deg) translateY(-270px);"></div><div class="minute-mark" style="width: 3px; height: 15px; position: absolute; background-color: rgb(119, 119, 119); left: calc(50% - 1.5px); bottom: 50%; transform-origin: center bottom; transform: rotate(354deg) translateY(-270px);"></div></div>
+
+    <div class="time-display" id="timeDisplay">現在時間：13:14 快樂 又 歡喜</div>
+
+    <div class="developer-link" id="developerLink"></div>
+
+    <div id="codeModal" class="code-modal">
+        <div class="code-content">
+            <span class="close-button" id="closeModal">×</span>
+            <h2>時鐘程式碼</h2>
+            <pre id="sourceCode"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const clockContainer = document.querySelector('.clock-container');
+            const hourHand = document.getElementById('hour-hand');
+            const minuteHand = document.getElementById('minute-hand');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const developerLink = document.getElementById('developerLink');
+            const codeModal = document.getElementById('codeModal');
+            const closeModal = document.getElementById('closeModal');
+            const sourceCode = document.getElementById('sourceCode');
+
+            // 中文時刻 - 按照時鐘順序排列（12點開始順時針）
+            const chineseHours = ['幸福', '快樂', '歡喜', '瀟灑', '開心', '心寧', '希望', '如意', '光明', '信心', '自在', '滿足'];
+            
+            // 時間對應表（用於文字顯示）
+            const hourToWord = {
+                0: '幸福', // 12點
+                1: '快樂',
+                2: '歡喜',
+                3: '瀟灑',
+                4: '開心',
+                5: '心寧',
+                6: '希望',
+                7: '如意',
+                8: '光明',
+                9: '信心',
+                10: '自在',
+                11: '滿足',
+                12: '幸福',
+                13: '快樂',
+                14: '歡喜',
+                15: '瀟灑',
+                16: '開心',
+                17: '心寧',
+                18: '希望',
+                19: '如意',
+                20: '光明',
+                21: '信心',
+                22: '自在',
+                23: '滿足'
+            };
+
+            // 分鐘對應表（每5分鐘一個區間）
+            function getMinuteWord(minute) {
+                if (minute >= 0 && minute < 5) return '幸福';
+                if (minute >= 5 && minute < 10) return '快樂';
+                if (minute >= 10 && minute < 15) return '歡喜';
+                if (minute >= 15 && minute < 20) return '瀟灑';
+                if (minute >= 20 && minute < 25) return '開心';
+                if (minute >= 25 && minute < 30) return '心寧';
+                if (minute >= 30 && minute < 35) return '希望';
+                if (minute >= 35 && minute < 40) return '如意';
+                if (minute >= 40 && minute < 45) return '光明';
+                if (minute >= 45 && minute < 50) return '信心';
+                if (minute >= 50 && minute < 55) return '自在';
+                return '滿足'; // 55-59
+            }
+
+            // 創建時刻標記
+            for (let i = 0; i < 12; i++) {
+                // 計算角度和位置 (順時針從12點開始)
+                const angle = ((i * 30) - 90) * (Math.PI / 180);
+                const radius = 255;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                
+                const hourText = document.createElement('div');
+                hourText.className = 'hour-text';
+                hourText.textContent = chineseHours[i];
+                hourText.style.left = `calc(50% + ${x}px)`;
+                hourText.style.top = `calc(50% + ${y}px)`;
+                
+                // 調整文字方向，使其與整點位置一致
+                const rotationAngle = i * 30; // 每個整點的角度
+                hourText.style.transform = `translate(-50%, -50%) rotate(${rotationAngle}deg)`;
+                
+                clockContainer.appendChild(hourText);
+            }
+
+            // 創建分鐘標記
+            for (let i = 0; i < 60; i++) {
+                if (i % 5 !== 0) { // 跳過整點位置
+                    const minuteMark = document.createElement('div');
+                    minuteMark.className = 'minute-mark';
+                    
+                    // 計算角度和位置
+                    const angle = i * 6;
+                    minuteMark.style.width = '3px';
+                    minuteMark.style.height = '15px';
+                    minuteMark.style.position = 'absolute';
+                    minuteMark.style.backgroundColor = '#777';
+                    minuteMark.style.left = 'calc(50% - 1.5px)';
+                    minuteMark.style.bottom = '50%';
+                    minuteMark.style.transformOrigin = 'center bottom';
+                    minuteMark.style.transform = `rotate(${angle}deg) translateY(-270px)`;
+                    
+                    clockContainer.appendChild(minuteMark);
+                }
+            }
+
+            function updateClock() {
+                // 獲取台北時間
+                const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Taipei' }));
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+
+                // 計算指針角度（12小時制顯示）
+                const hour12 = hours % 12;
+                const hourDegree = (hour12 * 30) + (minutes * 0.5);
+                const minuteDegree = (minutes * 6);
+
+                // 設置指針旋轉
+                hourHand.style.transform = `rotate(${hourDegree}deg)`;
+                minuteHand.style.transform = `rotate(${minuteDegree}deg)`;
+
+                // 更新時間顯示
+                // 獲取對應的中文時刻詞
+                const hourWord = hourToWord[hours];
+                
+                // 獲取分鐘對應的時刻詞
+                const minuteWord = getMinuteWord(minutes);
+                
+                // 更新時間顯示（24小時制）
+                const digitalTime = `${hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+                timeDisplay.textContent = `現在時間：${digitalTime} ${hourWord} 又 ${minuteWord}`;
+
+                // 每秒更新一次
+                setTimeout(updateClock, 1000);
+            }
+
+            // 顯示程式碼模態框
+            developerLink.addEventListener('click', function() {
+                // 獲取當前頁面的HTML源碼
+                sourceCode.textContent = document.documentElement.outerHTML;
+                codeModal.style.display = 'block';
+            });
+
+            // 關閉模態框
+            closeModal.addEventListener('click', function() {
+                codeModal.style.display = 'none';
+            });
+
+            // 點擊模態框外部關閉
+            window.addEventListener('click', function(event) {
+                if (event.target === codeModal) {
+                    codeModal.style.display = 'none';
+                }
+            });
+
+            updateClock();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93adc13c6142f1dc',t:'MTc0NjQyMjA3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+</body></html>
