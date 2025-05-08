@@ -162,6 +162,58 @@
   <p><strong>持倉溫度：</strong>SCBC＝空頭價差，SPBP＝多頭價差。庫存持倉的換算溫度，可用於【多空溫度調整】。</p>
 </div>
 
+<div style="max-width: 700px; margin: 60px auto; font-size: 16px; color: #333; padding: 0 20px;">
+  <h3 style="font-weight: bold; font-size: 18px; text-align: center; margin-bottom: 24px;">【預估損益小工具】</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 3px; justify-items: center; align-items: center;">
+
+    <!-- 左上 -->
+    <div style="display: flex; align-items: center;">
+      <label for="capital">投入資金（萬）</label>
+      <input id="capital" type="number" value="40" step="0.1" style="width: 80px; margin-left: 4px; padding: 4px;">
+    </div>
+
+    <!-- 右上 -->
+    <div style="display: flex; align-items: center;">
+      <label for="costPoints">持倉成本（點）</label>
+      <input id="costPoints" type="number" value="100" style="width: 80px; margin-left: 4px; padding: 4px;">
+    </div>
+
+    <!-- 左下 -->
+    <div style="display: flex; align-items: center;">
+      <label for="equity">權益總值（萬）</label>
+      <input id="equity" type="number" value="40.5" step="0.1" style="width: 80px; margin-left: 4px; padding: 4px;">
+    </div>
+
+    <!-- 右下 -->
+    <div style="display: flex; align-items: center;">
+      <label for="marketPoints">即時總點（點）</label>
+      <input id="marketPoints" type="number" value="80" style="width: 80px; margin-left: 4px; padding: 4px;">
+    </div>
+
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <button onclick="calcProfit()" style="padding: 8px 20px; font-size: 16px; font-weight: bold; background-color: #000; color: white; border: none; border-radius: 6px; cursor: pointer;">
+      計算預估損益
+    </button>
+    <div id="result" style="margin-top: 18px; font-size: 22px; font-weight: bold; color: #d9534f;">預估損益：2.2%</div>
+  </div>
+</div>
+
+<script>
+function calcProfit() {
+  const equity = parseFloat(document.getElementById('equity').value);
+  const costPoints = parseFloat(document.getElementById('costPoints').value);
+  const marketPoints = parseFloat(document.getElementById('marketPoints').value);
+  const capital = parseFloat(document.getElementById('capital').value);
+
+  const minPoints = Math.min(costPoints, marketPoints);
+  const estimatedProfit = ((equity - capital) + (minPoints * 0.005)) / capital * 100;
+  const truncated = Math.floor(estimatedProfit * 10) / 10;
+
+  document.getElementById('result').textContent = `預估損益：${truncated.toFixed(1)}%`;
+}
+</script>
 
   <footer>
     聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
