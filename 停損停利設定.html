@@ -202,7 +202,7 @@
           </div>
           <div class="input-group">
             <div class="input-row">
-              <label class="checkbox-label"><input type="checkbox" checked>即時總點停損</label>
+              <label class="checkbox-label"><input type="checkbox" checked>即時總點管控</label>
             </div>
             <div class="input-row">
               <div class="orange-box" data-tooltip="【交易總覽】的即時總點，大於等於設定條件點數時，平倉庫存最高價部位（每次一組價差）">即時總點 >=</div>
@@ -295,7 +295,7 @@ document.getElementById('spread').addEventListener('input', updateTotalPoints);
 <div style="max-width: 700px; margin: 40px auto 0; font-size: 16px; color: #333; padding: 0 20px;">
   <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 14px;">【名詞解釋】</h3>
   <p><strong>平倉最高價：</strong>平倉庫存最高價部位（每次一組價差），平倉次數統計不一定是停損，也可能是停利。</p>
-  <p><strong>保利降部位：</strong>達到條件不再建立新部位；只平倉一組最大價差。下次 平倉間格秒數 後再次檢查，又符合再平倉一組，以達最佳獲利。</p>
+  <p><strong>保利降部位：</strong>達到條件不再建立新部位；只平倉一組最大價差。下次 平倉間格秒數 後再次檢查，又符合再平倉一組，以達最佳獲利。（平倉最大點數不一定是停利，要看建倉當時的成本來計算，所以，程式紀錄會是停損平倉或停利平倉）</p>
 </div>
 
   <footer>
