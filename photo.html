@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智能交易百萬示範績效</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: #f9f9f9;
+    }
+
+    .photo-card {
+      display: inline-block;
+      width: 80px;
+      margin: 10px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .photo-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .photo-caption {
+      font-size: 0.875rem;
+      color: #333;
+      padding: 4px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 50;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .modal:target {
+      display: flex;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      max-height: 80vh;
+      margin-bottom: 1rem;
+    }
+
+    .modal-caption {
+      color: white;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .modal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-size: 2.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      opacity: 0.5;
+      text-decoration: none;
+      padding: 0 10px;
+    }
+
+    .modal-nav.left {
+      left: calc(50% - 46vw);
+    }
+
+    .modal-nav.right {
+      right: calc(50% - 46vw);
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">📸 智能交易 百萬示範績效</h1>
+
+  <!-- 相片區塊 -->
+  <div class="text-center max-w-4xl mx-auto">
+    <div class="photo-card">
+      <a href="#img1"><img src="images/img1.jpg" alt="展示圖1"></a>
+      <div class="photo-caption">第1週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img2"><img src="images/img2.jpg" alt="展示圖2"></a>
+      <div class="photo-caption">第2週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img3"><img src="images/img3.jpg" alt="展示圖3"></a>
+      <div class="photo-caption">第3週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img4"><img src="images/img4.jpg" alt="展示圖4"></a>
+      <div class="photo-caption">第4週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img5"><img src="images/img5.jpg" alt="展示圖5"></a>
+      <div class="photo-caption">第5週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img6"><img src="images/img6.jpg" alt="展示圖6"></a>
+      <div class="photo-caption">第6週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img7"><img src="images/img7.jpg" alt="展示圖7"></a>
+      <div class="photo-caption">第7週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img8"><img src="images/img8.jpg" alt="展示圖8"></a>
+      <div class="photo-caption">第8週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img9"><img src="images/img9.jpg" alt="展示圖9"></a>
+      <div class="photo-caption">第9週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img10"><img src="images/img10.jpg" alt="展示圖10"></a>
+      <div class="photo-caption">第10週</div>
+    </div>
+
+    <div class="photo-card">
+      <a href="#img11"><img src="images/img11.jpg" alt="展示圖11"></a>
+      <div class="photo-caption">第11週</div>
+    </div>
+
+
+  <!-- Lightbox Modal -->
+  <div id="img1" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img11" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第1週</div>
+    <img src="images/img1.jpg" class="modal-content" alt="第1週圖片放大">
+    <a href="#img2" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img2" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img1" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第2週</div>
+    <img src="images/img2.jpg" class="modal-content" alt="第2週圖片放大">
+    <a href="#img3" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img3" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img2" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第3週</div>
+    <img src="images/img3.jpg" class="modal-content" alt="第3週圖片放大">
+    <a href="#img4" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img4" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img3" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第4週</div>
+    <img src="images/img4.jpg" class="modal-content" alt="第4週圖片放大">
+    <a href="#img5" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img5" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img4" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第5週</div>
+    <img src="images/img5.jpg" class="modal-content" alt="第5週圖片放大">
+    <a href="#img6" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img6" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img5" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第6週</div>
+    <img src="images/img6.jpg" class="modal-content" alt="第6週圖片放大">
+    <a href="#img7" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img7" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img6" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第7週</div>
+    <img src="images/img7.jpg" class="modal-content" alt="第7週圖片放大">
+    <a href="#img8" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img8" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img7" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第8週</div>
+    <img src="images/img8.jpg" class="modal-content" alt="第8週圖片放大">
+    <a href="#img9" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img9" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img8" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第9週</div>
+    <img src="images/img9.jpg" class="modal-content" alt="第9週圖片放大">
+    <a href="#img10" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img10" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img9" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第10週</div>
+    <img src="images/img10.jpg" class="modal-content" alt="第10週圖片放大">
+    <a href="#img11" class="modal-nav right">&#10095;</a>
+  </div>
+  <div id="img11" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+    <a href="#img10" class="modal-nav left">&#10094;</a>
+    <div class="modal-caption">第11週</div>
+    <img src="images/img11.jpg" class="modal-content" alt="第11週圖片放大">
+    <a href="#img1" class="modal-nav right">&#10095;</a>
+  </div>
+
+
+  <footer class="text-center mt-12 text-sm text-gray-500">
+    &copy; 選擇權智能交易 | <a href="index.html" class="text-blue-500 font-bold">回首頁</a>
+  </footer>
+
+  <script>
+    document.addEventListener('keydown', function(e) {
+      const currentId = location.hash.replace('#img', '');
+      if (!currentId) return;
+
+      const current = parseInt(currentId);
+      if (isNaN(current)) return;
+
+      let targetId;
+      if (e.key === 'ArrowRight') {
+        targetId = current === 7 ? 1 : current + 1;
+      } else if (e.key === 'ArrowLeft') {
+        targetId = current === 1 ? 7 : current - 1;
+      }
+      if (targetId) {
+        location.href = `#img${targetId}`;
+      }
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', function(e) {
+      const touchEndX = e.changedTouches[0].screenX;
+      const diffX = touchStartX - touchEndX;
+      const currentId = location.hash.replace('#img', '');
+      const current = parseInt(currentId);
+      if (isNaN(current)) return;
+
+      if (Math.abs(diffX) > 50) {
+        let targetId;
+        if (diffX > 0) {
+          targetId = current === 7 ? 1 : current + 1;
+        } else {
+          targetId = current === 1 ? 7 : current - 1;
+        }
+        location.href = `#img${targetId}`;
+      }
+    });
+  </script>
+</body>
+</html>
