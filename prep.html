@@ -1,0 +1,1545 @@
+<html lang="zh-TW"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂閱智能交易前置作業</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0f9ff;
+            min-height: 100vh;
+            padding-top: 100px; /* Space for fixed header */
+            padding-bottom: 80px; /* Extra space at bottom for contact button */
+            font-size: 130%; /* Increase base font size to 130% */
+        }
+        
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px 20px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-bottom: 2px solid #ffb6c1;
+        }
+        
+        .card {
+            perspective: 1000px;
+            height: 110px; /* Increased height to accommodate larger text */
+            transition: transform 0.3s;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 0.75rem;
+        }
+        
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem; /* Reduced padding */
+        }
+        
+        .card-front {
+            background-color: #ffb6c1;
+            color: #4a044e;
+            font-weight: bold;
+            font-size: 1.3rem; /* Increased font size by 130% */
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+            border: 2px dashed #ff8fa3; /* Thinner border */
+        }
+        
+        .card-back {
+            background-color: #fce7f3;
+            color: #831843;
+            transform: rotateY(180deg);
+            text-align: center;
+        }
+        
+        .checkbox-container {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            z-index: 10;
+        }
+        
+        .custom-checkbox {
+            width: 26px; /* Increased size */
+            height: 26px;
+            background-color: white;
+            border-radius: 50%;
+            border: 2px solid #ff8fa3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .custom-checkbox.checked {
+            background-color: #ff8fa3;
+        }
+        
+        .custom-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 18px; /* Increased size */
+            font-weight: bold;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 1100;
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1100;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            font-size: 130%; /* Increased font size */
+        }
+        
+        .celebration.show {
+            opacity: 1;
+        }
+        
+        .card-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: white;
+            width: 24px; /* Increased size */
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #ff8fa3;
+            font-size: 14px; /* Increased size */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .link-button {
+            display: inline-block;
+            margin-top: 3px;
+            padding: 4px 10px;
+            background-color: #ff8fa3;
+            color: white;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 1rem; /* Increased size */
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .link-button:hover {
+            background-color: #ff6b8b;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 15px; /* Increased height */
+            background: linear-gradient(90deg, #ff8fa3, #ff6b8b);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .card-back .card-content p {
+            margin-bottom: 4px;
+            font-size: 1.17rem; /* Increased size by 130% */
+        }
+        
+        /* Contact button styles */
+        .contact-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff8fa3;
+            color: white;
+            border-radius: 50px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 900;
+            text-decoration: none;
+            font-size: 1.17rem; /* Increased size */
+        }
+        
+        .contact-button:hover {
+            background-color: #ff6b8b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        /* Footer space to prevent overlap */
+        .footer-space {
+            height: 80px; /* Increased height */
+            width: 100%;
+        }
+        
+        /* Star button in bottom left */
+        .star-button {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            color: rgba(0, 0, 0, 0.1); /* 10% opacity text */
+            font-size: 31px; /* Increased size by 130% */
+            cursor: pointer;
+            z-index: 900;
+            transition: color 0.3s;
+        }
+        
+        .star-button:hover {
+            color: rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Code modal */
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            overflow: auto;
+        }
+        
+        .code-content {
+            background-color: #f8f8f8;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 1000px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            position: relative;
+            font-size: 130%; /* Increased font size */
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 31px; /* Increased size */
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+        }
+        
+        .code-display {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 70vh;
+            overflow-y: auto;
+            font-size: 1.17rem; /* Increased size */
+        }
+        
+        /* Increase header text size */
+        h1.text-2xl {
+            font-size: 2.6rem; /* Increased by 130% */
+        }
+        
+        /* Increase progress text size */
+        #progressText {
+            font-size: 1.17rem; /* Increased by 130% */
+        }
+        
+        /* Increase celebration text size */
+        .celebration h2 {
+            font-size: 3.9rem; /* Increased by 130% */
+        }
+        
+        .celebration p {
+            font-size: 1.56rem; /* Increased by 130% */
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.grid{display:grid}.max-w-4xl{max-width:56rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.gap-4{gap:1rem}.p-4{padding:1rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-pink-700{--tw-text-opacity:1;color:rgb(190 24 93 / var(--tw-text-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+<body>
+    <!-- Fixed header with title and progress bar -->
+    <div class="header-fixed">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-2xl font-bold text-center mb-2 text-pink-700">用戶 訂閱智能交易前置作業（營業員協助）</h1>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+            </div>
+            <p class="text-center text-pink-600 text-sm" id="progressText">完成進度: 0/10</p>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Card 1 -->
+            <div class="card" id="card1">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">1</span>
+                        <p>首要條件</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(1)"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>期貨帳戶開戶完成</p>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(1)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="card" id="card2">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">2</span>
+                        <p>確認本人操作</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(2)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>申請/安裝憑證</p>
+                            <a href="https://www.capital.com.tw/web/#/certificate/ap" target="_blank" class="link-button">前往申請</a>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(2)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 3 -->
+            <div class="card" id="card3">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">3</span>
+                        <p>要與券商主機串接</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(3)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>簽署期貨API</p>
+                            <a href="https://tradeweb.capital.com.tw/Login.aspx?Source=L&amp;Action=TSWEB/agreeList.aspx" target="_blank" class="link-button">前往簽署</a>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(3)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 4 -->
+            <div class="card" id="card4">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">4</span>
+                        <p>選擇權價差程式交易</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(4)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>訂閱選擇權智能交易</p>
+                            <a href="https://iview.capitalfutures.com.tw/course/project_detail.aspx?pid=439" target="_blank" class="link-button">前往訂閱</a>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(4)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 5 -->
+            <div class="card" id="card5">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">5</span>
+                        <p>程式下載安裝</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(5)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>安裝智能交易(元件/下單機)</p>
+                            <a href="https://ost.capitalfutures.com.tw/" target="_blank" class="link-button">前往安裝</a>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(5)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 6 -->
+            <div class="card" id="card6">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">6</span>
+                        <p>交易人所需保證金之總額</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(6)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>確認交易總額度</p>
+                            <a href="https://goplus.capital.com.tw/FuturesTradingQuota/Default.aspx" target="_blank" class="link-button">前往確認</a>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(6)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 7 -->
+            <div class="card" id="card7">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">7</span>
+                        <p>投入資金成本</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(7)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>入金 (上限為交易總額度80%)</p>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(7)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 8 -->
+            <div class="card" id="card8">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">8</span>
+                        <p>前輩都問哪些問題？</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(8)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>閱讀常見問題FAQs</p>
+                            <a href="https://grave-oboe-994.notion.site/FAQs-1dfe18e5673b80f19c29fb74f88ff017" target="_blank" class="link-button">前往閱讀</a>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(8)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 9 -->
+            <div class="card" id="card9">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">9</span>
+                        <p>每個細節的功用</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(9)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>智能交易介面解說</p>
+                            <a href="https://optionshow.github.io/option/index.html" target="_blank" class="link-button">前往查看</a>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(9)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 10 -->
+            <div class="card" id="card10">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="card-number">10</span>
+                        <p>最後</p>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox" onclick="flipCard(10)" style="pointer-events: none;"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-content">
+                            <p>開始選擇權智能交易</p>
+                        </div>
+                        <div class="checkbox-container">
+                            <div class="custom-checkbox checked" onclick="unflipCard(10)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Extra space at the bottom to prevent overlap -->
+        <div class="footer-space"></div>
+    </div>
+    
+    <!-- Contact button in bottom right -->
+    <a href="https://lin.ee/n3bZgtk" target="_blank" class="contact-button">
+        <i class="fas fa-comments"></i>
+        <span>聯繫窗口</span>
+    </a>
+    
+    <!-- Star button in bottom left -->
+    <div class="star-button" id="starButton"></div>
+    
+    <!-- Code modal -->
+    <div class="code-modal" id="codeModal" style="display: none;">
+        <div class="code-content">
+            <span class="close-button" id="closeModal">×</span>
+            <h2 class="text-xl font-bold mb-4">網頁程式碼</h2>
+            <div class="code-display" id="codeDisplay">&lt;html lang="zh-TW"&gt;&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;訂閱智能交易前置作業&lt;/title&gt;
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"&gt;
+    &lt;style&gt;
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&amp;display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0f9ff;
+            min-height: 100vh;
+            padding-top: 100px; /* Space for fixed header */
+            padding-bottom: 80px; /* Extra space at bottom for contact button */
+            font-size: 130%; /* Increase base font size to 130% */
+        }
+        
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px 20px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-bottom: 2px solid #ffb6c1;
+        }
+        
+        .card {
+            perspective: 1000px;
+            height: 110px; /* Increased height to accommodate larger text */
+            transition: transform 0.3s;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 0.75rem;
+        }
+        
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem; /* Reduced padding */
+        }
+        
+        .card-front {
+            background-color: #ffb6c1;
+            color: #4a044e;
+            font-weight: bold;
+            font-size: 1.3rem; /* Increased font size by 130% */
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+            border: 2px dashed #ff8fa3; /* Thinner border */
+        }
+        
+        .card-back {
+            background-color: #fce7f3;
+            color: #831843;
+            transform: rotateY(180deg);
+            text-align: center;
+        }
+        
+        .checkbox-container {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            z-index: 10;
+        }
+        
+        .custom-checkbox {
+            width: 26px; /* Increased size */
+            height: 26px;
+            background-color: white;
+            border-radius: 50%;
+            border: 2px solid #ff8fa3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .custom-checkbox.checked {
+            background-color: #ff8fa3;
+        }
+        
+        .custom-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 18px; /* Increased size */
+            font-weight: bold;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 1100;
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1100;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            font-size: 130%; /* Increased font size */
+        }
+        
+        .celebration.show {
+            opacity: 1;
+        }
+        
+        .card-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: white;
+            width: 24px; /* Increased size */
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #ff8fa3;
+            font-size: 14px; /* Increased size */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .link-button {
+            display: inline-block;
+            margin-top: 3px;
+            padding: 4px 10px;
+            background-color: #ff8fa3;
+            color: white;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 1rem; /* Increased size */
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .link-button:hover {
+            background-color: #ff6b8b;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 15px; /* Increased height */
+            background: linear-gradient(90deg, #ff8fa3, #ff6b8b);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .card-back .card-content p {
+            margin-bottom: 4px;
+            font-size: 1.17rem; /* Increased size by 130% */
+        }
+        
+        /* Contact button styles */
+        .contact-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff8fa3;
+            color: white;
+            border-radius: 50px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 900;
+            text-decoration: none;
+            font-size: 1.17rem; /* Increased size */
+        }
+        
+        .contact-button:hover {
+            background-color: #ff6b8b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        /* Footer space to prevent overlap */
+        .footer-space {
+            height: 80px; /* Increased height */
+            width: 100%;
+        }
+        
+        /* Star button in bottom left */
+        .star-button {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            color: rgba(0, 0, 0, 0.1); /* 10% opacity text */
+            font-size: 31px; /* Increased size by 130% */
+            cursor: pointer;
+            z-index: 900;
+            transition: color 0.3s;
+        }
+        
+        .star-button:hover {
+            color: rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Code modal */
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            overflow: auto;
+        }
+        
+        .code-content {
+            background-color: #f8f8f8;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 1000px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            position: relative;
+            font-size: 130%; /* Increased font size */
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 31px; /* Increased size */
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+        }
+        
+        .code-display {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 70vh;
+            overflow-y: auto;
+            font-size: 1.17rem; /* Increased size */
+        }
+        
+        /* Increase header text size */
+        h1.text-2xl {
+            font-size: 2.6rem; /* Increased by 130% */
+        }
+        
+        /* Increase progress text size */
+        #progressText {
+            font-size: 1.17rem; /* Increased by 130% */
+        }
+        
+        /* Increase celebration text size */
+        .celebration h2 {
+            font-size: 3.9rem; /* Increased by 130% */
+        }
+        
+        .celebration p {
+            font-size: 1.56rem; /* Increased by 130% */
+        }
+    &lt;/style&gt;
+&lt;style&gt;*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.grid{display:grid}.max-w-4xl{max-width:56rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.gap-4{gap:1rem}.p-4{padding:1rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-pink-700{--tw-text-opacity:1;color:rgb(190 24 93 / var(--tw-text-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}&lt;/style&gt;&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Fixed header with title and progress bar --&gt;
+    &lt;div class="header-fixed"&gt;
+        &lt;div class="max-w-4xl mx-auto"&gt;
+            &lt;h1 class="text-2xl font-bold text-center mb-2 text-pink-700"&gt;用戶/營業員 訂閱智能交易前置作業&lt;/h1&gt;
+            
+            &lt;div class="progress-container"&gt;
+                &lt;div class="progress-bar" id="progressBar" style="width: 0%;"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;p class="text-center text-pink-600 text-sm" id="progressText"&gt;完成進度: 0/10&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="max-w-4xl mx-auto p-4"&gt;
+        &lt;div class="grid grid-cols-1 md:grid-cols-2 gap-4"&gt;
+            &lt;!-- Card 1 --&gt;
+            &lt;div class="card" id="card1"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;1&lt;/span&gt;
+                        &lt;p&gt;開戶了嗎？&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(1)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;開戶了嗎？&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(1)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 2 --&gt;
+            &lt;div class="card" id="card2"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;2&lt;/span&gt;
+                        &lt;p&gt;申請/安裝憑證&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(2)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;申請/安裝憑證&lt;/p&gt;
+                            &lt;a href="https://www.capital.com.tw/web/#/certificate/ap" target="_blank" class="link-button"&gt;前往申請&lt;/a&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(2)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 3 --&gt;
+            &lt;div class="card" id="card3"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;3&lt;/span&gt;
+                        &lt;p&gt;簽署期貨API&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(3)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;簽署期貨API&lt;/p&gt;
+                            &lt;a href="https://tradeweb.capital.com.tw/Login.aspx?Source=L&amp;amp;Action=TSWEB/agreeList.aspx" target="_blank" class="link-button"&gt;前往簽署&lt;/a&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(3)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 4 --&gt;
+            &lt;div class="card" id="card4"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;4&lt;/span&gt;
+                        &lt;p&gt;訂閱選擇權智能交易&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(4)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;訂閱選擇權智能交易&lt;/p&gt;
+                            &lt;a href="https://iview.capitalfutures.com.tw/course/project_detail.aspx?pid=439" target="_blank" class="link-button"&gt;前往訂閱&lt;/a&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(4)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 5 --&gt;
+            &lt;div class="card" id="card5"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;5&lt;/span&gt;
+                        &lt;p&gt;安裝智能交易(元件/下單機)&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(5)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;安裝智能交易(元件/下單機)&lt;/p&gt;
+                            &lt;a href="https://ost.capitalfutures.com.tw/" target="_blank" class="link-button"&gt;前往安裝&lt;/a&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(5)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 6 --&gt;
+            &lt;div class="card" id="card6"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;6&lt;/span&gt;
+                        &lt;p&gt;確認交易總額度&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(6)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;確認交易總額度&lt;/p&gt;
+                            &lt;a href="https://goplus.capital.com.tw/FuturesTradingQuota/Default.aspx" target="_blank" class="link-button"&gt;前往確認&lt;/a&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(6)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 7 --&gt;
+            &lt;div class="card" id="card7"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;7&lt;/span&gt;
+                        &lt;p&gt;入金 (上限為交易總額度80%)&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(7)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;入金 (上限為交易總額度80%)&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(7)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 8 --&gt;
+            &lt;div class="card" id="card8"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;8&lt;/span&gt;
+                        &lt;p&gt;閱讀常見問題FAQs&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(8)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;閱讀常見問題FAQs&lt;/p&gt;
+                            &lt;a href="https://grave-oboe-994.notion.site/FAQs-1dfe18e5673b80f19c29fb74f88ff017" target="_blank" class="link-button"&gt;前往閱讀&lt;/a&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(8)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 9 --&gt;
+            &lt;div class="card" id="card9"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;9&lt;/span&gt;
+                        &lt;p&gt;智能交易介面解說&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(9)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;智能交易介面解說&lt;/p&gt;
+                            &lt;a href="https://optionshow.github.io/option/index.html" target="_blank" class="link-button"&gt;前往查看&lt;/a&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(9)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Card 10 --&gt;
+            &lt;div class="card" id="card10"&gt;
+                &lt;div class="card-inner"&gt;
+                    &lt;div class="card-front"&gt;
+                        &lt;span class="card-number"&gt;10&lt;/span&gt;
+                        &lt;p&gt;準備好 開始選擇權智能交易&lt;/p&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(10)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-back"&gt;
+                        &lt;div class="card-content"&gt;
+                            &lt;p&gt;準備好 開始選擇權智能交易&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;div class="checkbox-container"&gt;
+                            &lt;div class="custom-checkbox checked" onclick="unflipCard(10)"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;!-- Extra space at the bottom to prevent overlap --&gt;
+        &lt;div class="footer-space"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Contact button in bottom right --&gt;
+    &lt;a href="https://lin.ee/n3bZgtk" target="_blank" class="contact-button"&gt;
+        &lt;i class="fas fa-comments"&gt;&lt;/i&gt;
+        &lt;span&gt;聯繫窗口&lt;/span&gt;
+    &lt;/a&gt;
+    
+    &lt;!-- Star button in bottom left --&gt;
+    &lt;div class="star-button" id="starButton"&gt;&lt;/div&gt;
+    
+    &lt;!-- Code modal --&gt;
+    &lt;div class="code-modal" id="codeModal"&gt;
+        &lt;div class="code-content"&gt;
+            &lt;span class="close-button" id="closeModal"&gt;×&lt;/span&gt;
+            &lt;h2 class="text-xl font-bold mb-4"&gt;網頁程式碼&lt;/h2&gt;
+            &lt;div class="code-display" id="codeDisplay"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="celebration" id="celebration"&gt;
+        &lt;h2 class="text-3xl font-bold text-pink-700 mb-4"&gt;恭喜完成！&lt;/h2&gt;
+        &lt;p class="text-xl text-pink-600"&gt;請您放心大膽操作！&lt;/p&gt;
+    &lt;/div&gt;
+    
+    &lt;script&gt;
+        let completedCards = new Set();
+        let totalCards = 10;
+        let confettiElements = [];
+        let confettiColors = ['#ff8fa3', '#ffc0cb', '#ffb6c1', '#ff69b4', '#ff1493', '#ffd700', '#87cefa', '#98fb98'];
+        
+        function updateProgress() {
+            const progress = (completedCards.size / totalCards) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `完成進度: ${completedCards.size}/${totalCards}`;
+            
+            if (completedCards.size === totalCards) {
+                setTimeout(celebrate, 500);
+            }
+        }
+        
+        function flipCard(cardNumber) {
+            const card = document.getElementById(`card${cardNumber}`);
+            card.classList.add('flipped');
+            completedCards.add(cardNumber);
+            updateProgress();
+            
+            // Enable next card if it exists
+            if (cardNumber &lt; totalCards) {
+                const nextCard = document.getElementById(`card${cardNumber + 1}`);
+                if (nextCard) {
+                    const checkbox = nextCard.querySelector('.card-front .custom-checkbox');
+                    checkbox.style.pointerEvents = 'auto';
+                }
+            }
+        }
+        
+        function unflipCard(cardNumber) {
+            const card = document.getElementById(`card${cardNumber}`);
+            card.classList.remove('flipped');
+            completedCards.delete(cardNumber);
+            updateProgress();
+        }
+        
+        // Initialize: only first card is clickable
+        function initializeCards() {
+            // Reset all cards to unflipped state
+            for (let i = 1; i &lt;= totalCards; i++) {
+                const card = document.getElementById(`card${i}`);
+                card.classList.remove('flipped');
+                
+                // Only first card is clickable initially
+                if (i &gt; 1) {
+                    const checkbox = card.querySelector('.card-front .custom-checkbox');
+                    checkbox.style.pointerEvents = 'none';
+                }
+            }
+            
+            // Clear any stored progress
+            completedCards.clear();
+            updateProgress();
+        }
+        
+        function createConfetti() {
+            // Create confetti from each corner
+            createConfettiFromCorner(0, 0, 45); // Top left
+            createConfettiFromCorner(window.innerWidth, 0, 135); // Top right
+            createConfettiFromCorner(0, window.innerHeight, -45); // Bottom left
+            createConfettiFromCorner(window.innerWidth, window.innerHeight, -135); // Bottom right
+        }
+        
+        function createConfettiFromCorner(x, y, angle) {
+            for (let i = 0; i &lt; 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                confetti.style.left = `${x}px`;
+                confetti.style.top = `${y}px`;
+                
+                // Random size
+                const size = Math.random() * 13 + 7; // Increased size by 130%
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                
+                // Random shape
+                if (Math.random() &gt; 0.5) {
+                    confetti.style.borderRadius = '50%';
+                } else {
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                }
+                
+                document.body.appendChild(confetti);
+                confettiElements.push(confetti);
+                
+                // Animation
+                const speed = Math.random() * 5 + 5;
+                const distance = Math.random() * 300 + 100;
+                const angleVariation = (Math.random() - 0.5) * 60;
+                const finalAngle = angle + angleVariation;
+                const radians = finalAngle * (Math.PI / 180);
+                
+                const destinationX = x + Math.cos(radians) * distance;
+                const destinationY = y + Math.sin(radians) * distance;
+                
+                confetti.animate([
+                    { 
+                        transform: 'translate(0, 0) rotate(0deg)',
+                        opacity: 1
+                    },
+                    { 
+                        transform: `translate(${destinationX - x}px, ${destinationY - y}px) rotate(${Math.random() * 720}deg)`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: speed * 1000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)',
+                    fill: 'forwards'
+                });
+            }
+        }
+        
+        function celebrate() {
+            createConfetti();
+            const celebration = document.getElementById('celebration');
+            celebration.classList.add('show');
+            
+            setTimeout(() =&gt; {
+                celebration.classList.remove('show');
+                // Clean up confetti
+                confettiElements.forEach(el =&gt; {
+                    if (el.parentNode) {
+                        el.parentNode.removeChild(el);
+                    }
+                });
+                confettiElements = [];
+            }, 5000);
+        }
+        
+        // Show code modal
+        function showCodeModal() {
+            const modal = document.getElementById('codeModal');
+            const codeDisplay = document.getElementById('codeDisplay');
+            
+            // Get the HTML of the current page
+            const htmlContent = document.documentElement.outerHTML;
+            
+            // Display the code
+            codeDisplay.textContent = htmlContent;
+            
+            // Show the modal
+            modal.style.display = 'block';
+        }
+        
+        // Close code modal
+        function closeCodeModal() {
+            const modal = document.getElementById('codeModal');
+            modal.style.display = 'none';
+        }
+        
+        // Initialize on page load
+        window.onload = function() {
+            // Always start fresh when page loads
+            initializeCards();
+            
+            // Clear any localStorage if it was being used
+            if (window.localStorage) {
+                localStorage.removeItem('completedCards');
+            }
+            
+            // Set up star button click event
+            document.getElementById('starButton').addEventListener('click', showCodeModal);
+            
+            // Set up close modal button
+            document.getElementById('closeModal').addEventListener('click', closeCodeModal);
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('codeModal');
+                if (event.target === modal) {
+                    closeCodeModal();
+                }
+            });
+        };
+        
+        // Clear session storage when page is refreshed or closed
+        window.addEventListener('beforeunload', function() {
+            if (window.sessionStorage) {
+                sessionStorage.removeItem('completedCards');
+            }
+        });
+    &lt;/script&gt;
+&lt;script&gt;(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94560ff9908ef21c',t:'MTc0ODE4NjkwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&amp;&amp;(document.onreadystatechange=e,c())}}}})();&lt;/script&gt;&lt;iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"&gt;&lt;/iframe&gt;
+&lt;/body&gt;&lt;/html&gt;</div>
+        </div>
+    </div>
+    
+    <div class="celebration" id="celebration">
+        <h2 class="text-3xl font-bold text-pink-700 mb-4">恭喜完成！</h2>
+        <p class="text-xl text-pink-600">請您放心大膽操作！</p>
+    </div>
+    
+    <script>
+        let completedCards = new Set();
+        let totalCards = 10;
+        let confettiElements = [];
+        let confettiColors = ['#ff8fa3', '#ffc0cb', '#ffb6c1', '#ff69b4', '#ff1493', '#ffd700', '#87cefa', '#98fb98'];
+        
+        function updateProgress() {
+            const progress = (completedCards.size / totalCards) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `完成進度: ${completedCards.size}/${totalCards}`;
+            
+            if (completedCards.size === totalCards) {
+                setTimeout(celebrate, 500);
+            }
+        }
+        
+        function flipCard(cardNumber) {
+            const card = document.getElementById(`card${cardNumber}`);
+            card.classList.add('flipped');
+            completedCards.add(cardNumber);
+            updateProgress();
+            
+            // Enable next card if it exists
+            if (cardNumber < totalCards) {
+                const nextCard = document.getElementById(`card${cardNumber + 1}`);
+                if (nextCard) {
+                    const checkbox = nextCard.querySelector('.card-front .custom-checkbox');
+                    checkbox.style.pointerEvents = 'auto';
+                }
+            }
+        }
+        
+        function unflipCard(cardNumber) {
+            const card = document.getElementById(`card${cardNumber}`);
+            card.classList.remove('flipped');
+            completedCards.delete(cardNumber);
+            updateProgress();
+        }
+        
+        // Initialize: only first card is clickable
+        function initializeCards() {
+            // Reset all cards to unflipped state
+            for (let i = 1; i <= totalCards; i++) {
+                const card = document.getElementById(`card${i}`);
+                card.classList.remove('flipped');
+                
+                // Only first card is clickable initially
+                if (i > 1) {
+                    const checkbox = card.querySelector('.card-front .custom-checkbox');
+                    checkbox.style.pointerEvents = 'none';
+                }
+            }
+            
+            // Clear any stored progress
+            completedCards.clear();
+            updateProgress();
+        }
+        
+        function createConfetti() {
+            // Create confetti from each corner
+            createConfettiFromCorner(0, 0, 45); // Top left
+            createConfettiFromCorner(window.innerWidth, 0, 135); // Top right
+            createConfettiFromCorner(0, window.innerHeight, -45); // Bottom left
+            createConfettiFromCorner(window.innerWidth, window.innerHeight, -135); // Bottom right
+        }
+        
+        function createConfettiFromCorner(x, y, angle) {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                confetti.style.left = `${x}px`;
+                confetti.style.top = `${y}px`;
+                
+                // Random size
+                const size = Math.random() * 13 + 7; // Increased size by 130%
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                
+                // Random shape
+                if (Math.random() > 0.5) {
+                    confetti.style.borderRadius = '50%';
+                } else {
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                }
+                
+                document.body.appendChild(confetti);
+                confettiElements.push(confetti);
+                
+                // Animation
+                const speed = Math.random() * 5 + 5;
+                const distance = Math.random() * 300 + 100;
+                const angleVariation = (Math.random() - 0.5) * 60;
+                const finalAngle = angle + angleVariation;
+                const radians = finalAngle * (Math.PI / 180);
+                
+                const destinationX = x + Math.cos(radians) * distance;
+                const destinationY = y + Math.sin(radians) * distance;
+                
+                confetti.animate([
+                    { 
+                        transform: 'translate(0, 0) rotate(0deg)',
+                        opacity: 1
+                    },
+                    { 
+                        transform: `translate(${destinationX - x}px, ${destinationY - y}px) rotate(${Math.random() * 720}deg)`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: speed * 1000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)',
+                    fill: 'forwards'
+                });
+            }
+        }
+        
+        function celebrate() {
+            createConfetti();
+            const celebration = document.getElementById('celebration');
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+                // Clean up confetti
+                confettiElements.forEach(el => {
+                    if (el.parentNode) {
+                        el.parentNode.removeChild(el);
+                    }
+                });
+                confettiElements = [];
+            }, 5000);
+        }
+        
+        // Show code modal
+        function showCodeModal() {
+            const modal = document.getElementById('codeModal');
+            const codeDisplay = document.getElementById('codeDisplay');
+            
+            // Get the HTML of the current page
+            const htmlContent = document.documentElement.outerHTML;
+            
+            // Display the code
+            codeDisplay.textContent = htmlContent;
+            
+            // Show the modal
+            modal.style.display = 'block';
+        }
+        
+        // Close code modal
+        function closeCodeModal() {
+            const modal = document.getElementById('codeModal');
+            modal.style.display = 'none';
+        }
+        
+        // Initialize on page load
+        window.onload = function() {
+            // Always start fresh when page loads
+            initializeCards();
+            
+            // Clear any localStorage if it was being used
+            if (window.localStorage) {
+                localStorage.removeItem('completedCards');
+            }
+            
+            // Set up star button click event
+            document.getElementById('starButton').addEventListener('click', showCodeModal);
+            
+            // Set up close modal button
+            document.getElementById('closeModal').addEventListener('click', closeCodeModal);
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('codeModal');
+                if (event.target === modal) {
+                    closeCodeModal();
+                }
+            });
+        };
+        
+        // Clear session storage when page is refreshed or closed
+        window.addEventListener('beforeunload', function() {
+            if (window.sessionStorage) {
+                sessionStorage.removeItem('completedCards');
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94560ff9908ef21c',t:'MTc0ODE4NjkwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+</body></html>
