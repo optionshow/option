@@ -11,7 +11,7 @@
             font-family: 'Nunito', sans-serif;
             background-color: #f0f9ff;
             min-height: 100vh;
-            padding-top: 100px; /* Space for fixed header */
+            padding-top: 130px; /* Increased space for fixed header */
             padding-bottom: 80px; /* Extra space at bottom for contact button */
             font-size: 130%; /* Increase base font size to 130% */
         }
@@ -23,7 +23,7 @@
             right: 0;
             background-color: rgba(255, 255, 255, 0.95);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 10px 20px;
+            padding: 30px 20px 15px; /* Added more padding at the top */
             z-index: 1000;
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
@@ -343,9 +343,9 @@
                 <div class="card-inner">
                     <div class="card-front">
                         <span class="card-number">1</span>
-                        <p>首要條件(用)</p>
+                        <p>首先(用)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(1)"></div>
+                            <div class="custom-checkbox" onclick="flipCard(1)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -364,9 +364,9 @@
                 <div class="card-inner">
                     <div class="card-front">
                         <span class="card-number">2</span>
-                        <p>確認本人操作(用/營)</p>
+                        <p>確認本人操作憑證(用/營)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(2)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(2)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -388,7 +388,7 @@
                         <span class="card-number">3</span>
                         <p>要與券商主機串接(用/營)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(3)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(3)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -408,9 +408,9 @@
                 <div class="card-inner">
                     <div class="card-front">
                         <span class="card-number">4</span>
-                        <p>選擇權價差程式交易(用/營)</p>
+                        <p>訂閱程式交易(用/營)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(4)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(4)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -432,7 +432,7 @@
                         <span class="card-number">5</span>
                         <p>程式下載安裝(用)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(5)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(5)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -452,9 +452,9 @@
                 <div class="card-inner">
                     <div class="card-front">
                         <span class="card-number">6</span>
-                        <p>交易人所需保證金之總額(用/營)</p>
+                        <p>用戶保證金之總額(用/營)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(6)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(6)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -474,9 +474,9 @@
                 <div class="card-inner">
                     <div class="card-front">
                         <span class="card-number">7</span>
-                        <p>投入資金成本(用/營)</p>
+                        <p>投入資金成本(用)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(7)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(7)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -497,7 +497,7 @@
                         <span class="card-number">8</span>
                         <p>前輩都問哪些問題？(用/營)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(8)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(8)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -519,7 +519,7 @@
                         <span class="card-number">9</span>
                         <p>每個細節的功用(用)</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(9)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(9)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
@@ -541,12 +541,12 @@
                         <span class="card-number">10</span>
                         <p>最後</p>
                         <div class="checkbox-container">
-                            <div class="custom-checkbox" onclick="flipCard(10)" style="pointer-events: none;"></div>
+                            <div class="custom-checkbox" onclick="flipCard(10)" style="pointer-events: auto;"></div>
                         </div>
                     </div>
                     <div class="card-back">
                         <div class="card-content">
-                            <p>開始選擇權智能交易</p>
+                            <p>準備好 開始選擇權智能交易</p>
                         </div>
                         <div class="checkbox-container">
                             <div class="custom-checkbox checked" onclick="unflipCard(10)"></div>
@@ -587,7 +587,7 @@
             font-family: 'Nunito', sans-serif;
             background-color: #f0f9ff;
             min-height: 100vh;
-            padding-top: 100px; /* Space for fixed header */
+            padding-top: 130px; /* Increased space for fixed header */
             padding-bottom: 80px; /* Extra space at bottom for contact button */
             font-size: 130%; /* Increase base font size to 130% */
         }
@@ -599,7 +599,7 @@
             right: 0;
             background-color: rgba(255, 255, 255, 0.95);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 10px 20px;
+            padding: 30px 20px 15px; /* Added more padding at the top */
             z-index: 1000;
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
@@ -921,7 +921,7 @@
                         &lt;span class="card-number"&gt;1&lt;/span&gt;
                         &lt;p&gt;開戶了嗎？&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(1)"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(1)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -942,7 +942,7 @@
                         &lt;span class="card-number"&gt;2&lt;/span&gt;
                         &lt;p&gt;申請/安裝憑證&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(2)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(2)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -964,7 +964,7 @@
                         &lt;span class="card-number"&gt;3&lt;/span&gt;
                         &lt;p&gt;簽署期貨API&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(3)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(3)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -986,7 +986,7 @@
                         &lt;span class="card-number"&gt;4&lt;/span&gt;
                         &lt;p&gt;訂閱選擇權智能交易&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(4)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(4)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -1008,7 +1008,7 @@
                         &lt;span class="card-number"&gt;5&lt;/span&gt;
                         &lt;p&gt;安裝智能交易(元件/下單機)&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(5)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(5)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -1030,7 +1030,7 @@
                         &lt;span class="card-number"&gt;6&lt;/span&gt;
                         &lt;p&gt;確認交易總額度&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(6)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(6)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -1052,7 +1052,7 @@
                         &lt;span class="card-number"&gt;7&lt;/span&gt;
                         &lt;p&gt;入金 (上限為交易總額度80%)&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(7)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(7)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -1073,7 +1073,7 @@
                         &lt;span class="card-number"&gt;8&lt;/span&gt;
                         &lt;p&gt;閱讀常見問題FAQs&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(8)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(8)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -1095,7 +1095,7 @@
                         &lt;span class="card-number"&gt;9&lt;/span&gt;
                         &lt;p&gt;智能交易介面解說&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(9)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(9)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -1117,7 +1117,7 @@
                         &lt;span class="card-number"&gt;10&lt;/span&gt;
                         &lt;p&gt;準備好 開始選擇權智能交易&lt;/p&gt;
                         &lt;div class="checkbox-container"&gt;
-                            &lt;div class="custom-checkbox" onclick="flipCard(10)" style="pointer-events: none;"&gt;&lt;/div&gt;
+                            &lt;div class="custom-checkbox" onclick="flipCard(10)" style="pointer-events: auto;"&gt;&lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="card-back"&gt;
@@ -1143,7 +1143,7 @@
     &lt;/a&gt;
     
     &lt;!-- Star button in bottom left --&gt;
-    &lt;div class="star-button" id="starButton"&gt;&lt;/div&gt;
+    &lt;div class="star-button" id="starButton"&gt;★&lt;/div&gt;
     
     &lt;!-- Code modal --&gt;
     &lt;div class="code-modal" id="codeModal"&gt;
@@ -1156,7 +1156,7 @@
     
     &lt;div class="celebration" id="celebration"&gt;
         &lt;h2 class="text-3xl font-bold text-pink-700 mb-4"&gt;恭喜完成！&lt;/h2&gt;
-        &lt;p class="text-xl text-pink-600"&gt;請您放心大膽操作！&lt;/p&gt;
+        &lt;p class="text-xl text-pink-600"&gt;祝您智能交易順利！&lt;/p&gt;
     &lt;/div&gt;
     
     &lt;script&gt;
@@ -1180,15 +1180,6 @@
             card.classList.add('flipped');
             completedCards.add(cardNumber);
             updateProgress();
-            
-            // Enable next card if it exists
-            if (cardNumber &lt; totalCards) {
-                const nextCard = document.getElementById(`card${cardNumber + 1}`);
-                if (nextCard) {
-                    const checkbox = nextCard.querySelector('.card-front .custom-checkbox');
-                    checkbox.style.pointerEvents = 'auto';
-                }
-            }
         }
         
         function unflipCard(cardNumber) {
@@ -1198,18 +1189,16 @@
             updateProgress();
         }
         
-        // Initialize: only first card is clickable
+        // Initialize: all cards are clickable
         function initializeCards() {
             // Reset all cards to unflipped state
             for (let i = 1; i &lt;= totalCards; i++) {
                 const card = document.getElementById(`card${i}`);
                 card.classList.remove('flipped');
                 
-                // Only first card is clickable initially
-                if (i &gt; 1) {
-                    const checkbox = card.querySelector('.card-front .custom-checkbox');
-                    checkbox.style.pointerEvents = 'none';
-                }
+                // Make all cards clickable
+                const checkbox = card.querySelector('.card-front .custom-checkbox');
+                checkbox.style.pointerEvents = 'auto';
             }
             
             // Clear any stored progress
@@ -1345,14 +1334,14 @@
             }
         });
     &lt;/script&gt;
-&lt;script&gt;(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94560ff9908ef21c',t:'MTc0ODE4NjkwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&amp;&amp;(document.onreadystatechange=e,c())}}}})();&lt;/script&gt;&lt;iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"&gt;&lt;/iframe&gt;
+&lt;script&gt;(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'945931d5b5e7f1e4',t:'MTc0ODIxOTc0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&amp;&amp;(document.onreadystatechange=e,c())}}}})();&lt;/script&gt;&lt;iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"&gt;&lt;/iframe&gt;
 &lt;/body&gt;&lt;/html&gt;</div>
         </div>
     </div>
     
     <div class="celebration" id="celebration">
         <h2 class="text-3xl font-bold text-pink-700 mb-4">恭喜完成！</h2>
-        <p class="text-xl text-pink-600">請您放心大膽操作！</p>
+        <p class="text-xl text-pink-600">祝您智能交易順利！</p>
     </div>
     
     <script>
@@ -1376,15 +1365,6 @@
             card.classList.add('flipped');
             completedCards.add(cardNumber);
             updateProgress();
-            
-            // Enable next card if it exists
-            if (cardNumber < totalCards) {
-                const nextCard = document.getElementById(`card${cardNumber + 1}`);
-                if (nextCard) {
-                    const checkbox = nextCard.querySelector('.card-front .custom-checkbox');
-                    checkbox.style.pointerEvents = 'auto';
-                }
-            }
         }
         
         function unflipCard(cardNumber) {
@@ -1394,18 +1374,16 @@
             updateProgress();
         }
         
-        // Initialize: only first card is clickable
+        // Initialize: all cards are clickable
         function initializeCards() {
             // Reset all cards to unflipped state
             for (let i = 1; i <= totalCards; i++) {
                 const card = document.getElementById(`card${i}`);
                 card.classList.remove('flipped');
                 
-                // Only first card is clickable initially
-                if (i > 1) {
-                    const checkbox = card.querySelector('.card-front .custom-checkbox');
-                    checkbox.style.pointerEvents = 'none';
-                }
+                // Make all cards clickable
+                const checkbox = card.querySelector('.card-front .custom-checkbox');
+                checkbox.style.pointerEvents = 'auto';
             }
             
             // Clear any stored progress
@@ -1541,5 +1519,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94560ff9908ef21c',t:'MTc0ODE4NjkwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'945931d5b5e7f1e4',t:'MTc0ODIxOTc0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 </body></html>
