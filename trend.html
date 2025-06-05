@@ -389,7 +389,7 @@
                         <span class="analysis-value positive">強勢多頭</span>
                     </div>
                     <div class="analysis-item">
-                        <span>近期阻力位</span>
+                        <span>近期阻力 </span>
                         <span class="analysis-value">21736</span>
                     </div>
                     <div class="analysis-item">
@@ -397,7 +397,7 @@
                         <span class="analysis-value">92.3/100</span>
                     </div>
                     <div class="analysis-item">
-                        <span>近期支撐位</span>
+                        <span>近期支撐 </span>
                         <span class="analysis-value">21499</span>
                     </div>
                 </div>
@@ -819,7 +819,7 @@
                         &lt;span class="analysis-value positive"&gt;強勢多頭&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
-                        &lt;span&gt;近期阻力位&lt;/span&gt;
+                        &lt;span&gt;近期阻力 &lt;/span&gt;
                         &lt;span class="analysis-value"&gt;21736&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
@@ -827,7 +827,7 @@
                         &lt;span class="analysis-value"&gt;92.3/100&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
-                        &lt;span&gt;近期支撐位&lt;/span&gt;
+                        &lt;span&gt;近期支撐 &lt;/span&gt;
                         &lt;span class="analysis-value"&gt;21499&lt;/span&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
@@ -1209,7 +1209,7 @@
                         &lt;span class="analysis-value ${marketClass}"&gt;${marketStatus}&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
-                        &lt;span&gt;近期阻力位&lt;/span&gt;
+                        &lt;span&gt;近期阻力 &lt;/span&gt;
                         &lt;span class="analysis-value"&gt;${nearestResistance.toFixed(0)}&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
@@ -1217,7 +1217,7 @@
                         &lt;span class="analysis-value"&gt;${score.toFixed(1)}/100&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
-                        &lt;span&gt;近期支撐位&lt;/span&gt;
+                        &lt;span&gt;近期支撐 &lt;/span&gt;
                         &lt;span class="analysis-value"&gt;${nearestSupport.toFixed(0)}&lt;/span&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
@@ -1569,7 +1569,7 @@
             const nearestSupport = supports.length > 0 ? supports[0] : quarterLow;
             const nearestResistance = resistances.length > 0 ? resistances[0] : quarterHigh;
             
-            // 更新綜合分析，使用2x2布局，並交換綜合評分和近期阻力位的位置
+            // 更新綜合分析，使用2x2布局，並交換綜合評分和近期阻力 的位置
             overallAnalysis.innerHTML = `
                 <div class="grid grid-cols-2 grid-rows-2 gap-4">
                     <div class="analysis-item">
@@ -1577,7 +1577,7 @@
                         <span class="analysis-value ${marketClass}">${marketStatus}</span>
                     </div>
                     <div class="analysis-item">
-                        <span>近期阻力位</span>
+                        <span>近期阻力 </span>
                         <span class="analysis-value">${nearestResistance.toFixed(0)}</span>
                     </div>
                     <div class="analysis-item">
@@ -1585,7 +1585,7 @@
                         <span class="analysis-value">${score.toFixed(1)}/100</span>
                     </div>
                     <div class="analysis-item">
-                        <span>近期支撐位</span>
+                        <span>近期支撐 </span>
                         <span class="analysis-value">${nearestSupport.toFixed(0)}</span>
                     </div>
                 </div>
