@@ -330,7 +330,7 @@
                         <h3 class="text-lg font-semibold mb-3 text-gray-700">布林通道分析</h3>
                         <div id="bollingerAnalysis" class="space-y-2">
                 <div class="analysis-item">
-                    <span>布林帶 </span>
+                    <span>布林帶</span>
                     <span class="analysis-value neutral">正常區間 (69.2%)</span>
                 </div>
                 <div class="analysis-item">
@@ -389,7 +389,7 @@
                         <span class="analysis-value positive">強勢多頭</span>
                     </div>
                     <div class="analysis-item">
-                        <span>近期阻力 </span>
+                        <span>近期阻力</span>
                         <span class="analysis-value">21736</span>
                     </div>
                     <div class="analysis-item">
@@ -397,7 +397,7 @@
                         <span class="analysis-value">92.3/100</span>
                     </div>
                     <div class="analysis-item">
-                        <span>近期支撐 </span>
+                        <span>近期支撐</span>
                         <span class="analysis-value">21499</span>
                     </div>
                 </div>
@@ -410,7 +410,7 @@
                             <a href="https://line.me/ti/p/@optionshow" target="_blank" title="加入LINE好友">
                                 <img src="https://optionshow.github.io/option/LINE.png" alt="LINE QR Code" class="qr-image">
                             </a>
-                            <p class="qr-text"></p>
+                            <p class="qr-text">掃描加入LINE好友</p>
                         </div>
                     </div>
                 </div>
@@ -760,7 +760,7 @@
                         &lt;h3 class="text-lg font-semibold mb-3 text-gray-700"&gt;布林通道分析&lt;/h3&gt;
                         &lt;div id="bollingerAnalysis" class="space-y-2"&gt;
                 &lt;div class="analysis-item"&gt;
-                    &lt;span&gt;布林帶 &lt;/span&gt;
+                    &lt;span&gt;布林帶&lt;/span&gt;
                     &lt;span class="analysis-value neutral"&gt;正常區間 (69.2%)&lt;/span&gt;
                 &lt;/div&gt;
                 &lt;div class="analysis-item"&gt;
@@ -819,7 +819,7 @@
                         &lt;span class="analysis-value positive"&gt;強勢多頭&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
-                        &lt;span&gt;近期阻力 &lt;/span&gt;
+                        &lt;span&gt;近期阻力&lt;/span&gt;
                         &lt;span class="analysis-value"&gt;21736&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
@@ -827,7 +827,7 @@
                         &lt;span class="analysis-value"&gt;92.3/100&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
-                        &lt;span&gt;近期支撐 &lt;/span&gt;
+                        &lt;span&gt;近期支撐&lt;/span&gt;
                         &lt;span class="analysis-value"&gt;21499&lt;/span&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
@@ -840,7 +840,7 @@
                             &lt;a href="https://line.me/ti/p/@optionshow" target="_blank" title="加入LINE好友"&gt;
                                 &lt;img src="https://optionshow.github.io/option/LINE.png" alt="LINE QR Code" class="qr-image"&gt;
                             &lt;/a&gt;
-                            &lt;p class="qr-text"&gt;&lt;/p&gt;
+                            &lt;p class="qr-text"&gt;掃描加入LINE好友&lt;/p&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
@@ -871,19 +871,32 @@
         const codeClose = document.getElementById('codeClose');
         const codeArea = document.getElementById('codeArea');
         
+        // 本地存儲鍵名
+        const STORAGE_KEY = 'priceAnalysisData';
+        
         // 初始化頁面
         document.addEventListener('DOMContentLoaded', function() {
+            // 從本地存儲加載數據
+            loadDataFromLocalStorage();
+            
+            // 更新分析
             updateAnalysis();
             
             // 為所有輸入欄位添加事件監聽
             inputs.forEach(input =&gt; {
-                input.addEventListener('change', updateAnalysis);
+                input.addEventListener('change', function() {
+                    updateAnalysis();
+                    saveDataToLocalStorage();
+                });
                 // 確保所有輸入欄位都是置中的
                 input.style.textAlign = 'center';
             });
             
             // 更新按鈕事件
-            updateBtn.addEventListener('click', updateAnalysis);
+            updateBtn.addEventListener('click', function() {
+                updateAnalysis();
+                saveDataToLocalStorage();
+            });
             
             // 程式碼星號點擊事件
             codeStar.addEventListener('click', function() {
@@ -906,6 +919,43 @@
                 }
             });
         });
+        
+        // 從本地存儲加載數據
+        function loadDataFromLocalStorage() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    
+                    // 將保存的數據填充到輸入欄位
+                    for (const key in data) {
+                        const input = document.getElementById(key);
+                        if (input) {
+                            input.value = data[key];
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('從本地存儲加載數據時出錯:', error);
+            }
+        }
+        
+        // 保存數據到本地存儲
+        function saveDataToLocalStorage() {
+            try {
+                const data = {};
+                
+                // 收集所有輸入欄位的值
+                inputs.forEach(input =&gt; {
+                    data[input.id] = input.value;
+                });
+                
+                // 保存到本地存儲
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (error) {
+                console.error('保存數據到本地存儲時出錯:', error);
+            }
+        }
         
         // 更新分析
         function updateAnalysis() {
@@ -1040,7 +1090,7 @@
             
             bollingerAnalysis.innerHTML = `
                 &lt;div class="analysis-item"&gt;
-                    &lt;span&gt;布林帶 &lt;/span&gt;
+                    &lt;span&gt;布林帶&lt;/span&gt;
                     &lt;span class="analysis-value ${statusClass}"&gt;${status} (${percentInBand.toFixed(1)}%)&lt;/span&gt;
                 &lt;/div&gt;
                 &lt;div class="analysis-item"&gt;
@@ -1209,7 +1259,7 @@
                         &lt;span class="analysis-value ${marketClass}"&gt;${marketStatus}&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
-                        &lt;span&gt;近期阻力 &lt;/span&gt;
+                        &lt;span&gt;近期阻力&lt;/span&gt;
                         &lt;span class="analysis-value"&gt;${nearestResistance.toFixed(0)}&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
@@ -1217,14 +1267,14 @@
                         &lt;span class="analysis-value"&gt;${score.toFixed(1)}/100&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div class="analysis-item"&gt;
-                        &lt;span&gt;近期支撐 &lt;/span&gt;
+                        &lt;span&gt;近期支撐&lt;/span&gt;
                         &lt;span class="analysis-value"&gt;${nearestSupport.toFixed(0)}&lt;/span&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
             `;
         }
     &lt;/script&gt;
-&lt;script&gt;(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94ace03e4778f1ec',t:'MTc0OTA5NzIxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&amp;&amp;(document.onreadystatechange=e,c())}}}})();&lt;/script&gt;&lt;iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"&gt;&lt;/iframe&gt;
+&lt;script&gt;(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94b027a93457f23c',t:'MTc0OTEzMTU5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&amp;&amp;(document.onreadystatechange=e,c())}}}})();&lt;/script&gt;&lt;iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"&gt;&lt;/iframe&gt;
 
 &lt;/body&gt;&lt;/html&gt;</div>
         </div>
@@ -1239,19 +1289,32 @@
         const codeClose = document.getElementById('codeClose');
         const codeArea = document.getElementById('codeArea');
         
+        // 本地存儲鍵名
+        const STORAGE_KEY = 'priceAnalysisData';
+        
         // 初始化頁面
         document.addEventListener('DOMContentLoaded', function() {
+            // 從本地存儲加載數據
+            loadDataFromLocalStorage();
+            
+            // 更新分析
             updateAnalysis();
             
             // 為所有輸入欄位添加事件監聽
             inputs.forEach(input => {
-                input.addEventListener('change', updateAnalysis);
+                input.addEventListener('change', function() {
+                    updateAnalysis();
+                    saveDataToLocalStorage();
+                });
                 // 確保所有輸入欄位都是置中的
                 input.style.textAlign = 'center';
             });
             
             // 更新按鈕事件
-            updateBtn.addEventListener('click', updateAnalysis);
+            updateBtn.addEventListener('click', function() {
+                updateAnalysis();
+                saveDataToLocalStorage();
+            });
             
             // 程式碼星號點擊事件
             codeStar.addEventListener('click', function() {
@@ -1274,6 +1337,43 @@
                 }
             });
         });
+        
+        // 從本地存儲加載數據
+        function loadDataFromLocalStorage() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    
+                    // 將保存的數據填充到輸入欄位
+                    for (const key in data) {
+                        const input = document.getElementById(key);
+                        if (input) {
+                            input.value = data[key];
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('從本地存儲加載數據時出錯:', error);
+            }
+        }
+        
+        // 保存數據到本地存儲
+        function saveDataToLocalStorage() {
+            try {
+                const data = {};
+                
+                // 收集所有輸入欄位的值
+                inputs.forEach(input => {
+                    data[input.id] = input.value;
+                });
+                
+                // 保存到本地存儲
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (error) {
+                console.error('保存數據到本地存儲時出錯:', error);
+            }
+        }
         
         // 更新分析
         function updateAnalysis() {
@@ -1408,7 +1508,7 @@
             
             bollingerAnalysis.innerHTML = `
                 <div class="analysis-item">
-                    <span>布林帶 </span>
+                    <span>布林帶</span>
                     <span class="analysis-value ${statusClass}">${status} (${percentInBand.toFixed(1)}%)</span>
                 </div>
                 <div class="analysis-item">
@@ -1569,7 +1669,7 @@
             const nearestSupport = supports.length > 0 ? supports[0] : quarterLow;
             const nearestResistance = resistances.length > 0 ? resistances[0] : quarterHigh;
             
-            // 更新綜合分析，使用2x2布局，並交換綜合評分和近期阻力 的位置
+            // 更新綜合分析，使用2x2布局，並交換綜合評分和近期阻力位的位置
             overallAnalysis.innerHTML = `
                 <div class="grid grid-cols-2 grid-rows-2 gap-4">
                     <div class="analysis-item">
@@ -1577,7 +1677,7 @@
                         <span class="analysis-value ${marketClass}">${marketStatus}</span>
                     </div>
                     <div class="analysis-item">
-                        <span>近期阻力 </span>
+                        <span>近期阻力</span>
                         <span class="analysis-value">${nearestResistance.toFixed(0)}</span>
                     </div>
                     <div class="analysis-item">
@@ -1585,13 +1685,13 @@
                         <span class="analysis-value">${score.toFixed(1)}/100</span>
                     </div>
                     <div class="analysis-item">
-                        <span>近期支撐 </span>
+                        <span>近期支撐</span>
                         <span class="analysis-value">${nearestSupport.toFixed(0)}</span>
                     </div>
                 </div>
             `;
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94ace03e4778f1ec',t:'MTc0OTA5NzIxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94b027a93457f23c',t:'MTc0OTEzMTU5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 </body></html>
