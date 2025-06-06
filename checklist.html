@@ -482,7 +482,7 @@
                         <div class="ml-3">
                             <h3 class="font-medium text-gray-800">交易條件：動態Sell價</h3>
                             <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>打開智能報價，查詢價差接近<code class="bg-gray-100 px-1 rounded">10</code>對應的Call及Put成交價</li>
+                                <li>打開智能報價，查詢價差接近<code class="bg-gray-100 px-1 rounded">10</code>對應的Call及Put成交價（若虧損，價差改接近<code class="bg-gray-100 px-1 rounded">14</code>）</li>
                                 <li>輸入設定，讓動態Sell價結果是剛剛的成交價</li>
                                 <li>點擊「儲存」</li>
                             </ul>
@@ -562,7 +562,7 @@
                         <div class="ml-3">
                             <h3 class="font-medium text-gray-800">交易條件：動態Sell價/複式單B價外50點</h3>
                             <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>打開智能報價，查詢價差<code class="bg-gray-100 px-1 rounded">10</code>對應的Call及Put成交價</li>
+                                <li>打開智能報價，查詢價差<code class="bg-gray-100 px-1 rounded">10</code>對應的Call及Put成交價（若虧損，價差改接近<code class="bg-gray-100 px-1 rounded">16</code>）</li>
                                 <li>輸入設定，讓動態Sell價結果是剛剛的成交價</li>
                                 <li class="font-medium">複式單 B 價外，改50點</li>
                                 <li>點擊「儲存」</li>
@@ -632,7 +632,8 @@
                         <div class="ml-3">
                             <h3 class="font-medium text-gray-800">交易條件：動態Sell價設定30～44</h3>
                             <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium">結算日（週三）的<code class="bg-gray-100 px-1 rounded">動態Sell價</code>固定設定為40點（30~44都可），不需參考智能報價的動態數值</li>
+                                <li class="font-medium">結算日（週三）的<code class="bg-gray-100 px-1 rounded">動態Sell價</code>固定設定為40（30~44都可），不需參考智能報價的動態數值</li>
+                                <li class="font-medium">若虧損超過-2％<code class="bg-gray-100 px-1 rounded">動態Sell價</code>固定設定為20（8~22都可）！</li>
                             </ul>
                         </div>
                     </div>
