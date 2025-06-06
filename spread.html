@@ -1,0 +1,534 @@
+<html lang="zh-TW"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台指價差賣方互動模擬收益</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f7ff;
+            position: relative;
+            min-height: 100vh;
+        }
+        .slider {
+            -webkit-appearance: none;
+            height: 10px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+        }
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+        }
+        .tab-active {
+            background-color: #2563eb;
+            color: white;
+        }
+        .star-button {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            color: rgba(0, 0, 0, 0.1);
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+        }
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow: auto;
+        }
+        .code-content {
+            background-color: #f8f8f8;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 80vh;
+            overflow: auto;
+            border-radius: 8px;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover {
+            color: #000;
+        }
+        pre {
+            white-space: pre-wrap;
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .nav-button {
+            background-color: #000;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-4{margin-bottom:1rem}.mb-8{margin-bottom:2rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.w-full{width:100%}.max-w-5xl{max-width:64rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.rounded{border-radius:0.25rem}.rounded-lg{border-radius:0.5rem}.rounded-t-lg{border-top-left-radius:0.5rem;border-top-right-radius:0.5rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-4{padding-left:1rem;padding-right:1rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-8{padding-top:2rem;padding-bottom:2rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}</style></head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <div class="header-container">
+            <a href="https://optionshow.github.io/option/index.html" target="_blank" class="nav-button">回到首頁</a>
+            <h1 class="text-3xl font-bold text-center text-blue-800">台指價差賣方互動模擬收益</h1>
+            <a href="https://lin.ee/n3bZgtk" target="_blank" class="nav-button">聯繫官方</a>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex mb-4 border-b">
+                <button id="tab1" class="tab-active px-4 py-2 rounded-t-lg font-medium">狀況一：單一價差</button>
+                <button id="tab2" class="px-4 py-2 rounded-t-lg font-medium">狀況二：雙重價差</button>
+            </div>
+            
+            <div id="scenario1" class="scenario-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h2 class="text-xl font-semibold mb-4 text-blue-700">基本設定</h2>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">固定本金</label>
+                            <input type="number" id="totalCapital1" value="1000000" class="w-full p-2 border rounded" readonly="">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">投入資金 (元)</label>
+                            <input type="number" id="investedCapital1" value="300000" min="10000" max="1000000" step="10000" class="w-full p-2 border rounded">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">價差成交價 (點)</label>
+                            <input type="number" id="spreadPrice1" value="12" min="0.5" max="100" step="0.5" class="w-full p-2 border rounded">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h2 class="text-xl font-semibold mb-4 text-blue-700">計算結果</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm font-medium">每點價值</p>
+                                <p id="pointValue1" class="font-bold">50 元</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">每組保證金</p>
+                                <p id="margin1" class="font-bold">5,000 元</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">可賣出組數</p>
+                                <p id="initialSets1" class="font-bold">60 組</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">收取權利金</p>
+                                <p id="premium1" class="font-bold">36,000 元</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">額外可賣組數</p>
+                                <p id="additionalSets1" class="font-bold">7 組</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">總持有組數</p>
+                                <p id="totalSets1" class="font-bold">67 組</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">總點數</p>
+                                <p id="totalPoints1" class="font-bold">804.0 點</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 bg-blue-50 p-4 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-700">模擬收益</h2>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">現價點數: <span id="currentPrice1Value">12</span></label>
+                        <input type="range" id="currentPrice1" min="0" max="12" value="12" step="0.5" class="slider w-full">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-sm font-medium text-gray-600">獲利點數</p>
+                            <p id="profitPoints1" class="text-2xl font-bold text-blue-600">0.0 點</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-sm font-medium text-gray-600">獲利金額</p>
+                            <p id="profitAmount1" class="text-2xl font-bold text-blue-600">0 元</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-sm font-medium text-gray-600">報酬率</p>
+                            <p id="returnRate1" class="text-2xl font-bold text-blue-600">0.0%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="scenario2" class="scenario-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h2 class="text-xl font-semibold mb-4 text-blue-700">基本設定</h2>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">固定本金</label>
+                            <input type="number" id="totalCapital2" value="1000000" class="w-full p-2 border rounded" readonly="">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">投入資金 (元)</label>
+                            <input type="number" id="investedCapital2" value="500000" min="10000" max="1000000" step="10000" class="w-full p-2 border rounded">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">第一部位投入 (元)</label>
+                            <input type="number" id="firstPosition" value="300000" min="10000" max="500000" step="10000" class="w-full p-2 border rounded">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">第一部位價差成交價 (點)</label>
+                            <input type="number" id="spreadPrice2A" value="12" min="0.5" max="100" step="0.5" class="w-full p-2 border rounded">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">第二部位價差成交價 (點)</label>
+                            <input type="number" id="spreadPrice2B" value="12" min="0.5" max="100" step="0.5" class="w-full p-2 border rounded">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h2 class="text-xl font-semibold mb-4 text-blue-700">計算結果</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm font-medium">第一部位組數</p>
+                                <p id="totalSets2A" class="font-bold">67 組</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">第一部位總點數</p>
+                                <p id="totalPoints2A" class="font-bold">804.0 點</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">第二部位組數</p>
+                                <p id="totalSets2B" class="font-bold">44 組</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">第二部位總點數</p>
+                                <p id="totalPoints2B" class="font-bold">528.0 點</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">第二部位投入</p>
+                                <p id="secondPosition" class="font-bold">200,000 元</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">總投入資金</p>
+                                <p id="totalInvested2" class="font-bold">500,000 元</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 bg-blue-50 p-4 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-700">模擬收益</h2>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">第二部位現價點數: <span id="currentPrice2BValue">12</span></label>
+                        <input type="range" id="currentPrice2B" min="0" max="12" value="12" step="0.5" class="slider w-full">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">第一部位現價點數: <span id="currentPrice2AValue">12.00</span></label>
+                        <p class="text-xs text-gray-600">（根據第二部位現價自動調整：第二部位每減少0.5點，第一部位增加0.25點）</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-sm font-medium text-gray-600">總獲利點數</p>
+                            <p id="profitPoints2" class="text-2xl font-bold text-blue-600">0.0 點</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-sm font-medium text-gray-600">總獲利金額</p>
+                            <p id="profitAmount2" class="text-2xl font-bold text-blue-600">0 元</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-sm font-medium text-gray-600">報酬率</p>
+                            <p id="returnRate2" class="text-2xl font-bold text-blue-600">0.0%</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-sm font-medium text-gray-600">第一部位獲利</p>
+                            <p id="profitA" class="text-xl font-bold text-blue-600">0.0 點 (0 元)</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-sm font-medium text-gray-600">第二部位獲利</p>
+                            <p id="profitB" class="text-xl font-bold text-blue-600">0.0 點 (0 元)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Star button in bottom left -->
+    <div class="star-button" id="starButton"></div>
+    
+    <!-- Code modal -->
+    <div id="codeModal" class="code-modal">
+        <div class="code-content">
+            <span class="close-button" id="closeModal">×</span>
+            <h2 class="text-xl font-bold mb-4">網頁程式碼</h2>
+            <pre id="sourceCode"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const POINT_VALUE = 50;
+        const MARGIN_PER_SET = 5000;
+        const TOTAL_CAPITAL = 1000000;
+        
+        // DOM Elements - Scenario 1
+        const tab1 = document.getElementById('tab1');
+        const tab2 = document.getElementById('tab2');
+        const scenario1 = document.getElementById('scenario1');
+        const scenario2 = document.getElementById('scenario2');
+        
+        const investedCapital1 = document.getElementById('investedCapital1');
+        const spreadPrice1 = document.getElementById('spreadPrice1');
+        const currentPrice1 = document.getElementById('currentPrice1');
+        const currentPrice1Value = document.getElementById('currentPrice1Value');
+        
+        // DOM Elements - Scenario 2
+        const investedCapital2 = document.getElementById('investedCapital2');
+        const firstPosition = document.getElementById('firstPosition');
+        const spreadPrice2A = document.getElementById('spreadPrice2A');
+        const spreadPrice2B = document.getElementById('spreadPrice2B');
+        const currentPrice2B = document.getElementById('currentPrice2B');
+        const currentPrice2AValue = document.getElementById('currentPrice2AValue');
+        const currentPrice2BValue = document.getElementById('currentPrice2BValue');
+        
+        // Modal elements
+        const starButton = document.getElementById('starButton');
+        const codeModal = document.getElementById('codeModal');
+        const closeModal = document.getElementById('closeModal');
+        const sourceCode = document.getElementById('sourceCode');
+        
+        // Star button click event
+        starButton.addEventListener('click', function() {
+            sourceCode.textContent = document.documentElement.outerHTML;
+            codeModal.style.display = 'block';
+        });
+        
+        // Close modal
+        closeModal.addEventListener('click', function() {
+            codeModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target == codeModal) {
+                codeModal.style.display = 'none';
+            }
+        });
+        
+        // Tab switching
+        tab1.addEventListener('click', () => {
+            tab1.classList.add('tab-active');
+            tab2.classList.remove('tab-active');
+            scenario1.classList.remove('hidden');
+            scenario2.classList.add('hidden');
+        });
+        
+        tab2.addEventListener('click', () => {
+            tab2.classList.add('tab-active');
+            tab1.classList.remove('tab-active');
+            scenario2.classList.remove('hidden');
+            scenario1.classList.add('hidden');
+        });
+        
+        // Format number with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        // Calculate scenario 1
+        function calculateScenario1() {
+            const invested = parseInt(investedCapital1.value);
+            const spread = parseFloat(spreadPrice1.value);
+            const premiumPerSet = spread * POINT_VALUE;
+            
+            // Initial sets calculation
+            const initialSets = Math.floor(invested / MARGIN_PER_SET);
+            const initialPremium = initialSets * premiumPerSet;
+            
+            // Additional sets from premium
+            const additionalSets = Math.floor(initialPremium / MARGIN_PER_SET);
+            const totalSets = initialSets + additionalSets;
+            const totalPoints = totalSets * spread;
+            
+            // Update DOM
+            document.getElementById('initialSets1').textContent = `${initialSets} 組`;
+            document.getElementById('premium1').textContent = `${formatNumber(Math.round(initialPremium))} 元`;
+            document.getElementById('additionalSets1').textContent = `${additionalSets} 組`;
+            document.getElementById('totalSets1').textContent = `${totalSets} 組`;
+            document.getElementById('totalPoints1').textContent = `${totalPoints.toFixed(1)} 點`;
+            
+            // Update slider max value
+            currentPrice1.max = spread;
+            currentPrice1.value = spread;
+            currentPrice1Value.textContent = spread;
+            
+            // Calculate profit
+            calculateProfit1();
+        }
+        
+        // Calculate profit for scenario 1
+        function calculateProfit1() {
+            const spread = parseFloat(spreadPrice1.value);
+            const currentPriceVal = parseFloat(currentPrice1.value);
+            const totalSets = parseInt(document.getElementById('totalSets1').textContent);
+            
+            const profitPoints = (spread - currentPriceVal) * totalSets;
+            const profitAmount = profitPoints * POINT_VALUE;
+            const returnRate = (profitAmount / TOTAL_CAPITAL) * 100;
+            
+            document.getElementById('profitPoints1').textContent = `${profitPoints.toFixed(1)} 點`;
+            document.getElementById('profitAmount1').textContent = `${formatNumber(Math.round(profitAmount))} 元`;
+            document.getElementById('returnRate1').textContent = `${returnRate.toFixed(1)}%`;
+        }
+        
+        // Calculate scenario 2
+        function calculateScenario2() {
+            const totalInvested = parseInt(investedCapital2.value);
+            const firstPositionAmount = parseInt(firstPosition.value);
+            const secondPositionAmount = totalInvested - firstPositionAmount;
+            
+            const spreadA = parseFloat(spreadPrice2A.value);
+            const spreadB = parseFloat(spreadPrice2B.value);
+            
+            // First position calculation
+            const initialSetsA = Math.floor(firstPositionAmount / MARGIN_PER_SET);
+            const initialPremiumA = initialSetsA * (spreadA * POINT_VALUE);
+            const additionalSetsA = Math.floor(initialPremiumA / MARGIN_PER_SET);
+            const totalSetsA = initialSetsA + additionalSetsA;
+            const totalPointsA = totalSetsA * spreadA;
+            
+            // Second position calculation
+            const initialSetsB = Math.floor(secondPositionAmount / MARGIN_PER_SET);
+            const initialPremiumB = initialSetsB * (spreadB * POINT_VALUE);
+            const additionalSetsB = Math.floor(initialPremiumB / MARGIN_PER_SET);
+            const totalSetsB = initialSetsB + additionalSetsB;
+            const totalPointsB = totalSetsB * spreadB;
+            
+            // Update DOM
+            document.getElementById('secondPosition').textContent = `${formatNumber(secondPositionAmount)} 元`;
+            document.getElementById('totalInvested2').textContent = `${formatNumber(totalInvested)} 元`;
+            document.getElementById('totalSets2A').textContent = `${totalSetsA} 組`;
+            document.getElementById('totalPoints2A').textContent = `${totalPointsA.toFixed(1)} 點`;
+            document.getElementById('totalSets2B').textContent = `${totalSetsB} 組`;
+            document.getElementById('totalPoints2B').textContent = `${totalPointsB.toFixed(1)} 點`;
+            
+            // Update slider max value
+            currentPrice2B.max = spreadB;
+            currentPrice2B.value = spreadB;
+            currentPrice2BValue.textContent = spreadB;
+            currentPrice2AValue.textContent = spreadA;
+            
+            // Calculate profit
+            calculateProfit2();
+        }
+        
+        // Calculate profit for scenario 2
+        function calculateProfit2() {
+            const spreadA = parseFloat(spreadPrice2A.value);
+            const spreadB = parseFloat(spreadPrice2B.value);
+            const currentPriceB = parseFloat(currentPrice2B.value);
+            
+            // Calculate current price A based on the rule:
+            // For each 0.5 point decrease in B, A increases by 0.25 points
+            const priceChangeB = spreadB - currentPriceB;
+            const currentPriceA = spreadA + (priceChangeB * 0.25 / 0.5);
+            
+            const totalSetsA = parseInt(document.getElementById('totalSets2A').textContent);
+            const totalSetsB = parseInt(document.getElementById('totalSets2B').textContent);
+            
+            const profitPointsA = (spreadA - currentPriceA) * totalSetsA;
+            const profitPointsB = (spreadB - currentPriceB) * totalSetsB;
+            const totalProfitPoints = profitPointsA + profitPointsB;
+            
+            const profitAmountA = profitPointsA * POINT_VALUE;
+            const profitAmountB = profitPointsB * POINT_VALUE;
+            const totalProfitAmount = totalProfitPoints * POINT_VALUE;
+            
+            const returnRate = (totalProfitAmount / TOTAL_CAPITAL) * 100;
+            
+            currentPrice2AValue.textContent = currentPriceA.toFixed(2);
+            document.getElementById('profitPoints2').textContent = `${totalProfitPoints.toFixed(1)} 點`;
+            document.getElementById('profitAmount2').textContent = `${formatNumber(Math.round(totalProfitAmount))} 元`;
+            document.getElementById('returnRate2').textContent = `${returnRate.toFixed(1)}%`;
+            
+            document.getElementById('profitA').textContent = `${profitPointsA.toFixed(1)} 點 (${formatNumber(Math.round(profitAmountA))} 元)`;
+            document.getElementById('profitB').textContent = `${profitPointsB.toFixed(1)} 點 (${formatNumber(Math.round(profitAmountB))} 元)`;
+        }
+        
+        // Event listeners - Scenario 1
+        investedCapital1.addEventListener('input', calculateScenario1);
+        spreadPrice1.addEventListener('input', calculateScenario1);
+        currentPrice1.addEventListener('input', () => {
+            currentPrice1Value.textContent = currentPrice1.value;
+            calculateProfit1();
+        });
+        
+        // Event listeners - Scenario 2
+        investedCapital2.addEventListener('input', () => {
+            // Ensure firstPosition doesn't exceed investedCapital2
+            if (parseInt(firstPosition.value) > parseInt(investedCapital2.value)) {
+                firstPosition.value = investedCapital2.value;
+            }
+            calculateScenario2();
+        });
+        
+        firstPosition.addEventListener('input', () => {
+            // Ensure firstPosition doesn't exceed investedCapital2
+            if (parseInt(firstPosition.value) > parseInt(investedCapital2.value)) {
+                firstPosition.value = investedCapital2.value;
+            }
+            calculateScenario2();
+        });
+        
+        spreadPrice2A.addEventListener('input', calculateScenario2);
+        spreadPrice2B.addEventListener('input', calculateScenario2);
+        currentPrice2B.addEventListener('input', () => {
+            currentPrice2BValue.textContent = currentPrice2B.value;
+            calculateProfit2();
+        });
+        
+        // Initialize calculations
+        calculateScenario1();
+        calculateScenario2();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94b44ef22593f1f4',t:'MTc0OTE3NTE0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+
+</body></html>
