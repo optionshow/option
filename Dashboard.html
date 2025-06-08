@@ -1,7 +1,7 @@
 <html lang="zh-TW"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>價格趨勢分析</title>
+    <title>趨勢分析</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -13,15 +13,15 @@
         }
         .price-bar {
             position: relative;
-            height: 40px;
+            height: 30px; /* 減少高度 */
             background: linear-gradient(to right, #34d399, #fbbf24, #f87171);
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 10px 0; /* 減少邊距 */
         }
         .price-marker {
             position: absolute;
             width: 4px;
-            height: 50px;
+            height: 40px; /* 減少高度 */
             background-color: #1e40af;
             top: -5px;
             transform: translateX(-50%);
@@ -30,18 +30,19 @@
             position: absolute;
             background-color: #1e40af;
             color: white;
-            padding: 2px 8px;
+            padding: 2px 6px; /* 減少內邊距 */
             border-radius: 4px;
             transform: translateX(-50%);
-            top: -30px;
+            top: -25px; /* 調整位置 */
             font-weight: bold;
             white-space: nowrap;
+            font-size: 0.9rem; /* 減少字體大小 */
         }
         .price-scale {
             position: absolute;
             transform: translateX(-50%);
-            top: 45px;
-            font-size: 12px;
+            top: 35px; /* 調整位置 */
+            font-size: 11px; /* 減少字體大小 */
             color: #4b5563;
         }
         input {
@@ -86,20 +87,21 @@
             padding-left: 10px;
         }
         .price-chart-bar {
-            height: 28px;
-            margin: 4px 0;
+            height: 22px; /* 減少高度 */
+            margin: 2px 0; /* 減少邊距 */
             border-radius: 4px;
             display: flex;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 8px; /* 減少內邊距 */
             font-weight: 500;
             position: relative;
             overflow: hidden;
+            font-size: 0.8rem; /* 減少字體大小 */
         }
         .price-chart-label {
             position: absolute;
-            right: 10px;
-            font-size: 12px;
+            right: 8px;
+            font-size: 10px; /* 減少字體大小 */
             color: rgba(0, 0, 0, 0.5);
         }
         .section-title-link {
@@ -179,15 +181,16 @@
             width: 100%;
         }
         .summary-box {
-            padding: 8px;
+            padding: 6px; /* 減少內邊距 */
             border-radius: 6px;
             text-align: center;
             font-weight: 500;
+            font-size: 0.9rem; /* 減少字體大小 */
         }
         .summary-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem; /* 減少字體大小 */
             color: #4b5563;
-            margin-bottom: 2px;
+            margin-bottom: 1px; /* 減少邊距 */
         }
         /* 分隔線樣式 */
         .gutter {
@@ -218,13 +221,50 @@
         .analysis-conclusion {
             font-weight: 500;
         }
+        .price-chart-container {
+            position: relative;
+            overflow: visible; /* 改為可見，不截斷 */
+            height: auto; /* 自動高度 */
+        }
+        /* 新增的緊湊樣式 */
+        .compact-section {
+            padding: 12px !important; /* 減少內邊距 */
+            margin-bottom: 12px !important; /* 減少底部邊距 */
+        }
+        .compact-title {
+            font-size: 1rem !important; /* 減少標題字體大小 */
+            margin-bottom: 8px !important; /* 減少標題底部邊距 */
+        }
+        .compact-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px; /* 減少間距 */
+        }
+        .compact-summary-item {
+            flex: 1;
+            min-width: 100px;
+            padding: 4px;
+        }
+        /* 統一所有分析標題樣式 */
+        .analysis-title {
+            font-size: 1rem !important;
+            margin-bottom: 8px !important;
+            border-left: 4px solid #1e40af;
+            padding-left: 10px;
+            font-weight: bold;
+        }
+        /* 統一分析區塊樣式 */
+        .analysis-section-box {
+            padding: 12px !important;
+            margin-bottom: 12px !important;
+        }
     </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mb-1{margin-bottom:0.25rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.flex{display:flex}.grid{display:grid}.w-full{width:100%}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-2{gap:0.5rem}.rounded-lg{border-radius:0.5rem}.rounded{border-radius:0.25rem}.border-b{border-bottom-width:1px}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}@media (min-width: 768px){.md\:w-1\/2{width:50%}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:w-1\/4{width:25%}}</style></head>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.flex{display:flex}.grid{display:grid}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.gap-3{gap:0.75rem}.gap-6{gap:1.5rem}.gap-2{gap:0.5rem}.rounded-lg{border-radius:0.5rem}.rounded{border-radius:0.25rem}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-3{padding:0.75rem}.p-4{padding:1rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
 <body>
     <div class="split" id="split-container">
         <!-- 左側輸入區域 -->
         <div class="split-panel p-4 bg-gray-50 input-section" id="left-panel" style="width: calc(33% - 5px);">
-            <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">價格趨勢分析儀表板</h1>
+            <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">趨勢分析儀表板</h1>
             
             <!-- 現價輸入 -->
             <div class="bg-white p-4 rounded-lg shadow-md mb-4">
@@ -276,9 +316,9 @@
                 </div>
             </div>
 
-            <!-- 近期價格區間 -->
+            <!-- 近期區間 -->
             <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-                <h2 class="text-lg font-bold mb-3 section-title">近期價格區間</h2>
+                <h2 class="text-lg font-bold mb-3 section-title">近期區間</h2>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="input-group">
                         <label>近周高</label>
@@ -416,10 +456,11 @@
         
         <!-- 右側分析區域 -->
         <div class="gutter gutter-horizontal" style="width: 10px;"></div><div class="split-panel p-4 analysis-section" id="right-panel" style="width: calc(67% - 5px);">
-            <!-- 綜合價格圖表 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                <h2 class="text-xl font-bold mb-4 section-title">綜合價格圖表</h2>
-                <div id="priceChart">
+            <!-- 綜合圖表 - 完整顯示版本 -->
+            <div class="bg-white p-3 rounded-lg shadow-lg mb-3 compact-section">
+                <h2 class="analysis-title compact-title">綜合圖表</h2>
+                <div class="price-chart-container" id="priceChartContainer">
+                    <div id="priceChart">
                 <div class="price-chart-bar price-higher-3" style="width: 100%">
                     22150 - C最大增量
                     <span class="price-chart-label">未平倉</span>
@@ -437,7 +478,7 @@
                 
                 <div class="price-chart-bar price-higher-3" style="width: 88.21782178217822%">
                     21929 - 近季高
-                    <span class="price-chart-label">價格區間</span>
+                    <span class="price-chart-label">區間</span>
                 </div>
                 
                 <div class="price-chart-bar price-higher" style="width: 78.67479055597867%">
@@ -497,12 +538,12 @@
                 
                 <div class="price-chart-bar price-lower" style="width: 69.02513328255903%">
                     21569 - 近周高
-                    <span class="price-chart-label">價格區間</span>
+                    <span class="price-chart-label">區間</span>
                 </div>
                 
                 <div class="price-chart-bar price-lower" style="width: 68.97182025894897%">
                     21568 - 近月高
-                    <span class="price-chart-label">價格區間</span>
+                    <span class="price-chart-label">區間</span>
                 </div>
                 
                 <div class="price-chart-bar price-lower" style="width: 68.91850723533892%">
@@ -547,12 +588,12 @@
                 
                 <div class="price-chart-bar price-lower-3" style="width: 59.215536938309214%">
                     21385 - 近周低
-                    <span class="price-chart-label">價格區間</span>
+                    <span class="price-chart-label">區間</span>
                 </div>
                 
                 <div class="price-chart-bar price-lower-3" style="width: 56.17669459253618%">
                     21328 - 近月低
-                    <span class="price-chart-label">價格區間</span>
+                    <span class="price-chart-label">區間</span>
                 </div>
                 
                 <div class="price-chart-bar price-lower-3" style="width: 53.884234577303886%">
@@ -577,13 +618,14 @@
                 
                 <div class="price-chart-bar price-lower-3" style="width: 30%">
                     20837 - 近季低
-                    <span class="price-chart-label">價格區間</span>
+                    <span class="price-chart-label">區間</span>
+                </div>
                 </div>
                 </div>
             </div>
             
-            <!-- 現價橫條 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <!-- 現價橫條 - 更緊湊的版本 -->
+            <div class="bg-white p-3 rounded-lg shadow-lg mb-3 compact-section">
                 <div class="price-bar-container">
                     <div class="price-bar" id="priceBar">
                         <div class="price-marker" id="priceMarker" style="left: 68.4343%;">
@@ -595,75 +637,25 @@
                 </div>
             </div>
 
-            <!-- 綜合分析摘要 -->
-            <div class="bg-white p-4 rounded-lg shadow-lg mb-6">
-                <h2 class="text-xl font-bold mb-3 section-title">綜合分析摘要</h2>
-                <div class="flex flex-wrap justify-between items-center">
-                    <div class="w-full md:w-1/2 lg:w-1/4 p-2">
-                        <div class="summary-box bg-gray-50">
-                            <div class="summary-label">綜合分析</div>
-                            <div id="overallStatusSummary"><span class="price-higher-3 px-2 py-1 rounded font-bold">強勢多頭</span></div>
-                        </div>
+            <!-- 綜合分析摘要 - 更緊湊的版本 -->
+            <div class="bg-white p-3 rounded-lg shadow-lg mb-3 compact-section">
+                <h2 class="analysis-title compact-title">綜合分析摘要</h2>
+                <div class="compact-summary">
+                    <div class="compact-summary-item">
+                        <div class="summary-label">綜合分析</div>
+                        <div id="overallStatusSummary"><span class="price-higher-3 px-2 py-1 rounded font-bold">強勢多頭</span></div>
                     </div>
-                    <div class="w-full md:w-1/2 lg:w-1/4 p-2">
-                        <div class="summary-box bg-gray-50">
-                            <div class="summary-label">主要支撐</div>
-                            <div id="supportSummary"><span class="price-lower-2 px-2 py-1 rounded font-bold">21517</span></div>
-                        </div>
+                    <div class="compact-summary-item">
+                        <div class="summary-label">主要支撐</div>
+                        <div id="supportSummary"><span class="price-lower-2 px-2 py-1 rounded font-bold">21517</span></div>
                     </div>
-                    <div class="w-full md:w-1/2 lg:w-1/4 p-2">
-                        <div class="summary-box bg-gray-50">
-                            <div class="summary-label">現價</div>
-                            <div id="currentPriceSummary"><span class="current-price">21650</span></div>
-                        </div>
+                    <div class="compact-summary-item">
+                        <div class="summary-label">現價</div>
+                        <div id="currentPriceSummary"><span class="current-price">21650</span></div>
                     </div>
-                    <div class="w-full md:w-1/2 lg:w-1/4 p-2">
-                        <div class="summary-box bg-gray-50">
-                            <div class="summary-label">主要壓力</div>
-                            <div id="resistanceSummary"><span class="price-higher-2 px-2 py-1 rounded font-bold">21674</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 指標分析 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                <h2 class="text-xl font-bold mb-4 section-title">指標分析</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- 左側指標 -->
-                    <div>
-                        <div class="py-2 border-b border-gray-200">
-                            <div class="font-bold mb-1">未平倉莊家</div>
-                            <div id="positionStatusSummary">價格處於主要未平倉區間之間</div>
-                        </div>
-                        <div class="py-2 border-b border-gray-200">
-                            <div class="font-bold mb-1">近期價格區間</div>
-                            <div id="rangeStatusSummary">價格創近期新高，多頭強勢</div>
-                        </div>
-                        <div class="py-2">
-                            <div class="font-bold mb-1">Pivot Point</div>
-                            <div id="pivotStatusSummary">價格在壓力2與壓力1之間，偏多頭</div>
-                        </div>
-                    </div>
-                    
-                    <!-- 右側指標 -->
-                    <div>
-                        <div class="py-2 border-b border-gray-200">
-                            <div class="font-bold mb-1">布林通道</div>
-                            <div id="bollingerStatusSummary">價格在布林通道中間，處於盤整</div>
-                        </div>
-                        <div class="py-2 border-b border-gray-200">
-                            <div class="font-bold mb-1">移動平均線</div>
-                            <div id="maStatusSummary">價格高於所有均線，強勢多頭</div>
-                        </div>
-                        <div class="py-2 border-b border-gray-200">
-                            <div class="font-bold mb-1">三關價</div>
-                            <div id="levelStatusSummary">價格在中關價與上關價之間，偏多頭</div>
-                        </div>
-                        <div class="py-2">
-                            <div class="font-bold mb-1">CDP</div>
-                            <div id="cdpStatusSummary">價格處於CDP轉強區域，偏多</div>
-                        </div>
+                    <div class="compact-summary-item">
+                        <div class="summary-label">主要壓力</div>
+                        <div id="resistanceSummary"><span class="price-higher-2 px-2 py-1 rounded font-bold">21674</span></div>
                     </div>
                 </div>
             </div>
@@ -673,20 +665,20 @@
                 <!-- 左側詳細分析 -->
                 <div>
                     <!-- 未平倉莊家分析 -->
-                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <h2 class="text-xl font-bold mb-4 section-title">未平倉莊家分析</h2>
+                    <div class="bg-white p-4 rounded-lg shadow-lg mb-4 analysis-section-box">
+                        <h2 class="analysis-title">未平倉莊家分析</h2>
                         <div id="positionAnalysis"><div class="analysis-item">
                 <div class="analysis-data grid grid-cols-2 gap-2">
                     <div>C最大未平: <span class="px-2 py-1 rounded price-higher-3">22000</span></div>
                     <div>P最大未平: <span class="px-2 py-1 rounded price-lower-3">21000</span></div>
                     <div>C最大增量: <span class="px-2 py-1 rounded price-higher-3">22150</span></div>
                     <div>P最大增量: <span class="px-2 py-1 rounded price-lower-3">21000</span></div>
-                </div><div class="analysis-conclusion">價格處於主要未平倉區間之間</div></div></div>
+                </div><div class="analysis-conclusion">處於主要未平倉區間之間</div></div></div>
                     </div>
 
-                    <!-- 近期價格區間分析 -->
-                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <h2 class="text-xl font-bold mb-4 section-title">近期價格區間分析</h2>
+                    <!-- 近期區間分析 -->
+                    <div class="bg-white p-4 rounded-lg shadow-lg mb-4 analysis-section-box">
+                        <h2 class="analysis-title">近期區間分析</h2>
                         <div id="rangeAnalysis"><div class="analysis-item">
                 <div class="analysis-data grid grid-cols-2 gap-2">
                     <div>近周高: <span class="px-2 py-1 rounded price-lower">21569</span></div>
@@ -695,12 +687,12 @@
                     <div>近月低: <span class="px-2 py-1 rounded price-lower-3">21328</span></div>
                     <div>近季高: <span class="px-2 py-1 rounded price-higher-3">21929</span></div>
                     <div>近季低: <span class="px-2 py-1 rounded price-lower-3">20837</span></div>
-                </div><div class="analysis-conclusion">價格創近期新高，多頭強勢</div></div></div>
+                </div><div class="analysis-conclusion">創近期新高，多頭強勢</div></div></div>
                     </div>
 
                     <!-- Pivot Point分析 -->
-                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <h2 class="text-xl font-bold mb-4 section-title">Pivot Point分析</h2>
+                    <div class="bg-white p-4 rounded-lg shadow-lg mb-4 analysis-section-box">
+                        <h2 class="analysis-title">Pivot Point分析</h2>
                         <div id="pivotAnalysis"><div class="analysis-item">
                 <div class="analysis-data grid grid-cols-2 gap-2">
                     <div>壓力3: <span class="px-2 py-1 rounded price-higher">21750</span></div>
@@ -710,49 +702,49 @@
                     <div>支撐1: <span class="px-2 py-1 rounded price-lower-2">21516</span></div>
                     <div>支撐2: <span class="px-2 py-1 rounded price-lower-2">21456</span></div>
                     <div>支撐3: <span class="px-2 py-1 rounded price-lower-3">21399</span></div>
-                </div><div class="analysis-conclusion">價格在壓力2與壓力1之間，偏多頭</div></div></div>
+                </div><div class="analysis-conclusion">在壓力2與壓力1之間，偏多頭</div></div></div>
                     </div>
                 </div>
                 
                 <!-- 右側詳細分析 -->
                 <div>
                     <!-- 布林通道分析 -->
-                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <h2 class="text-xl font-bold mb-4 section-title">布林通道分析</h2>
+                    <div class="bg-white p-4 rounded-lg shadow-lg mb-4 analysis-section-box">
+                        <h2 class="analysis-title">布林通道分析</h2>
                         <div id="bollingerAnalysis"><div class="analysis-item">
                 <div class="analysis-data flex flex-wrap gap-2 items-center">
-                    <div>上軌: <span class="px-2 py-1 rounded price-higher-3">22025</span></div>
+                    <div>上軌: <span class="px-2 py-1 rounded price-higher-3">22025</span> (+375)</div>
                     <div>現價: <span class="current-price">21650</span></div>
-                    <div>下軌: <span class="px-2 py-1 rounded price-lower-3">21275</span></div>
-                </div><div class="analysis-conclusion">價格在布林通道中間，處於盤整</div></div></div>
+                    <div>下軌: <span class="px-2 py-1 rounded price-lower-3">21275</span> (+375)</div>
+                </div><div class="analysis-conclusion">在布林通道中間，處於盤整</div></div></div>
                     </div>
                     
                     <!-- 移動平均線分析 -->
-                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <h2 class="text-xl font-bold mb-4 section-title">移動平均線分析</h2>
+                    <div class="bg-white p-4 rounded-lg shadow-lg mb-4 analysis-section-box">
+                        <h2 class="analysis-title">移動平均線分析</h2>
                         <div id="maAnalysis"><div class="analysis-item">
                 <div class="analysis-data flex flex-wrap gap-2 items-center">
                     <div>MA10: <span class="px-2 py-1 rounded price-lower">21567</span></div>
                     <div>MA20: <span class="px-2 py-1 rounded price-lower">21596</span></div>
                     <div>MA60: <span class="px-2 py-1 rounded price-lower-2">21458</span></div>
                     <div>MA120: <span class="px-2 py-1 rounded price-lower-3">21285</span></div>
-                </div><div class="analysis-conclusion">價格高於所有均線，強勢多頭</div></div></div>
+                </div><div class="analysis-conclusion">高於所有均線，強勢多頭</div></div></div>
                     </div>
 
                     <!-- 三關價分析 -->
-                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <h2 class="text-xl font-bold mb-4 section-title">三關價分析</h2>
+                    <div class="bg-white p-4 rounded-lg shadow-lg mb-4 analysis-section-box">
+                        <h2 class="analysis-title">三關價分析</h2>
                         <div id="levelAnalysis"><div class="analysis-item">
                 <div class="analysis-data flex flex-wrap gap-2 items-center">
                     <div>上關價: <span class="px-2 py-1 rounded price-higher">21674</span></div>
                     <div>中關價: <span class="px-2 py-1 rounded price-lower">21571</span></div>
                     <div>下關價: <span class="px-2 py-1 rounded price-lower-2">21468</span></div>
-                </div><div class="analysis-conclusion">價格在中關價與上關價之間，偏多頭</div></div></div>
+                </div><div class="analysis-conclusion">在中關價與上關價之間，偏多頭</div></div></div>
                     </div>
 
                     <!-- CDP分析 -->
-                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                        <h2 class="text-xl font-bold mb-4 section-title">CDP分析</h2>
+                    <div class="bg-white p-4 rounded-lg shadow-lg mb-4 analysis-section-box">
+                        <h2 class="analysis-title">CDP分析</h2>
                         <div id="cdpAnalysis"><div class="analysis-item">
                 <div class="analysis-data flex flex-wrap gap-2 items-center">
                     <div>多頭: <span class="px-2 py-1 rounded price-higher">21690</span></div>
@@ -760,7 +752,7 @@
                     <div>盤整: <span class="px-2 py-1 rounded price-lower">21573</span></div>
                     <div>轉弱: <span class="px-2 py-1 rounded price-lower-2">21517</span></div>
                     <div>空頭: <span class="px-2 py-1 rounded price-lower-2">21456</span></div>
-                </div><div class="analysis-conclusion">價格處於CDP轉強區域，偏多</div></div></div>
+                </div><div class="analysis-conclusion">處於CDP轉強區域，偏多</div></div></div>
                     </div>
                 </div>
             </div>
@@ -837,10 +829,10 @@
         function updateAnalysis() {
             const currentPrice = parseFloat(document.getElementById('currentPrice').value);
             
-            // 更新價格標記位置
+            // 更新標記位置
             updatePriceBar();
             
-            // 更新綜合價格圖表
+            // 更新綜合圖表
             updatePriceChart();
             
             // 更新各區塊分析
@@ -883,7 +875,7 @@
         function updatePriceChart() {
             const currentPrice = parseFloat(document.getElementById('currentPrice').value);
             
-            // 收集所有價格數據
+            // 收集所有數據
             const priceData = [
                 { name: "布林上軌", value: parseFloat(document.getElementById('bollingerUpper').value), category: "布林通道" },
                 { name: "布林下軌", value: parseFloat(document.getElementById('bollingerLower').value), category: "布林通道" },
@@ -891,12 +883,12 @@
                 { name: "MA20", value: parseFloat(document.getElementById('ma20').value), category: "均線" },
                 { name: "MA60", value: parseFloat(document.getElementById('ma60').value), category: "均線" },
                 { name: "MA120", value: parseFloat(document.getElementById('ma120').value), category: "均線" },
-                { name: "近周高", value: parseFloat(document.getElementById('weekHigh').value), category: "價格區間" },
-                { name: "近周低", value: parseFloat(document.getElementById('weekLow').value), category: "價格區間" },
-                { name: "近月高", value: parseFloat(document.getElementById('monthHigh').value), category: "價格區間" },
-                { name: "近月低", value: parseFloat(document.getElementById('monthLow').value), category: "價格區間" },
-                { name: "近季高", value: parseFloat(document.getElementById('quarterHigh').value), category: "價格區間" },
-                { name: "近季低", value: parseFloat(document.getElementById('quarterLow').value), category: "價格區間" },
+                { name: "近周高", value: parseFloat(document.getElementById('weekHigh').value), category: "區間" },
+                { name: "近周低", value: parseFloat(document.getElementById('weekLow').value), category: "區間" },
+                { name: "近月高", value: parseFloat(document.getElementById('monthHigh').value), category: "區間" },
+                { name: "近月低", value: parseFloat(document.getElementById('monthLow').value), category: "區間" },
+                { name: "近季高", value: parseFloat(document.getElementById('quarterHigh').value), category: "區間" },
+                { name: "近季低", value: parseFloat(document.getElementById('quarterLow').value), category: "區間" },
                 { name: "C最大未平", value: parseFloat(document.getElementById('callMax').value), category: "未平倉" },
                 { name: "P最大未平", value: parseFloat(document.getElementById('putMax').value), category: "未平倉" },
                 { name: "C最大增量", value: parseFloat(document.getElementById('callIncrease').value), category: "未平倉" },
@@ -919,10 +911,10 @@
                 { name: "現價", value: currentPrice, category: "現價" }
             ];
             
-            // 按價格從高到低排序
+            // 按從高到低排序
             priceData.sort((a, b) => b.value - a.value);
             
-            // 找出最高和最低價格
+            // 找出最高和最低
             const maxPrice = priceData[0].value;
             const minPrice = priceData[priceData.length - 1].value;
             const priceRange = maxPrice - minPrice;
@@ -990,27 +982,31 @@
             const upper = parseFloat(document.getElementById('bollingerUpper').value);
             const lower = parseFloat(document.getElementById('bollingerLower').value);
             
+            // 計算距離點數
+            const upperDiff = upper - currentPrice;
+            const lowerDiff = currentPrice - lower;
+            
             // 分成兩段落：數據和結論
             let analysis = `<div class="analysis-item">
                 <div class="analysis-data flex flex-wrap gap-2 items-center">
-                    <div>上軌: ${formatPrice(upper, currentPrice)}</div>
+                    <div>上軌: ${formatPrice(upper, currentPrice)} (${upperDiff > 0 ? '+' : ''}${upperDiff})</div>
                     <div>現價: <span class="current-price">${currentPrice}</span></div>
-                    <div>下軌: ${formatPrice(lower, currentPrice)}</div>
+                    <div>下軌: ${formatPrice(lower, currentPrice)} (${lowerDiff > 0 ? '+' : ''}${lowerDiff})</div>
                 </div>`;
             
             let status = '';
             if (currentPrice > upper) {
-                status = '價格高於上軌，可能超買';
+                status = '高於上軌，可能超買';
             } else if (currentPrice < lower) {
-                status = '價格低於下軌，可能超賣';
+                status = '低於下軌，可能超賣';
             } else {
                 const middle = (upper + lower) / 2;
                 if (currentPrice > middle) {
-                    status = '價格在布林通道上半部，偏多頭';
+                    status = '在布林通道上半部，偏多頭';
                 } else if (currentPrice < middle) {
-                    status = '價格在布林通道下半部，偏空頭';
+                    status = '在布林通道下半部，偏空頭';
                 } else {
-                    status = '價格在布林通道中間，處於盤整';
+                    status = '在布林通道中間，處於盤整';
                 }
             }
             
@@ -1019,7 +1015,6 @@
             
             // 儲存分析結果供綜合分析使用
             window.bollingerStatus = status;
-            document.getElementById('bollingerStatusSummary').textContent = status;
         }
         
         function updateMAAnalysis() {
@@ -1046,15 +1041,15 @@
             
             let status = '';
             if (aboveCount === 4) {
-                status = '價格高於所有均線，強勢多頭';
+                status = '高於所有均線，強勢多頭';
             } else if (aboveCount === 0) {
-                status = '價格低於所有均線，強勢空頭';
+                status = '低於所有均線，強勢空頭';
             } else if (aboveCount >= 3) {
-                status = '價格高於大部分均線，偏多頭';
+                status = '高於大部分均線，偏多頭';
             } else if (aboveCount <= 1) {
-                status = '價格低於大部分均線，偏空頭';
+                status = '低於大部分均線，偏空頭';
             } else {
-                status = '價格在均線之間，趨勢不明';
+                status = '在均線之間，趨勢不明';
             }
             
             // 黃金交叉/死亡交叉檢查
@@ -1069,7 +1064,6 @@
             
             // 儲存分析結果供綜合分析使用
             window.maStatus = status;
-            document.getElementById('maStatusSummary').textContent = status;
         }
         
         function updateRangeAnalysis() {
@@ -1094,21 +1088,21 @@
             
             let status = '';
             if (currentPrice >= weekHigh && currentPrice >= monthHigh) {
-                status = '價格創近期新高，多頭強勢';
+                status = '創近期新高，多頭強勢';
             } else if (currentPrice <= weekLow && currentPrice <= monthLow) {
-                status = '價格創近期新低，空頭強勢';
+                status = '創近期新低，空頭強勢';
             } else {
                 const weekRange = weekHigh - weekLow;
                 const weekPosition = (currentPrice - weekLow) / weekRange;
                 
                 if (weekPosition > 0.8) {
-                    status = '價格接近近周高點，短期偏強';
+                    status = '接近近周高點，短期偏強';
                 } else if (weekPosition < 0.2) {
-                    status = '價格接近近周低點，短期偏弱';
+                    status = '接近近周低點，短期偏弱';
                 } else if (weekPosition > 0.5) {
-                    status = '價格在近周區間上半部，偏多頭';
+                    status = '在近周區間上半部，偏多頭';
                 } else {
-                    status = '價格在近周區間下半部，偏空頭';
+                    status = '在近周區間下半部，偏空頭';
                 }
             }
             
@@ -1117,7 +1111,6 @@
             
             // 儲存分析結果供綜合分析使用
             window.rangeStatus = status;
-            document.getElementById('rangeStatusSummary').textContent = status;
         }
         
         function updatePositionAnalysis() {
@@ -1141,15 +1134,15 @@
             const putDiff = currentPrice - putMax;
             
             if (callDiff > 0 && callDiff < 200) {
-                status = '價格接近看漲期權最大未平倉，可能有壓力';
+                status = '接近看漲期權最大未平倉，可能有壓力';
             } else if (putDiff > 0 && putDiff < 200) {
-                status = '價格接近看跌期權最大未平倉，可能有支撐';
+                status = '接近看跌期權最大未平倉，可能有支撐';
             } else if (callDiff < 0) {
-                status = '價格已超過看漲期權最大未平倉，可能繼續上漲';
+                status = '已超過看漲期權最大未平倉，可能繼續上漲';
             } else if (putDiff < 0) {
-                status = '價格已低於看跌期權最大未平倉，可能繼續下跌';
+                status = '已低於看跌期權最大未平倉，可能繼續下跌';
             } else {
-                status = '價格處於主要未平倉區間之間';
+                status = '處於主要未平倉區間之間';
             }
             
             analysis += `<div class="analysis-conclusion">${status}</div></div>`;
@@ -1157,7 +1150,6 @@
             
             // 儲存分析結果供綜合分析使用
             window.positionStatus = status;
-            document.getElementById('positionStatusSummary').textContent = status;
         }
         
         function updateLevelAnalysis() {
@@ -1176,13 +1168,13 @@
             
             let status = '';
             if (currentPrice > upperLevel) {
-                status = '價格高於上關價，多頭強勢';
+                status = '高於上關價，多頭強勢';
             } else if (currentPrice < lowerLevel) {
-                status = '價格低於下關價，空頭強勢';
+                status = '低於下關價，空頭強勢';
             } else if (currentPrice > midLevel) {
-                status = '價格在中關價與上關價之間，偏多頭';
+                status = '在中關價與上關價之間，偏多頭';
             } else {
-                status = '價格在中關價與下關價之間，偏空頭';
+                status = '在中關價與下關價之間，偏空頭';
             }
             
             analysis += `<div class="analysis-conclusion">${status}</div></div>`;
@@ -1190,7 +1182,6 @@
             
             // 儲存分析結果供綜合分析使用
             window.levelStatus = status;
-            document.getElementById('levelStatusSummary').textContent = status;
         }
         
         function updateCDPAnalysis() {
@@ -1213,17 +1204,17 @@
             
             let status = '';
             if (currentPrice >= cdpBull) {
-                status = '價格處於CDP多頭區域，看漲';
+                status = '處於CDP多頭區域，看漲';
             } else if (currentPrice >= cdpStrong) {
-                status = '價格處於CDP轉強區域，偏多';
+                status = '處於CDP轉強區域，偏多';
             } else if (currentPrice >= cdpNeutral) {
-                status = '價格處於CDP盤整區域，偏多';
+                status = '處於CDP盤整區域，偏多';
             } else if (currentPrice >= cdpWeak) {
-                status = '價格處於CDP轉弱區域，偏空';
+                status = '處於CDP轉弱區域，偏空';
             } else if (currentPrice >= cdpBear) {
-                status = '價格處於CDP空頭區域，看跌';
+                status = '處於CDP空頭區域，看跌';
             } else {
-                status = '價格低於CDP空頭區域，強烈看跌';
+                status = '低於CDP空頭區域，強烈看跌';
             }
             
             analysis += `<div class="analysis-conclusion">${status}</div></div>`;
@@ -1231,7 +1222,6 @@
             
             // 儲存分析結果供綜合分析使用
             window.cdpStatus = status;
-            document.getElementById('cdpStatusSummary').textContent = status;
         }
         
         function updatePivotAnalysis() {
@@ -1258,21 +1248,21 @@
             
             let status = '';
             if (currentPrice > r3) {
-                status = '價格高於所有壓力位，極強多頭';
+                status = '高於所有壓力位，極強多頭';
             } else if (currentPrice > r2) {
-                status = '價格在壓力3與壓力2之間，強勢多頭';
+                status = '在壓力3與壓力2之間，強勢多頭';
             } else if (currentPrice > r1) {
-                status = '價格在壓力2與壓力1之間，偏多頭';
+                status = '在壓力2與壓力1之間，偏多頭';
             } else if (currentPrice > pivot) {
-                status = '價格在壓力1與中樞之間，輕微偏多';
+                status = '在壓力1與中樞之間，輕微偏多';
             } else if (currentPrice > s1) {
-                status = '價格在中樞與支撐1之間，輕微偏空';
+                status = '在中樞與支撐1之間，輕微偏空';
             } else if (currentPrice > s2) {
-                status = '價格在支撐1與支撐2之間，偏空頭';
+                status = '在支撐1與支撐2之間，偏空頭';
             } else if (currentPrice > s3) {
-                status = '價格在支撐2與支撐3之間，強勢空頭';
+                status = '在支撐2與支撐3之間，強勢空頭';
             } else {
-                status = '價格低於所有支撐位，極強空頭';
+                status = '低於所有支撐位，極強空頭';
             }
             
             analysis += `<div class="analysis-conclusion">${status}</div></div>`;
@@ -1280,7 +1270,6 @@
             
             // 儲存分析結果供綜合分析使用
             window.pivotStatus = status;
-            document.getElementById('pivotStatusSummary').textContent = status;
         }
         
         function updateOverallAnalysis() {
@@ -1425,6 +1414,6 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94c70219c27cf1c0',t:'MTc0OTM3MTIyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94c8df771429f1bc',t:'MTc0OTM5MDc4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 </body></html>
