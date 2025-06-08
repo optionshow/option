@@ -1,0 +1,1430 @@
+<html lang="zh-TW"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>價格趨勢分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .price-bar {
+            position: relative;
+            height: 40px;
+            background: linear-gradient(to right, #34d399, #fbbf24, #f87171);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .price-marker {
+            position: absolute;
+            width: 4px;
+            height: 50px;
+            background-color: #1e40af;
+            top: -5px;
+            transform: translateX(-50%);
+        }
+        .price-label {
+            position: absolute;
+            background-color: #1e40af;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transform: translateX(-50%);
+            top: -30px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .price-scale {
+            position: absolute;
+            transform: translateX(-50%);
+            top: 45px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+        input {
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 100px;
+        }
+        .current-price {
+            background-color: #1e40af;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .price-higher {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        .price-higher-2 {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+        .price-higher-3 {
+            background-color: rgba(239, 68, 68, 0.3);
+            color: #b91c1c;
+        }
+        .price-lower {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+        .price-lower-2 {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #16a34a;
+        }
+        .price-lower-3 {
+            background-color: rgba(34, 197, 94, 0.3);
+            color: #15803d;
+        }
+        .section-title {
+            border-left: 4px solid #1e40af;
+            padding-left: 10px;
+        }
+        .price-chart-bar {
+            height: 28px;
+            margin: 4px 0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        .price-chart-label {
+            position: absolute;
+            right: 10px;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+        }
+        .section-title-link {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .section-title-link:hover {
+            color: #2563eb;
+        }
+        .code-star {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            color: rgba(0, 0, 0, 0.1);
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+        }
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow: auto;
+        }
+        .code-modal-content {
+            background-color: #f0f4f8;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 8px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .code-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .code-close:hover {
+            color: #000;
+        }
+        pre {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .input-section {
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .analysis-section {
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.875rem;
+            margin-bottom: 2px;
+            color: #4b5563;
+        }
+        .input-group input {
+            width: 100%;
+        }
+        .summary-box {
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .summary-label {
+            font-size: 0.75rem;
+            color: #4b5563;
+            margin-bottom: 2px;
+        }
+        /* 分隔線樣式 */
+        .gutter {
+            background-color: #e5e7eb;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            cursor: col-resize;
+        }
+        .gutter.gutter-horizontal {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+            cursor: col-resize;
+            height: 100%;
+            float: left;
+        }
+        .split {
+            display: flex;
+            height: 100vh;
+        }
+        .split-panel {
+            overflow-y: auto;
+        }
+        .analysis-item {
+            margin-bottom: 1rem;
+        }
+        .analysis-data {
+            margin-bottom: 0.5rem;
+        }
+        .analysis-conclusion {
+            font-weight: 500;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mb-1{margin-bottom:0.25rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.flex{display:flex}.grid{display:grid}.w-full{width:100%}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-2{gap:0.5rem}.rounded-lg{border-radius:0.5rem}.rounded{border-radius:0.25rem}.border-b{border-bottom-width:1px}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}@media (min-width: 768px){.md\:w-1\/2{width:50%}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:w-1\/4{width:25%}}</style></head>
+<body>
+    <div class="split" id="split-container">
+        <!-- 左側輸入區域 -->
+        <div class="split-panel p-4 bg-gray-50 input-section" id="left-panel" style="width: calc(33% - 5px);">
+            <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">價格趨勢分析儀表板</h1>
+            
+            <!-- 現價輸入 -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <div class="input-group">
+                    <label class="font-medium text-base">現價</label>
+                    <input type="number" id="currentPrice" value="21650" class="text-center font-bold text-lg" onchange="updateAnalysis()">
+                </div>
+            </div>
+            
+            <!-- 布林通道 -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <h2 class="text-lg font-bold mb-3 section-title">
+                    <a href="https://docs.google.com/spreadsheets/d/11de34APew-KYUYwP2Tt7_ITkgeKJUwm8AsZLSvCc5P4/edit?gid=1765442620#gid=1765442620" target="_blank" class="section-title-link">布林通道</a>
+                </h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="input-group">
+                        <label>上軌</label>
+                        <input type="number" id="bollingerUpper" value="22025" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>下軌</label>
+                        <input type="number" id="bollingerLower" value="21275" onchange="updateAnalysis()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 移動平均線 -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <h2 class="text-lg font-bold mb-3 section-title">
+                    <a href="https://www.wantgoo.com/futures/wtxm&amp;" target="_blank" class="section-title-link">移動平均線</a>
+                </h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="input-group">
+                        <label>MA10</label>
+                        <input type="number" id="ma10" value="21567" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>MA20</label>
+                        <input type="number" id="ma20" value="21596" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>MA60</label>
+                        <input type="number" id="ma60" value="21458" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>MA120</label>
+                        <input type="number" id="ma120" value="21285" onchange="updateAnalysis()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 近期價格區間 -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <h2 class="text-lg font-bold mb-3 section-title">近期價格區間</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="input-group">
+                        <label>近周高</label>
+                        <input type="number" id="weekHigh" value="21569" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>近周低</label>
+                        <input type="number" id="weekLow" value="21385" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>近月高</label>
+                        <input type="number" id="monthHigh" value="21568" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>近月低</label>
+                        <input type="number" id="monthLow" value="21328" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>近季高</label>
+                        <input type="number" id="quarterHigh" value="21929" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>近季低</label>
+                        <input type="number" id="quarterLow" value="20837" onchange="updateAnalysis()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 未平倉莊家 -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <h2 class="text-lg font-bold mb-3 section-title">
+                    <a href="https://www.wantgoo.com/futures" target="_blank" class="section-title-link">未平倉莊家</a>
+                </h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="input-group">
+                        <label>C最大未平</label>
+                        <input type="number" id="callMax" value="22000" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>P最大未平</label>
+                        <input type="number" id="putMax" value="21000" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>C最大增量</label>
+                        <input type="number" id="callIncrease" value="22150" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>P最大增量</label>
+                        <input type="number" id="putIncrease" value="21000" onchange="updateAnalysis()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 三關價 -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <h2 class="text-lg font-bold mb-3 section-title">三關價</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="input-group">
+                        <label>上關價</label>
+                        <input type="number" id="upperLevel" value="21674" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>中關價</label>
+                        <input type="number" id="midLevel" value="21571" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>下關價</label>
+                        <input type="number" id="lowerLevel" value="21468" onchange="updateAnalysis()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CDP -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <h2 class="text-lg font-bold mb-3 section-title">CDP</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="input-group">
+                        <label>多頭</label>
+                        <input type="number" id="cdpBull" value="21690" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>轉強</label>
+                        <input type="number" id="cdpStrong" value="21634" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>盤整</label>
+                        <input type="number" id="cdpNeutral" value="21573" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>轉弱</label>
+                        <input type="number" id="cdpWeak" value="21517" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>空頭</label>
+                        <input type="number" id="cdpBear" value="21456" onchange="updateAnalysis()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pivot Point -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <h2 class="text-lg font-bold mb-3 section-title">Pivot Point</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="input-group">
+                        <label>壓力3</label>
+                        <input type="number" id="resistance3" value="21750" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>壓力2</label>
+                        <input type="number" id="resistance2" value="21690" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>壓力1</label>
+                        <input type="number" id="resistance1" value="21633" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>中間</label>
+                        <input type="number" id="pivotMiddle" value="21573" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>支撐1</label>
+                        <input type="number" id="support1" value="21516" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>支撐2</label>
+                        <input type="number" id="support2" value="21456" onchange="updateAnalysis()">
+                    </div>
+                    <div class="input-group">
+                        <label>支撐3</label>
+                        <input type="number" id="support3" value="21399" onchange="updateAnalysis()">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右側分析區域 -->
+        <div class="gutter gutter-horizontal" style="width: 10px;"></div><div class="split-panel p-4 analysis-section" id="right-panel" style="width: calc(67% - 5px);">
+            <!-- 綜合價格圖表 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h2 class="text-xl font-bold mb-4 section-title">綜合價格圖表</h2>
+                <div id="priceChart">
+                <div class="price-chart-bar price-higher-3" style="width: 100%">
+                    22150 - C最大增量
+                    <span class="price-chart-label">未平倉</span>
+                </div>
+                
+                <div class="price-chart-bar price-higher-3" style="width: 93.33587204874334%">
+                    22025 - 布林上軌
+                    <span class="price-chart-label">布林通道</span>
+                </div>
+                
+                <div class="price-chart-bar price-higher-3" style="width: 92.00304645849201%">
+                    22000 - C最大未平
+                    <span class="price-chart-label">未平倉</span>
+                </div>
+                
+                <div class="price-chart-bar price-higher-3" style="width: 88.21782178217822%">
+                    21929 - 近季高
+                    <span class="price-chart-label">價格區間</span>
+                </div>
+                
+                <div class="price-chart-bar price-higher" style="width: 78.67479055597867%">
+                    21750 - 壓力3
+                    <span class="price-chart-label">Pivot</span>
+                </div>
+                
+                <div class="price-chart-bar price-higher" style="width: 75.47600913937546%">
+                    21690 - CDP多頭
+                    <span class="price-chart-label">CDP</span>
+                </div>
+                
+                <div class="price-chart-bar price-higher" style="width: 75.47600913937546%">
+                    21690 - 壓力2
+                    <span class="price-chart-label">Pivot</span>
+                </div>
+                
+                <div class="price-chart-bar price-higher" style="width: 74.62300076161462%">
+                    21674 - 上關價
+                    <span class="price-chart-label">三關價</span>
+                </div>
+                
+                <div class="price-chart-bar current-price" style="width: 73.34348819497333%">
+                    21650 - 現價
+                    <span class="price-chart-label">現價</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 72.49047981721249%">
+                    21634 - CDP轉強
+                    <span class="price-chart-label">CDP</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 72.43716679360244%">
+                    21633 - 壓力1
+                    <span class="price-chart-label">Pivot</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 70.46458492003046%">
+                    21596 - MA20
+                    <span class="price-chart-label">均線</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 69.23838537699925%">
+                    21573 - CDP盤整
+                    <span class="price-chart-label">CDP</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 69.23838537699925%">
+                    21573 - 中間
+                    <span class="price-chart-label">Pivot</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 69.13175932977913%">
+                    21571 - 中關價
+                    <span class="price-chart-label">三關價</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 69.02513328255903%">
+                    21569 - 近周高
+                    <span class="price-chart-label">價格區間</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 68.97182025894897%">
+                    21568 - 近月高
+                    <span class="price-chart-label">價格區間</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower" style="width: 68.91850723533892%">
+                    21567 - MA10
+                    <span class="price-chart-label">均線</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-2" style="width: 66.25285605483626%">
+                    21517 - CDP轉弱
+                    <span class="price-chart-label">CDP</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-2" style="width: 66.1995430312262%">
+                    21516 - 支撐1
+                    <span class="price-chart-label">Pivot</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-2" style="width: 63.64051789794364%">
+                    21468 - 下關價
+                    <span class="price-chart-label">三關價</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-2" style="width: 63.107387661843106%">
+                    21458 - MA60
+                    <span class="price-chart-label">均線</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-2" style="width: 63.000761614623%">
+                    21456 - CDP空頭
+                    <span class="price-chart-label">CDP</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-2" style="width: 63.000761614623%">
+                    21456 - 支撐2
+                    <span class="price-chart-label">Pivot</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-3" style="width: 59.96191926884996%">
+                    21399 - 支撐3
+                    <span class="price-chart-label">Pivot</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-3" style="width: 59.215536938309214%">
+                    21385 - 近周低
+                    <span class="price-chart-label">價格區間</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-3" style="width: 56.17669459253618%">
+                    21328 - 近月低
+                    <span class="price-chart-label">價格區間</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-3" style="width: 53.884234577303886%">
+                    21285 - MA120
+                    <span class="price-chart-label">均線</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-3" style="width: 53.35110434120335%">
+                    21275 - 布林下軌
+                    <span class="price-chart-label">布林通道</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-3" style="width: 38.69002284843869%">
+                    21000 - P最大未平
+                    <span class="price-chart-label">未平倉</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-3" style="width: 38.69002284843869%">
+                    21000 - P最大增量
+                    <span class="price-chart-label">未平倉</span>
+                </div>
+                
+                <div class="price-chart-bar price-lower-3" style="width: 30%">
+                    20837 - 近季低
+                    <span class="price-chart-label">價格區間</span>
+                </div>
+                </div>
+            </div>
+            
+            <!-- 現價橫條 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <div class="price-bar-container">
+                    <div class="price-bar" id="priceBar">
+                        <div class="price-marker" id="priceMarker" style="left: 68.4343%;">
+                            <div class="price-label" id="priceLabel">21650</div>
+                        </div>
+                        <div class="price-scale" id="minPrice" style="left: 0%">20837</div>
+                        <div class="price-scale" id="maxPrice" style="left: 100%">22025</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 綜合分析摘要 -->
+            <div class="bg-white p-4 rounded-lg shadow-lg mb-6">
+                <h2 class="text-xl font-bold mb-3 section-title">綜合分析摘要</h2>
+                <div class="flex flex-wrap justify-between items-center">
+                    <div class="w-full md:w-1/2 lg:w-1/4 p-2">
+                        <div class="summary-box bg-gray-50">
+                            <div class="summary-label">綜合分析</div>
+                            <div id="overallStatusSummary"><span class="price-higher-3 px-2 py-1 rounded font-bold">強勢多頭</span></div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 lg:w-1/4 p-2">
+                        <div class="summary-box bg-gray-50">
+                            <div class="summary-label">主要支撐</div>
+                            <div id="supportSummary"><span class="price-lower-2 px-2 py-1 rounded font-bold">21517</span></div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 lg:w-1/4 p-2">
+                        <div class="summary-box bg-gray-50">
+                            <div class="summary-label">現價</div>
+                            <div id="currentPriceSummary"><span class="current-price">21650</span></div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 lg:w-1/4 p-2">
+                        <div class="summary-box bg-gray-50">
+                            <div class="summary-label">主要壓力</div>
+                            <div id="resistanceSummary"><span class="price-higher-2 px-2 py-1 rounded font-bold">21674</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 指標分析 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h2 class="text-xl font-bold mb-4 section-title">指標分析</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 左側指標 -->
+                    <div>
+                        <div class="py-2 border-b border-gray-200">
+                            <div class="font-bold mb-1">布林通道</div>
+                            <div id="bollingerStatusSummary">價格在布林通道中間，處於盤整</div>
+                        </div>
+                        <div class="py-2 border-b border-gray-200">
+                            <div class="font-bold mb-1">移動平均線</div>
+                            <div id="maStatusSummary">價格高於所有均線，強勢多頭</div>
+                        </div>
+                        <div class="py-2">
+                            <div class="font-bold mb-1">近期價格區間</div>
+                            <div id="rangeStatusSummary">價格創近期新高，多頭強勢</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右側指標 -->
+                    <div>
+                        <div class="py-2 border-b border-gray-200">
+                            <div class="font-bold mb-1">未平倉莊家</div>
+                            <div id="positionStatusSummary">價格處於主要未平倉區間之間</div>
+                        </div>
+                        <div class="py-2 border-b border-gray-200">
+                            <div class="font-bold mb-1">三關價</div>
+                            <div id="levelStatusSummary">價格在中關價與上關價之間，偏多頭</div>
+                        </div>
+                        <div class="py-2 border-b border-gray-200">
+                            <div class="font-bold mb-1">CDP</div>
+                            <div id="cdpStatusSummary">價格處於CDP轉強區域，偏多</div>
+                        </div>
+                        <div class="py-2">
+                            <div class="font-bold mb-1">Pivot Point</div>
+                            <div id="pivotStatusSummary">價格在壓力2與壓力1之間，偏多頭</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 各指標詳細分析 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 左側詳細分析 -->
+                <div>
+                    <!-- 布林通道分析 -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                        <h2 class="text-xl font-bold mb-4 section-title">布林通道分析</h2>
+                        <div id="bollingerAnalysis"><div class="analysis-item">
+                <div class="analysis-data flex flex-wrap gap-2 items-center">
+                    <div>上軌: <span class="px-2 py-1 rounded price-higher-3">22025</span></div>
+                    <div>現價: <span class="current-price">21650</span></div>
+                    <div>下軌: <span class="px-2 py-1 rounded price-lower-3">21275</span></div>
+                </div><div class="analysis-conclusion">價格在布林通道中間，處於盤整</div></div></div>
+                    </div>
+
+                    <!-- 移動平均線分析 -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                        <h2 class="text-xl font-bold mb-4 section-title">移動平均線分析</h2>
+                        <div id="maAnalysis"><div class="analysis-item">
+                <div class="analysis-data flex flex-wrap gap-2 items-center">
+                    <div>MA10: <span class="px-2 py-1 rounded price-lower">21567</span></div>
+                    <div>MA20: <span class="px-2 py-1 rounded price-lower">21596</span></div>
+                    <div>MA60: <span class="px-2 py-1 rounded price-lower-2">21458</span></div>
+                    <div>MA120: <span class="px-2 py-1 rounded price-lower-3">21285</span></div>
+                </div><div class="analysis-conclusion">價格高於所有均線，強勢多頭</div></div></div>
+                    </div>
+
+                    <!-- 近期價格區間分析 -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                        <h2 class="text-xl font-bold mb-4 section-title">近期價格區間分析</h2>
+                        <div id="rangeAnalysis"><div class="analysis-item">
+                <div class="analysis-data grid grid-cols-2 gap-2">
+                    <div>近周高: <span class="px-2 py-1 rounded price-lower">21569</span></div>
+                    <div>近周低: <span class="px-2 py-1 rounded price-lower-3">21385</span></div>
+                    <div>近月高: <span class="px-2 py-1 rounded price-lower">21568</span></div>
+                    <div>近月低: <span class="px-2 py-1 rounded price-lower-3">21328</span></div>
+                    <div>近季高: <span class="px-2 py-1 rounded price-higher-3">21929</span></div>
+                    <div>近季低: <span class="px-2 py-1 rounded price-lower-3">20837</span></div>
+                </div><div class="analysis-conclusion">價格創近期新高，多頭強勢</div></div></div>
+                    </div>
+                </div>
+                
+                <!-- 右側詳細分析 -->
+                <div>
+                    <!-- 未平倉莊家分析 -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                        <h2 class="text-xl font-bold mb-4 section-title">未平倉莊家分析</h2>
+                        <div id="positionAnalysis"><div class="analysis-item">
+                <div class="analysis-data grid grid-cols-2 gap-2">
+                    <div>C最大未平: <span class="px-2 py-1 rounded price-higher-3">22000</span></div>
+                    <div>P最大未平: <span class="px-2 py-1 rounded price-lower-3">21000</span></div>
+                    <div>C最大增量: <span class="px-2 py-1 rounded price-higher-3">22150</span></div>
+                    <div>P最大增量: <span class="px-2 py-1 rounded price-lower-3">21000</span></div>
+                </div><div class="analysis-conclusion">價格處於主要未平倉區間之間</div></div></div>
+                    </div>
+
+                    <!-- 三關價分析 -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                        <h2 class="text-xl font-bold mb-4 section-title">三關價分析</h2>
+                        <div id="levelAnalysis"><div class="analysis-item">
+                <div class="analysis-data flex flex-wrap gap-2 items-center">
+                    <div>上關價: <span class="px-2 py-1 rounded price-higher">21674</span></div>
+                    <div>中關價: <span class="px-2 py-1 rounded price-lower">21571</span></div>
+                    <div>下關價: <span class="px-2 py-1 rounded price-lower-2">21468</span></div>
+                </div><div class="analysis-conclusion">價格在中關價與上關價之間，偏多頭</div></div></div>
+                    </div>
+
+                    <!-- CDP分析 -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                        <h2 class="text-xl font-bold mb-4 section-title">CDP分析</h2>
+                        <div id="cdpAnalysis"><div class="analysis-item">
+                <div class="analysis-data flex flex-wrap gap-2 items-center">
+                    <div>多頭: <span class="px-2 py-1 rounded price-higher">21690</span></div>
+                    <div>轉強: <span class="px-2 py-1 rounded price-lower">21634</span></div>
+                    <div>盤整: <span class="px-2 py-1 rounded price-lower">21573</span></div>
+                    <div>轉弱: <span class="px-2 py-1 rounded price-lower-2">21517</span></div>
+                    <div>空頭: <span class="px-2 py-1 rounded price-lower-2">21456</span></div>
+                </div><div class="analysis-conclusion">價格處於CDP轉強區域，偏多</div></div></div>
+                    </div>
+
+                    <!-- Pivot Point分析 -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                        <h2 class="text-xl font-bold mb-4 section-title">Pivot Point分析</h2>
+                        <div id="pivotAnalysis"><div class="analysis-item">
+                <div class="analysis-data grid grid-cols-2 gap-2">
+                    <div>壓力3: <span class="px-2 py-1 rounded price-higher">21750</span></div>
+                    <div>壓力2: <span class="px-2 py-1 rounded price-higher">21690</span></div>
+                    <div>壓力1: <span class="px-2 py-1 rounded price-lower">21633</span></div>
+                    <div>中間: <span class="px-2 py-1 rounded price-lower">21573</span></div>
+                    <div>支撐1: <span class="px-2 py-1 rounded price-lower-2">21516</span></div>
+                    <div>支撐2: <span class="px-2 py-1 rounded price-lower-2">21456</span></div>
+                    <div>支撐3: <span class="px-2 py-1 rounded price-lower-3">21399</span></div>
+                </div><div class="analysis-conclusion">價格在壓力2與壓力1之間，偏多頭</div></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 左下角星號 -->
+    <div class="code-star" id="codeStar"></div>
+
+    <!-- 程式碼顯示模態框 -->
+    <div id="codeModal" class="code-modal">
+        <div class="code-modal-content">
+            <span class="code-close" id="closeModal">×</span>
+            <h2 class="text-xl font-bold mb-4">網頁程式碼</h2>
+            <pre id="codeContent"></pre>
+        </div>
+    </div>
+
+    <!-- Split.js 庫 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
+
+    <script>
+        // 儲存所有輸入欄位的ID
+        const inputFields = [
+            'currentPrice',
+            'bollingerUpper', 'bollingerLower',
+            'ma10', 'ma20', 'ma60', 'ma120',
+            'weekHigh', 'weekLow', 'monthHigh', 'monthLow', 'quarterHigh', 'quarterLow',
+            'callMax', 'putMax', 'callIncrease', 'putIncrease',
+            'upperLevel', 'midLevel', 'lowerLevel',
+            'cdpBull', 'cdpStrong', 'cdpNeutral', 'cdpWeak', 'cdpBear',
+            'resistance3', 'resistance2', 'resistance1', 'pivotMiddle', 'support1', 'support2', 'support3'
+        ];
+
+        // 從本地儲存載入數據
+        function loadDataFromLocalStorage() {
+            inputFields.forEach(id => {
+                const savedValue = localStorage.getItem(id);
+                if (savedValue !== null) {
+                    document.getElementById(id).value = savedValue;
+                }
+            });
+            
+            // 載入面板大小設定
+            const savedSizes = localStorage.getItem('panelSizes');
+            if (savedSizes) {
+                return JSON.parse(savedSizes);
+            }
+            return [33, 67]; // 預設大小
+        }
+
+        // 將數據保存到本地儲存
+        function saveDataToLocalStorage() {
+            inputFields.forEach(id => {
+                const value = document.getElementById(id).value;
+                localStorage.setItem(id, value);
+            });
+        }
+        
+        // 保存面板大小設定
+        function savePanelSizes(sizes) {
+            localStorage.setItem('panelSizes', JSON.stringify(sizes));
+        }
+
+        // 監聽所有輸入欄位的變化，保存到本地儲存
+        function setupLocalStorageSaving() {
+            inputFields.forEach(id => {
+                document.getElementById(id).addEventListener('change', () => {
+                    saveDataToLocalStorage();
+                });
+            });
+        }
+
+        function updateAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            
+            // 更新價格標記位置
+            updatePriceBar();
+            
+            // 更新綜合價格圖表
+            updatePriceChart();
+            
+            // 更新各區塊分析
+            updateBollingerAnalysis();
+            updateMAAnalysis();
+            updateRangeAnalysis();
+            updatePositionAnalysis();
+            updateLevelAnalysis();
+            updateCDPAnalysis();
+            updatePivotAnalysis();
+            
+            // 更新綜合分析
+            updateOverallAnalysis();
+            
+            // 保存數據到本地儲存
+            saveDataToLocalStorage();
+        }
+        
+        function updatePriceBar() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const minPrice = Math.min(
+                parseFloat(document.getElementById('bollingerLower').value),
+                parseFloat(document.getElementById('quarterLow').value)
+            );
+            const maxPrice = Math.max(
+                parseFloat(document.getElementById('bollingerUpper').value),
+                parseFloat(document.getElementById('quarterHigh').value)
+            );
+            
+            document.getElementById('minPrice').textContent = minPrice;
+            document.getElementById('maxPrice').textContent = maxPrice;
+            
+            const range = maxPrice - minPrice;
+            const position = ((currentPrice - minPrice) / range) * 100;
+            
+            document.getElementById('priceMarker').style.left = `${position}%`;
+            document.getElementById('priceLabel').textContent = currentPrice;
+        }
+        
+        function updatePriceChart() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            
+            // 收集所有價格數據
+            const priceData = [
+                { name: "布林上軌", value: parseFloat(document.getElementById('bollingerUpper').value), category: "布林通道" },
+                { name: "布林下軌", value: parseFloat(document.getElementById('bollingerLower').value), category: "布林通道" },
+                { name: "MA10", value: parseFloat(document.getElementById('ma10').value), category: "均線" },
+                { name: "MA20", value: parseFloat(document.getElementById('ma20').value), category: "均線" },
+                { name: "MA60", value: parseFloat(document.getElementById('ma60').value), category: "均線" },
+                { name: "MA120", value: parseFloat(document.getElementById('ma120').value), category: "均線" },
+                { name: "近周高", value: parseFloat(document.getElementById('weekHigh').value), category: "價格區間" },
+                { name: "近周低", value: parseFloat(document.getElementById('weekLow').value), category: "價格區間" },
+                { name: "近月高", value: parseFloat(document.getElementById('monthHigh').value), category: "價格區間" },
+                { name: "近月低", value: parseFloat(document.getElementById('monthLow').value), category: "價格區間" },
+                { name: "近季高", value: parseFloat(document.getElementById('quarterHigh').value), category: "價格區間" },
+                { name: "近季低", value: parseFloat(document.getElementById('quarterLow').value), category: "價格區間" },
+                { name: "C最大未平", value: parseFloat(document.getElementById('callMax').value), category: "未平倉" },
+                { name: "P最大未平", value: parseFloat(document.getElementById('putMax').value), category: "未平倉" },
+                { name: "C最大增量", value: parseFloat(document.getElementById('callIncrease').value), category: "未平倉" },
+                { name: "P最大增量", value: parseFloat(document.getElementById('putIncrease').value), category: "未平倉" },
+                { name: "上關價", value: parseFloat(document.getElementById('upperLevel').value), category: "三關價" },
+                { name: "中關價", value: parseFloat(document.getElementById('midLevel').value), category: "三關價" },
+                { name: "下關價", value: parseFloat(document.getElementById('lowerLevel').value), category: "三關價" },
+                { name: "CDP多頭", value: parseFloat(document.getElementById('cdpBull').value), category: "CDP" },
+                { name: "CDP轉強", value: parseFloat(document.getElementById('cdpStrong').value), category: "CDP" },
+                { name: "CDP盤整", value: parseFloat(document.getElementById('cdpNeutral').value), category: "CDP" },
+                { name: "CDP轉弱", value: parseFloat(document.getElementById('cdpWeak').value), category: "CDP" },
+                { name: "CDP空頭", value: parseFloat(document.getElementById('cdpBear').value), category: "CDP" },
+                { name: "壓力3", value: parseFloat(document.getElementById('resistance3').value), category: "Pivot" },
+                { name: "壓力2", value: parseFloat(document.getElementById('resistance2').value), category: "Pivot" },
+                { name: "壓力1", value: parseFloat(document.getElementById('resistance1').value), category: "Pivot" },
+                { name: "中間", value: parseFloat(document.getElementById('pivotMiddle').value), category: "Pivot" },
+                { name: "支撐1", value: parseFloat(document.getElementById('support1').value), category: "Pivot" },
+                { name: "支撐2", value: parseFloat(document.getElementById('support2').value), category: "Pivot" },
+                { name: "支撐3", value: parseFloat(document.getElementById('support3').value), category: "Pivot" },
+                { name: "現價", value: currentPrice, category: "現價" }
+            ];
+            
+            // 按價格從高到低排序
+            priceData.sort((a, b) => b.value - a.value);
+            
+            // 找出最高和最低價格
+            const maxPrice = priceData[0].value;
+            const minPrice = priceData[priceData.length - 1].value;
+            const priceRange = maxPrice - minPrice;
+            
+            // 生成HTML
+            let chartHTML = '';
+            
+            priceData.forEach(item => {
+                // 計算顏色類別
+                let colorClass;
+                if (item.name === "現價") {
+                    colorClass = "current-price";
+                } else {
+                    const priceDiff = item.value - currentPrice;
+                    const absDiff = Math.abs(priceDiff);
+                    
+                    if (priceDiff > 0) {
+                        if (absDiff > 200) colorClass = "price-higher-3";
+                        else if (absDiff > 100) colorClass = "price-higher-2";
+                        else colorClass = "price-higher";
+                    } else {
+                        if (absDiff > 200) colorClass = "price-lower-3";
+                        else if (absDiff > 100) colorClass = "price-lower-2";
+                        else colorClass = "price-lower";
+                    }
+                }
+                
+                // 計算條形寬度（相對於最大值）
+                const widthPercentage = 30 + ((item.value - minPrice) / priceRange) * 70;
+                
+                chartHTML += `
+                <div class="price-chart-bar ${colorClass}" style="width: ${widthPercentage}%">
+                    ${item.value} - ${item.name}
+                    <span class="price-chart-label">${item.category}</span>
+                </div>
+                `;
+            });
+            
+            document.getElementById('priceChart').innerHTML = chartHTML;
+        }
+        
+        function getPriceClass(price, currentPrice) {
+            const diff = price - currentPrice;
+            const absDiff = Math.abs(diff);
+            
+            if (diff > 0) {
+                if (absDiff > 200) return 'price-higher-3';
+                if (absDiff > 100) return 'price-higher-2';
+                return 'price-higher';
+            } else if (diff < 0) {
+                if (absDiff > 200) return 'price-lower-3';
+                if (absDiff > 100) return 'price-lower-2';
+                return 'price-lower';
+            }
+            return 'current-price';
+        }
+        
+        function formatPrice(price, currentPrice) {
+            const priceClass = getPriceClass(price, currentPrice);
+            return `<span class="px-2 py-1 rounded ${priceClass}">${price}</span>`;
+        }
+        
+        function updateBollingerAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const upper = parseFloat(document.getElementById('bollingerUpper').value);
+            const lower = parseFloat(document.getElementById('bollingerLower').value);
+            
+            // 分成兩段落：數據和結論
+            let analysis = `<div class="analysis-item">
+                <div class="analysis-data flex flex-wrap gap-2 items-center">
+                    <div>上軌: ${formatPrice(upper, currentPrice)}</div>
+                    <div>現價: <span class="current-price">${currentPrice}</span></div>
+                    <div>下軌: ${formatPrice(lower, currentPrice)}</div>
+                </div>`;
+            
+            let status = '';
+            if (currentPrice > upper) {
+                status = '價格高於上軌，可能超買';
+            } else if (currentPrice < lower) {
+                status = '價格低於下軌，可能超賣';
+            } else {
+                const middle = (upper + lower) / 2;
+                if (currentPrice > middle) {
+                    status = '價格在布林通道上半部，偏多頭';
+                } else if (currentPrice < middle) {
+                    status = '價格在布林通道下半部，偏空頭';
+                } else {
+                    status = '價格在布林通道中間，處於盤整';
+                }
+            }
+            
+            analysis += `<div class="analysis-conclusion">${status}</div></div>`;
+            document.getElementById('bollingerAnalysis').innerHTML = analysis;
+            
+            // 儲存分析結果供綜合分析使用
+            window.bollingerStatus = status;
+            document.getElementById('bollingerStatusSummary').textContent = status;
+        }
+        
+        function updateMAAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const ma10 = parseFloat(document.getElementById('ma10').value);
+            const ma20 = parseFloat(document.getElementById('ma20').value);
+            const ma60 = parseFloat(document.getElementById('ma60').value);
+            const ma120 = parseFloat(document.getElementById('ma120').value);
+            
+            // 分成兩段落：數據和結論
+            let analysis = `<div class="analysis-item">
+                <div class="analysis-data flex flex-wrap gap-2 items-center">
+                    <div>MA10: ${formatPrice(ma10, currentPrice)}</div>
+                    <div>MA20: ${formatPrice(ma20, currentPrice)}</div>
+                    <div>MA60: ${formatPrice(ma60, currentPrice)}</div>
+                    <div>MA120: ${formatPrice(ma120, currentPrice)}</div>
+                </div>`;
+            
+            let aboveCount = 0;
+            if (currentPrice > ma10) aboveCount++;
+            if (currentPrice > ma20) aboveCount++;
+            if (currentPrice > ma60) aboveCount++;
+            if (currentPrice > ma120) aboveCount++;
+            
+            let status = '';
+            if (aboveCount === 4) {
+                status = '價格高於所有均線，強勢多頭';
+            } else if (aboveCount === 0) {
+                status = '價格低於所有均線，強勢空頭';
+            } else if (aboveCount >= 3) {
+                status = '價格高於大部分均線，偏多頭';
+            } else if (aboveCount <= 1) {
+                status = '價格低於大部分均線，偏空頭';
+            } else {
+                status = '價格在均線之間，趨勢不明';
+            }
+            
+            // 黃金交叉/死亡交叉檢查
+            if (ma10 > ma20 && ma20 > ma60) {
+                status += '，均線呈多頭排列';
+            } else if (ma10 < ma20 && ma20 < ma60) {
+                status += '，均線呈空頭排列';
+            }
+            
+            analysis += `<div class="analysis-conclusion">${status}</div></div>`;
+            document.getElementById('maAnalysis').innerHTML = analysis;
+            
+            // 儲存分析結果供綜合分析使用
+            window.maStatus = status;
+            document.getElementById('maStatusSummary').textContent = status;
+        }
+        
+        function updateRangeAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const weekHigh = parseFloat(document.getElementById('weekHigh').value);
+            const weekLow = parseFloat(document.getElementById('weekLow').value);
+            const monthHigh = parseFloat(document.getElementById('monthHigh').value);
+            const monthLow = parseFloat(document.getElementById('monthLow').value);
+            const quarterHigh = parseFloat(document.getElementById('quarterHigh').value);
+            const quarterLow = parseFloat(document.getElementById('quarterLow').value);
+            
+            // 分成兩段落：數據和結論
+            let analysis = `<div class="analysis-item">
+                <div class="analysis-data grid grid-cols-2 gap-2">
+                    <div>近周高: ${formatPrice(weekHigh, currentPrice)}</div>
+                    <div>近周低: ${formatPrice(weekLow, currentPrice)}</div>
+                    <div>近月高: ${formatPrice(monthHigh, currentPrice)}</div>
+                    <div>近月低: ${formatPrice(monthLow, currentPrice)}</div>
+                    <div>近季高: ${formatPrice(quarterHigh, currentPrice)}</div>
+                    <div>近季低: ${formatPrice(quarterLow, currentPrice)}</div>
+                </div>`;
+            
+            let status = '';
+            if (currentPrice >= weekHigh && currentPrice >= monthHigh) {
+                status = '價格創近期新高，多頭強勢';
+            } else if (currentPrice <= weekLow && currentPrice <= monthLow) {
+                status = '價格創近期新低，空頭強勢';
+            } else {
+                const weekRange = weekHigh - weekLow;
+                const weekPosition = (currentPrice - weekLow) / weekRange;
+                
+                if (weekPosition > 0.8) {
+                    status = '價格接近近周高點，短期偏強';
+                } else if (weekPosition < 0.2) {
+                    status = '價格接近近周低點，短期偏弱';
+                } else if (weekPosition > 0.5) {
+                    status = '價格在近周區間上半部，偏多頭';
+                } else {
+                    status = '價格在近周區間下半部，偏空頭';
+                }
+            }
+            
+            analysis += `<div class="analysis-conclusion">${status}</div></div>`;
+            document.getElementById('rangeAnalysis').innerHTML = analysis;
+            
+            // 儲存分析結果供綜合分析使用
+            window.rangeStatus = status;
+            document.getElementById('rangeStatusSummary').textContent = status;
+        }
+        
+        function updatePositionAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const callMax = parseFloat(document.getElementById('callMax').value);
+            const putMax = parseFloat(document.getElementById('putMax').value);
+            const callIncrease = parseFloat(document.getElementById('callIncrease').value);
+            const putIncrease = parseFloat(document.getElementById('putIncrease').value);
+            
+            // 分成兩段落：數據和結論
+            let analysis = `<div class="analysis-item">
+                <div class="analysis-data grid grid-cols-2 gap-2">
+                    <div>C最大未平: ${formatPrice(callMax, currentPrice)}</div>
+                    <div>P最大未平: ${formatPrice(putMax, currentPrice)}</div>
+                    <div>C最大增量: ${formatPrice(callIncrease, currentPrice)}</div>
+                    <div>P最大增量: ${formatPrice(putIncrease, currentPrice)}</div>
+                </div>`;
+            
+            let status = '';
+            const callDiff = callMax - currentPrice;
+            const putDiff = currentPrice - putMax;
+            
+            if (callDiff > 0 && callDiff < 200) {
+                status = '價格接近看漲期權最大未平倉，可能有壓力';
+            } else if (putDiff > 0 && putDiff < 200) {
+                status = '價格接近看跌期權最大未平倉，可能有支撐';
+            } else if (callDiff < 0) {
+                status = '價格已超過看漲期權最大未平倉，可能繼續上漲';
+            } else if (putDiff < 0) {
+                status = '價格已低於看跌期權最大未平倉，可能繼續下跌';
+            } else {
+                status = '價格處於主要未平倉區間之間';
+            }
+            
+            analysis += `<div class="analysis-conclusion">${status}</div></div>`;
+            document.getElementById('positionAnalysis').innerHTML = analysis;
+            
+            // 儲存分析結果供綜合分析使用
+            window.positionStatus = status;
+            document.getElementById('positionStatusSummary').textContent = status;
+        }
+        
+        function updateLevelAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const upperLevel = parseFloat(document.getElementById('upperLevel').value);
+            const midLevel = parseFloat(document.getElementById('midLevel').value);
+            const lowerLevel = parseFloat(document.getElementById('lowerLevel').value);
+            
+            // 分成兩段落：數據和結論
+            let analysis = `<div class="analysis-item">
+                <div class="analysis-data flex flex-wrap gap-2 items-center">
+                    <div>上關價: ${formatPrice(upperLevel, currentPrice)}</div>
+                    <div>中關價: ${formatPrice(midLevel, currentPrice)}</div>
+                    <div>下關價: ${formatPrice(lowerLevel, currentPrice)}</div>
+                </div>`;
+            
+            let status = '';
+            if (currentPrice > upperLevel) {
+                status = '價格高於上關價，多頭強勢';
+            } else if (currentPrice < lowerLevel) {
+                status = '價格低於下關價，空頭強勢';
+            } else if (currentPrice > midLevel) {
+                status = '價格在中關價與上關價之間，偏多頭';
+            } else {
+                status = '價格在中關價與下關價之間，偏空頭';
+            }
+            
+            analysis += `<div class="analysis-conclusion">${status}</div></div>`;
+            document.getElementById('levelAnalysis').innerHTML = analysis;
+            
+            // 儲存分析結果供綜合分析使用
+            window.levelStatus = status;
+            document.getElementById('levelStatusSummary').textContent = status;
+        }
+        
+        function updateCDPAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const cdpBull = parseFloat(document.getElementById('cdpBull').value);
+            const cdpStrong = parseFloat(document.getElementById('cdpStrong').value);
+            const cdpNeutral = parseFloat(document.getElementById('cdpNeutral').value);
+            const cdpWeak = parseFloat(document.getElementById('cdpWeak').value);
+            const cdpBear = parseFloat(document.getElementById('cdpBear').value);
+            
+            // 分成兩段落：數據和結論
+            let analysis = `<div class="analysis-item">
+                <div class="analysis-data flex flex-wrap gap-2 items-center">
+                    <div>多頭: ${formatPrice(cdpBull, currentPrice)}</div>
+                    <div>轉強: ${formatPrice(cdpStrong, currentPrice)}</div>
+                    <div>盤整: ${formatPrice(cdpNeutral, currentPrice)}</div>
+                    <div>轉弱: ${formatPrice(cdpWeak, currentPrice)}</div>
+                    <div>空頭: ${formatPrice(cdpBear, currentPrice)}</div>
+                </div>`;
+            
+            let status = '';
+            if (currentPrice >= cdpBull) {
+                status = '價格處於CDP多頭區域，看漲';
+            } else if (currentPrice >= cdpStrong) {
+                status = '價格處於CDP轉強區域，偏多';
+            } else if (currentPrice >= cdpNeutral) {
+                status = '價格處於CDP盤整區域，偏多';
+            } else if (currentPrice >= cdpWeak) {
+                status = '價格處於CDP轉弱區域，偏空';
+            } else if (currentPrice >= cdpBear) {
+                status = '價格處於CDP空頭區域，看跌';
+            } else {
+                status = '價格低於CDP空頭區域，強烈看跌';
+            }
+            
+            analysis += `<div class="analysis-conclusion">${status}</div></div>`;
+            document.getElementById('cdpAnalysis').innerHTML = analysis;
+            
+            // 儲存分析結果供綜合分析使用
+            window.cdpStatus = status;
+            document.getElementById('cdpStatusSummary').textContent = status;
+        }
+        
+        function updatePivotAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const r3 = parseFloat(document.getElementById('resistance3').value);
+            const r2 = parseFloat(document.getElementById('resistance2').value);
+            const r1 = parseFloat(document.getElementById('resistance1').value);
+            const pivot = parseFloat(document.getElementById('pivotMiddle').value);
+            const s1 = parseFloat(document.getElementById('support1').value);
+            const s2 = parseFloat(document.getElementById('support2').value);
+            const s3 = parseFloat(document.getElementById('support3').value);
+            
+            // 分成兩段落：數據和結論
+            let analysis = `<div class="analysis-item">
+                <div class="analysis-data grid grid-cols-2 gap-2">
+                    <div>壓力3: ${formatPrice(r3, currentPrice)}</div>
+                    <div>壓力2: ${formatPrice(r2, currentPrice)}</div>
+                    <div>壓力1: ${formatPrice(r1, currentPrice)}</div>
+                    <div>中間: ${formatPrice(pivot, currentPrice)}</div>
+                    <div>支撐1: ${formatPrice(s1, currentPrice)}</div>
+                    <div>支撐2: ${formatPrice(s2, currentPrice)}</div>
+                    <div>支撐3: ${formatPrice(s3, currentPrice)}</div>
+                </div>`;
+            
+            let status = '';
+            if (currentPrice > r3) {
+                status = '價格高於所有壓力位，極強多頭';
+            } else if (currentPrice > r2) {
+                status = '價格在壓力3與壓力2之間，強勢多頭';
+            } else if (currentPrice > r1) {
+                status = '價格在壓力2與壓力1之間，偏多頭';
+            } else if (currentPrice > pivot) {
+                status = '價格在壓力1與中樞之間，輕微偏多';
+            } else if (currentPrice > s1) {
+                status = '價格在中樞與支撐1之間，輕微偏空';
+            } else if (currentPrice > s2) {
+                status = '價格在支撐1與支撐2之間，偏空頭';
+            } else if (currentPrice > s3) {
+                status = '價格在支撐2與支撐3之間，強勢空頭';
+            } else {
+                status = '價格低於所有支撐位，極強空頭';
+            }
+            
+            analysis += `<div class="analysis-conclusion">${status}</div></div>`;
+            document.getElementById('pivotAnalysis').innerHTML = analysis;
+            
+            // 儲存分析結果供綜合分析使用
+            window.pivotStatus = status;
+            document.getElementById('pivotStatusSummary').textContent = status;
+        }
+        
+        function updateOverallAnalysis() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const ma10 = parseFloat(document.getElementById('ma10').value);
+            const ma20 = parseFloat(document.getElementById('ma20').value);
+            const ma60 = parseFloat(document.getElementById('ma60').value);
+            const bollingerUpper = parseFloat(document.getElementById('bollingerUpper').value);
+            const bollingerLower = parseFloat(document.getElementById('bollingerLower').value);
+            const pivotMiddle = parseFloat(document.getElementById('pivotMiddle').value);
+            
+            let bullishFactors = 0;
+            let bearishFactors = 0;
+            
+            // 布林通道分析
+            if (currentPrice > (bollingerUpper + bollingerLower) / 2) bullishFactors++;
+            else bearishFactors++;
+            
+            // 均線分析
+            if (currentPrice > ma10) bullishFactors++;
+            else bearishFactors++;
+            
+            if (currentPrice > ma20) bullishFactors++;
+            else bearishFactors++;
+            
+            if (currentPrice > ma60) bullishFactors++;
+            else bearishFactors++;
+            
+            // Pivot分析
+            if (currentPrice > pivotMiddle) bullishFactors++;
+            else bearishFactors++;
+            
+            let overallStatus = '';
+            if (bullishFactors >= 4) {
+                overallStatus = '<span class="price-higher-3 px-2 py-1 rounded font-bold">強勢多頭</span>';
+            } else if (bullishFactors == 3) {
+                overallStatus = '<span class="price-higher-2 px-2 py-1 rounded font-bold">偏多頭</span>';
+            } else if (bearishFactors == 3) {
+                overallStatus = '<span class="price-lower-2 px-2 py-1 rounded font-bold">偏空頭</span>';
+            } else if (bearishFactors >= 4) {
+                overallStatus = '<span class="price-lower-3 px-2 py-1 rounded font-bold">強勢空頭</span>';
+            } else {
+                overallStatus = '<span class="bg-gray-200 px-2 py-1 rounded font-bold">盤整</span>';
+            }
+            
+            // 尋找下一個支撐
+            const allLevels = [
+                parseFloat(document.getElementById('support1').value),
+                parseFloat(document.getElementById('support2').value),
+                parseFloat(document.getElementById('support3').value),
+                parseFloat(document.getElementById('bollingerLower').value),
+                parseFloat(document.getElementById('lowerLevel').value),
+                parseFloat(document.getElementById('cdpWeak').value),
+                parseFloat(document.getElementById('cdpBear').value)
+            ].sort((a, b) => b - a);
+            
+            let nextSupport = '';
+            for (let level of allLevels) {
+                if (level < currentPrice) {
+                    nextSupport = `<span class="price-lower-2 px-2 py-1 rounded font-bold">${level}</span>`;
+                    break;
+                }
+            }
+            
+            // 尋找下一個壓力
+            const allResistances = [
+                parseFloat(document.getElementById('resistance1').value),
+                parseFloat(document.getElementById('resistance2').value),
+                parseFloat(document.getElementById('resistance3').value),
+                parseFloat(document.getElementById('bollingerUpper').value),
+                parseFloat(document.getElementById('upperLevel').value),
+                parseFloat(document.getElementById('cdpStrong').value),
+                parseFloat(document.getElementById('cdpBull').value)
+            ].sort((a, b) => a - b);
+            
+            let nextResistance = '';
+            for (let level of allResistances) {
+                if (level > currentPrice) {
+                    nextResistance = `<span class="price-higher-2 px-2 py-1 rounded font-bold">${level}</span>`;
+                    break;
+                }
+            }
+            
+            // 更新頂部摘要區域
+            document.getElementById('overallStatusSummary').innerHTML = overallStatus;
+            document.getElementById('resistanceSummary').innerHTML = nextResistance;
+            document.getElementById('currentPriceSummary').innerHTML = `<span class="current-price">${currentPrice}</span>`;
+            document.getElementById('supportSummary').innerHTML = nextSupport;
+        }
+
+        // 顯示程式碼模態框
+        function showCodeModal() {
+            const modal = document.getElementById('codeModal');
+            const codeContent = document.getElementById('codeContent');
+            
+            // 獲取當前頁面的HTML
+            const htmlContent = document.documentElement.outerHTML;
+            
+            // 顯示在模態框中
+            codeContent.textContent = htmlContent;
+            modal.style.display = 'block';
+        }
+
+        // 關閉模態框
+        function closeCodeModal() {
+            document.getElementById('codeModal').style.display = 'none';
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 載入本地儲存的數據
+            const savedSizes = loadDataFromLocalStorage();
+            
+            // 初始化分割面板
+            const splitInstance = Split(['#left-panel', '#right-panel'], {
+                sizes: savedSizes,
+                minSize: 200,
+                gutterSize: 10,
+                onDragEnd: function(sizes) {
+                    savePanelSizes(sizes);
+                }
+            });
+            
+            // 設置本地儲存監聽
+            setupLocalStorageSaving();
+            
+            // 初始化分析
+            updateAnalysis();
+            
+            // 設置星號點擊事件
+            document.getElementById('codeStar').addEventListener('click', showCodeModal);
+            
+            // 設置關閉按鈕事件
+            document.getElementById('closeModal').addEventListener('click', closeCodeModal);
+            
+            // 點擊模態框外部關閉
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('codeModal');
+                if (event.target === modal) {
+                    closeCodeModal();
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94c6bcdeb14bf228',t:'MTc0OTM2ODM5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+
+</body></html>
