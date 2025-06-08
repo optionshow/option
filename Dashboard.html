@@ -17,6 +17,7 @@
             background: linear-gradient(to right, #34d399, #fbbf24, #f87171);
             border-radius: 8px;
             margin: 10px 0; /* 減少邊距 */
+            margin-top: 25px; /* 為上方的數字留出空間 */
         }
         .price-marker {
             position: absolute;
@@ -40,11 +41,19 @@
         }
         .price-scale {
             position: absolute;
-            transform: translateX(-50%);
-            top: 35px; /* 調整位置 */
+            top: -25px; /* 移到上方 */
             font-size: 1.1rem; /* 增加字體大小與現價一致 */
             color: #4b5563;
             font-weight: bold;
+        }
+        .price-scale-min {
+            left: 0; /* 最小值靠左對齊 */
+            transform: none; /* 取消水平居中 */
+        }
+        .price-scale-max {
+            right: 0; /* 最大值靠右對齊 */
+            transform: none; /* 取消水平居中 */
+            text-align: right;
         }
         input {
             background-color: #f3f4f6;
@@ -666,11 +675,11 @@
             <div class="bg-white p-3 rounded-lg shadow-lg mb-3 compact-section">
                 <div class="price-bar-container">
                     <div class="price-bar" id="priceBar">
+                        <div class="price-scale price-scale-min" id="minPrice">20837</div>
+                        <div class="price-scale price-scale-max" id="maxPrice">22150</div>
                         <div class="price-marker" id="priceMarker" style="left: 61.9193%;">
                             <div class="price-label" id="priceLabel">21650</div>
                         </div>
-                        <div class="price-scale" id="minPrice" style="left: 0%">20837</div>
-                        <div class="price-scale" id="maxPrice" style="left: 100%">22150</div>
                     </div>
                 </div>
             </div>
@@ -1494,6 +1503,6 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94c98bc701c7f230',t:'MTc0OTM5NzgzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94c99c075549f1f8',t:'MTc0OTM5ODUwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 </body></html>
