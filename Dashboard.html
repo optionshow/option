@@ -36,14 +36,15 @@
             top: -25px; /* 調整位置 */
             font-weight: bold;
             white-space: nowrap;
-            font-size: 0.9rem; /* 減少字體大小 */
+            font-size: 1.1rem; /* 增加字體大小 */
         }
         .price-scale {
             position: absolute;
             transform: translateX(-50%);
             top: 35px; /* 調整位置 */
-            font-size: 11px; /* 減少字體大小 */
+            font-size: 1.1rem; /* 增加字體大小與現價一致 */
             color: #4b5563;
+            font-weight: bold;
         }
         input {
             background-color: #f3f4f6;
@@ -167,6 +168,8 @@
         .analysis-section {
             height: 100vh;
             overflow-y: auto;
+            position: relative; /* 添加相對定位，用於版權信息定位 */
+            padding-bottom: 40px; /* 為版權信息留出空間 */
         }
         .input-group {
             margin-bottom: 10px;
@@ -278,9 +281,10 @@
         /* QR碼圖片樣式 - 縮小一半 */
         .qr-code-container {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             margin-top: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .qr-code-image {
             width: 25%; /* 從50%縮小到25% */
@@ -288,9 +292,18 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            margin-bottom: 10px;
         }
         .qr-code-image:hover {
             transform: scale(1.05);
+        }
+        /* 版權信息樣式 */
+        .copyright {
+            text-align: center;
+            padding: 5px 0;
+            color: #6b7280;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
         }
     </style>
 <style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mt-2{margin-top:0.5rem}.flex{display:flex}.grid{display:grid}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.gap-3{gap:0.75rem}.gap-6{gap:1.5rem}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.rounded-lg{border-radius:0.5rem}.rounded{border-radius:0.25rem}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-3{padding:0.75rem}.p-4{padding:1rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
@@ -653,11 +666,11 @@
             <div class="bg-white p-3 rounded-lg shadow-lg mb-3 compact-section">
                 <div class="price-bar-container">
                     <div class="price-bar" id="priceBar">
-                        <div class="price-marker" id="priceMarker" style="left: 68.4343%;">
+                        <div class="price-marker" id="priceMarker" style="left: 61.9193%;">
                             <div class="price-label" id="priceLabel">21650</div>
                         </div>
                         <div class="price-scale" id="minPrice" style="left: 0%">20837</div>
-                        <div class="price-scale" id="maxPrice" style="left: 100%">22025</div>
+                        <div class="price-scale" id="maxPrice" style="left: 100%">22150</div>
                     </div>
                 </div>
             </div>
@@ -786,6 +799,9 @@
                     <!-- LINE QR碼 - 移到右側Pivot Point分析下方 -->
                     <a href="https://lin.ee/n3bZgtk" target="_blank" class="qr-code-container">
                         <img src="https://github.com/optionshow/option/blob/main/LINE.png?raw=true" alt="LINE QR Code" class="qr-code-image">
+                        <div class="copyright">
+                            Copyright (C) 2005 Just int'l 就是國際
+                        </div>
                     </a>
                 </div>
             </div>
@@ -886,14 +902,45 @@
         
         function updatePriceBar() {
             const currentPrice = parseFloat(document.getElementById('currentPrice').value);
-            const minPrice = Math.min(
-                parseFloat(document.getElementById('bollingerLower').value),
-                parseFloat(document.getElementById('quarterLow').value)
-            );
-            const maxPrice = Math.max(
+            
+            // 收集所有數據點
+            const allPrices = [
                 parseFloat(document.getElementById('bollingerUpper').value),
-                parseFloat(document.getElementById('quarterHigh').value)
-            );
+                parseFloat(document.getElementById('bollingerLower').value),
+                parseFloat(document.getElementById('ma10').value),
+                parseFloat(document.getElementById('ma20').value),
+                parseFloat(document.getElementById('ma60').value),
+                parseFloat(document.getElementById('ma120').value),
+                parseFloat(document.getElementById('weekHigh').value),
+                parseFloat(document.getElementById('weekLow').value),
+                parseFloat(document.getElementById('monthHigh').value),
+                parseFloat(document.getElementById('monthLow').value),
+                parseFloat(document.getElementById('quarterHigh').value),
+                parseFloat(document.getElementById('quarterLow').value),
+                parseFloat(document.getElementById('callMax').value),
+                parseFloat(document.getElementById('putMax').value),
+                parseFloat(document.getElementById('callIncrease').value),
+                parseFloat(document.getElementById('putIncrease').value),
+                parseFloat(document.getElementById('upperLevel').value),
+                parseFloat(document.getElementById('midLevel').value),
+                parseFloat(document.getElementById('lowerLevel').value),
+                parseFloat(document.getElementById('cdpBull').value),
+                parseFloat(document.getElementById('cdpStrong').value),
+                parseFloat(document.getElementById('cdpNeutral').value),
+                parseFloat(document.getElementById('cdpWeak').value),
+                parseFloat(document.getElementById('cdpBear').value),
+                parseFloat(document.getElementById('resistance3').value),
+                parseFloat(document.getElementById('resistance2').value),
+                parseFloat(document.getElementById('resistance1').value),
+                parseFloat(document.getElementById('support1').value),
+                parseFloat(document.getElementById('support2').value),
+                parseFloat(document.getElementById('support3').value),
+                currentPrice
+            ];
+            
+            // 找出最小值和最大值
+            const minPrice = Math.min(...allPrices);
+            const maxPrice = Math.max(...allPrices);
             
             document.getElementById('minPrice').textContent = minPrice;
             document.getElementById('maxPrice').textContent = maxPrice;
@@ -947,8 +994,8 @@
             priceData.sort((a, b) => b.value - a.value);
             
             // 找出最高和最低
-            const maxPrice = priceData[0].value;
-            const minPrice = priceData[priceData.length - 1].value;
+            const maxPrice = Math.max(...priceData.map(item => item.value));
+            const minPrice = Math.min(...priceData.map(item => item.value));
             const priceRange = maxPrice - minPrice;
             
             // 生成HTML
@@ -1447,6 +1494,6 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94c94fed83e6f1c8',t:'MTc0OTM5NTM4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94c98bc701c7f230',t:'MTc0OTM5NzgzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 </body></html>
