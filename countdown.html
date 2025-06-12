@@ -45,11 +45,16 @@
         .timer {
             font-size: 7rem; /* 增加字體大小 */
             font-weight: bold;
-            color: #fff;
+            color: #ffffff; /* 預設為白色 */
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             margin: 1rem 0;
             letter-spacing: 5px; /* 增加字母間距 */
             padding: 0 2rem; /* 增加左右內邊距 */
+            transition: color 0.5s ease;
+        }
+
+        .timer.warning {
+            color: #ff0000; /* 警告時為紅色 */
         }
 
         .message {
@@ -137,6 +142,13 @@
             text-align: center;
             background-color: rgba(255, 255, 255, 0.8);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .time-label {
+            font-size: 1.2rem;
+            color: black;
+            font-weight: bold;
+            margin-left: 5px;
         }
 
         .time-separator {
@@ -346,7 +358,7 @@
     </style>
 </head>
 <body>
-    <div class="clouds"><div class="cloud" style="width: 131.148px; height: 131.148px; top: 5.96083%; animation-duration: 101.075s; animation-delay: 25.5136s; opacity: 0.20155;"></div><div class="cloud" style="width: 117.14px; height: 117.14px; top: 78.2085%; animation-duration: 111.799s; animation-delay: 51.7572s; opacity: 0.225655;"></div><div class="cloud" style="width: 114.327px; height: 114.327px; top: 56.3207%; animation-duration: 73.4696s; animation-delay: 11.709s; opacity: 0.112359;"></div><div class="cloud" style="width: 64.0004px; height: 64.0004px; top: 82.4582%; animation-duration: 99.2758s; animation-delay: 27.2251s; opacity: 0.195822;"></div><div class="cloud" style="width: 66.5836px; height: 66.5836px; top: 71.5331%; animation-duration: 94.2212s; animation-delay: 11.2346s; opacity: 0.212338;"></div><div class="cloud" style="width: 106.923px; height: 106.923px; top: 56.2947%; animation-duration: 93.4996s; animation-delay: 31.616s; opacity: 0.145715;"></div><div class="cloud" style="width: 101.149px; height: 101.149px; top: 56.6628%; animation-duration: 91.8661s; animation-delay: 44.6159s; opacity: 0.345649;"></div><div class="cloud" style="width: 59.8948px; height: 59.8948px; top: 49.9994%; animation-duration: 87.9831s; animation-delay: 53.8511s; opacity: 0.161343;"></div><div class="cloud" style="width: 86.2988px; height: 86.2988px; top: 49.7781%; animation-duration: 81.8137s; animation-delay: 20.6115s; opacity: 0.239714;"></div><div class="cloud" style="width: 100.285px; height: 100.285px; top: 15.8866%; animation-duration: 103.959s; animation-delay: 35.0571s; opacity: 0.139812;"></div><div class="cloud" style="width: 130.189px; height: 130.189px; top: 1.35684%; animation-duration: 108.976s; animation-delay: 2.73657s; opacity: 0.322289;"></div><div class="cloud" style="width: 64.3151px; height: 64.3151px; top: 89.5266%; animation-duration: 119.557s; animation-delay: 40.3232s; opacity: 0.315831;"></div><div class="cloud" style="width: 133.005px; height: 133.005px; top: 93.3998%; animation-duration: 94.7396s; animation-delay: 43.4768s; opacity: 0.296251;"></div><div class="cloud" style="width: 120.791px; height: 120.791px; top: 49.8345%; animation-duration: 119.596s; animation-delay: 44.0578s; opacity: 0.227145;"></div><div class="cloud" style="width: 97.1859px; height: 97.1859px; top: 2.80796%; animation-duration: 107.077s; animation-delay: 19.8596s; opacity: 0.240799;"></div></div>
+    <div class="clouds"><div class="cloud" style="width: 76.8652px; height: 76.8652px; top: 99.6132%; animation-duration: 79.9902s; animation-delay: 59.2595s; opacity: 0.111486;"></div><div class="cloud" style="width: 138.885px; height: 138.885px; top: 48.4279%; animation-duration: 116.03s; animation-delay: 37.5127s; opacity: 0.30901;"></div><div class="cloud" style="width: 65.8178px; height: 65.8178px; top: 51.089%; animation-duration: 92.2706s; animation-delay: 28.6057s; opacity: 0.379139;"></div><div class="cloud" style="width: 109.152px; height: 109.152px; top: 4.14829%; animation-duration: 85.5936s; animation-delay: 28.7072s; opacity: 0.279596;"></div><div class="cloud" style="width: 53.4969px; height: 53.4969px; top: 38.0701%; animation-duration: 110.325s; animation-delay: 44.7217s; opacity: 0.274048;"></div><div class="cloud" style="width: 75.2446px; height: 75.2446px; top: 15.1797%; animation-duration: 118.058s; animation-delay: 38.2592s; opacity: 0.328871;"></div><div class="cloud" style="width: 119.195px; height: 119.195px; top: 57.1028%; animation-duration: 84.9096s; animation-delay: 9.57354s; opacity: 0.339718;"></div><div class="cloud" style="width: 105.485px; height: 105.485px; top: 28.5774%; animation-duration: 119.913s; animation-delay: 58.5583s; opacity: 0.394227;"></div><div class="cloud" style="width: 140.435px; height: 140.435px; top: 24.8122%; animation-duration: 101.363s; animation-delay: 45.8427s; opacity: 0.210023;"></div><div class="cloud" style="width: 82.2549px; height: 82.2549px; top: 48.3371%; animation-duration: 67.0393s; animation-delay: 45.8997s; opacity: 0.2424;"></div><div class="cloud" style="width: 68.8514px; height: 68.8514px; top: 77.9936%; animation-duration: 103.843s; animation-delay: 34.8328s; opacity: 0.327454;"></div><div class="cloud" style="width: 103.546px; height: 103.546px; top: 1.25308%; animation-duration: 71.6159s; animation-delay: 34.5165s; opacity: 0.315332;"></div><div class="cloud" style="width: 60.3341px; height: 60.3341px; top: 1.33508%; animation-duration: 74.0057s; animation-delay: 3.05043s; opacity: 0.257615;"></div><div class="cloud" style="width: 123.026px; height: 123.026px; top: 1.68162%; animation-duration: 76.1302s; animation-delay: 6.72624s; opacity: 0.119248;"></div><div class="cloud" style="width: 53.3963px; height: 53.3963px; top: 86.3727%; animation-duration: 100.379s; animation-delay: 15.6577s; opacity: 0.22202;"></div></div>
     <div class="fireworks-container" id="fireworks-container"></div>
     
     <div class="container">
@@ -354,17 +366,15 @@
         
         <div class="timer" id="timer">10:00</div>
         
-        <div class="message" id="message" style="opacity: 1;">決定要理性，進出股票切忌衝動</div>
+        <div class="message" id="message" style="opacity: 1;">真理不一定站在多數人一邊，眾人皆看好，則行情未必繼續好</div>
         
         <div class="time-options">
             <div class="time-option">
                 <label>
                     <input type="radio" name="timeMode" value="custom" checked="">
-                    自訂時間
                 </label>
-                <input type="number" id="hours" min="0" max="99" placeholder="小時" value="0">
-                <span class="time-separator">:</span>
                 <input type="number" id="minutes" min="0" max="59" placeholder="分鐘" value="10">
+                <span class="time-label">分鐘</span>
             </div>
             
             <div class="time-option">
@@ -450,7 +460,6 @@
         const messageElement = document.getElementById('message');
         const customRadio = document.querySelector('input[value="custom"]');
         const taipeiRadio = document.querySelector('input[value="taipei"]');
-        const hoursInput = document.getElementById('hours');
         const minutesInput = document.getElementById('minutes');
         const taipeiHoursInput = document.getElementById('taipei-hours');
         const taipeiMinutesInput = document.getElementById('taipei-minutes');
@@ -474,6 +483,7 @@
         let messageInterval;
         let targetTime = null;
         let usedMessageIndices = []; // 追蹤已使用的訊息索引
+        const WARNING_THRESHOLD = 3 * 60; // 3分鐘警告閾值
 
         // 初始化
         function init() {
@@ -666,6 +676,13 @@
             } else {
                 timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
+            
+            // 根據剩餘時間更新顏色
+            if (remainingSeconds <= WARNING_THRESHOLD) {
+                timerElement.classList.add('warning');
+            } else {
+                timerElement.classList.remove('warning');
+            }
         }
 
         // 顯示隨機鼓勵訊息
@@ -715,6 +732,7 @@
                     if (remainingSeconds <= 0) {
                         clearInterval(countdownInterval);
                         timerElement.textContent = '時間到！';
+                        timerElement.classList.add('warning'); // 時間到時顯示紅色
                         timerControls.classList.add('hidden');
                         startBtn.classList.remove('hidden');
                         startBtn.textContent = '重新開始';
@@ -736,7 +754,6 @@
 
         // 事件監聽器
         customRadio.addEventListener('change', () => {
-            hoursInput.disabled = false;
             minutesInput.disabled = false;
             taipeiHoursInput.disabled = true;
             taipeiMinutesInput.disabled = true;
@@ -744,7 +761,6 @@
         });
         
         taipeiRadio.addEventListener('change', () => {
-            hoursInput.disabled = true;
             minutesInput.disabled = true;
             taipeiHoursInput.disabled = false;
             taipeiMinutesInput.disabled = false;
@@ -753,15 +769,14 @@
         
         startBtn.addEventListener('click', () => {
             if (customRadio.checked) {
-                const hours = parseInt(hoursInput.value) || 0;
                 const minutes = parseInt(minutesInput.value) || 0;
                 
-                if (hours === 0 && minutes === 0) {
+                if (minutes === 0) {
                     alert('請設定有效的時間！');
                     return;
                 }
                 
-                totalSeconds = hours * 3600 + minutes * 60;
+                totalSeconds = minutes * 60;
                 remainingSeconds = totalSeconds;
                 targetTime = null;
             } else if (taipeiRadio.checked) {
@@ -806,11 +821,6 @@
         });
         
         // 限制輸入數字
-        hoursInput.addEventListener('input', () => {
-            if (hoursInput.value > 99) hoursInput.value = 99;
-            if (hoursInput.value < 0) hoursInput.value = 0;
-        });
-        
         minutesInput.addEventListener('input', () => {
             if (minutesInput.value > 59) minutesInput.value = 59;
             if (minutesInput.value < 0) minutesInput.value = 0;
@@ -829,6 +839,6 @@
         // 初始化
         init();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94e51e12547cf224',t:'MTc0OTY4Njk0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94e69148c778f1cc',t:'MTc0OTcwMjE1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 </body></html>
