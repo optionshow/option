@@ -736,8 +736,8 @@
                     <!-- 溫度計 - 修改為矩形 -->
                     <div class="temperature-gauge">
                         <!-- 30%和70%閾值標籤 - 移到溫度計外部上方更高位置 -->
-                        <div class="gauge-threshold gauge-threshold-30" id="threshold30">20946</div>
-                        <div class="gauge-threshold gauge-threshold-70" id="threshold70">22058</div>
+                        <div class="gauge-threshold gauge-threshold-30" id="threshold30">21298</div>
+                        <div class="gauge-threshold gauge-threshold-70" id="threshold70">21854</div>
                         <div class="gauge-background"></div>
                         <div class="gauge-border"></div>
                         <div class="gauge-value gauge-orange" id="temperatureValue">63%</div>
@@ -749,9 +749,9 @@
             <div class="bg-white p-3 rounded-lg shadow-lg mb-3 compact-section">
                 <div class="price-bar-container">
                     <div class="price-bar" id="priceBar">
-                        <div class="price-scale price-scale-min" id="minPrice">20837</div>
-                        <div class="price-scale price-scale-max" id="maxPrice">22150</div>
-                        <div class="price-marker" id="priceMarker" style="left: 61.9193%;">
+                        <div class="price-scale price-scale-min" id="minPrice">20946</div>
+                        <div class="price-scale price-scale-max" id="maxPrice">22058</div>
+                        <div class="price-marker" id="priceMarker" style="left: 63.3094%;">
                             <div class="price-label" id="priceLabel">21650</div>
                         </div>
                     </div>
@@ -1024,36 +1024,37 @@
                 currentPrice
             ];
             
-            // 找出最小值和最大值
-            const minPrice = Math.min(...allPrices);
-            const maxPrice = Math.max(...allPrices);
+            // 排序所有價格
+            const sortedPrices = [...allPrices].sort((a, b) => a - b);
             
-            document.getElementById('minPrice').textContent = minPrice;
-            document.getElementById('maxPrice').textContent = maxPrice;
+            // 計算最小3個值的平均
+            const minThreeAvg = Math.round((sortedPrices[0] + sortedPrices[1] + sortedPrices[2]) / 3);
             
-            const range = maxPrice - minPrice;
-            const position = ((currentPrice - minPrice) / range) * 100;
+            // 計算最大3個值的平均
+            const maxThreeAvg = Math.round((sortedPrices[sortedPrices.length-1] + sortedPrices[sortedPrices.length-2] + sortedPrices[sortedPrices.length-3]) / 3);
+            
+            document.getElementById('minPrice').textContent = minThreeAvg;
+            document.getElementById('maxPrice').textContent = maxThreeAvg;
+            
+            const range = maxThreeAvg - minThreeAvg;
+            const position = ((currentPrice - minThreeAvg) / range) * 100;
             
             document.getElementById('priceMarker').style.left = `${position}%`;
             document.getElementById('priceLabel').textContent = currentPrice;
             
             // 儲存最小值和最大值供溫度計使用
-            window.minPrice = minPrice;
-            window.maxPrice = maxPrice;
+            window.minThreeAvg = minThreeAvg;
+            window.maxThreeAvg = maxThreeAvg;
             
             // 儲存所有價格供溫度計使用
-            window.allPrices = allPrices.sort((a, b) => a - b);
+            window.allPrices = sortedPrices;
+            window.currentPrice = currentPrice;
         }
         
         function updateTemperatureGauge() {
-            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
-            const allPrices = window.allPrices;
-            
-            // 計算最小3個值的平均
-            const minThreeAvg = Math.round((allPrices[0] + allPrices[1] + allPrices[2]) / 3);
-            
-            // 計算最大3個值的平均
-            const maxThreeAvg = Math.round((allPrices[allPrices.length-1] + allPrices[allPrices.length-2] + allPrices[allPrices.length-3]) / 3);
+            const currentPrice = window.currentPrice;
+            const minThreeAvg = window.minThreeAvg;
+            const maxThreeAvg = window.maxThreeAvg;
             
             // 計算百分比
             const percentage = Math.round(((currentPrice - minThreeAvg) / (maxThreeAvg - minThreeAvg)) * 100);
@@ -1071,14 +1072,13 @@
                 temperatureValue.className = 'gauge-value gauge-orange';
             }
             
-            // 計算30%和70%的價格閾值
-            const range = maxThreeAvg - minThreeAvg;
-            const threshold30Price = Math.round(minThreeAvg + (range * 0.3));
-            const threshold70Price = Math.round(minThreeAvg + (range * 0.7));
+            // 計算現價與最小/最大平均值的中間點
+            const midpointLow = Math.round((currentPrice + minThreeAvg) / 2);
+            const midpointHigh = Math.round((currentPrice + maxThreeAvg) / 2);
             
             // 更新閾值標籤
-            document.getElementById('threshold30').textContent = minThreeAvg;
-            document.getElementById('threshold70').textContent = maxThreeAvg;
+            document.getElementById('threshold30').textContent = midpointLow;
+            document.getElementById('threshold70').textContent = midpointHigh;
         }
         
         function updatePriceChart() {
@@ -1623,6 +1623,6 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9527458c2081f244',t:'MTc1MDM4MDYyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95275d3347e0f1c8',t:'MTc1MDM4MTU5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 </body></html>
