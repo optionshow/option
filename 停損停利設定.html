@@ -281,7 +281,7 @@
 function updateTotalPoints() {
   const funds = parseFloat(document.getElementById('funds').value) || 0;
   const spread = parseFloat(document.getElementById('spread').value) || 0;
-  const result = Math.round(funds * spread * 2.52);
+  const result = Math.round(funds * spread * 2.62);
   document.getElementById('totalPoints').textContent = result;
 }
 
