@@ -296,7 +296,7 @@ function calcRescue() {
   document.getElementById('rescueResult1').textContent = `建議總點增加（點）：${increasePoints}`;
   document.getElementById('rescueResult2').textContent = `建議100價差（每組）：${groupCount.toFixed(1)}`;
 
-  if (groupCount > 6) {
+  if (groupCount > 8) {
     tipBox.style.display = 'block';
   } else {
     tipBox.style.display = 'none';
