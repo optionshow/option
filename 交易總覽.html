@@ -224,33 +224,6 @@ document.querySelectorAll('#capital, #costPoints, #marketPoints, #equity').forEa
 window.addEventListener('load', calcProfit);
 </script>
 
-<div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px solid #d9534f; border-radius: 12px; background-color: #fff;">
-  <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 24px;">【預估損益小工具】*持倉全部歸零時</h3>
-
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px 2em;">
-    <div style="display: flex; align-items: center; justify-content: flex-end;">
-      <label for="capital" style="white-space: nowrap;">投入資金（萬）</label>
-      <input id="capital" type="number" value="40" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
-    </div>
-    <div style="display: flex; align-items: center; justify-content: flex-start;">
-      <label for="costPoints" style="white-space: nowrap;">持倉成本（點）</label>
-      <input id="costPoints" type="number" value="100" style="width: 70px; margin-left: 0.5em; padding: 4px;">
-    </div>
-    <div style="display: flex; align-items: center; justify-content: flex-end;">
-      <label for="equity" style="white-space: nowrap;">權益總值（萬）</label>
-      <input id="equity" type="number" value="40.5" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
-    </div>
-    <div style="display: flex; align-items: center; justify-content: flex-start;">
-      <label for="marketPoints" style="white-space: nowrap;">即時總點（點）</label>
-      <input id="marketPoints" type="number" value="80" style="width: 70px; margin-left: 0.5em; padding: 4px;">
-    </div>
-  </div>
-
-  <div style="text-align: center; margin-top: 20px;">
-    <div id="result" style="font-size: 22px; font-weight: bold; color: #d9534f;">預估損益：2.2%</div>
-  </div>
-</div>
-
 <!-- 補救虧損小工具 -->
 <div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px solid #0275d8; border-radius: 12px; background-color: #fff;">
   <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 24px;">【補救虧損小工具】</h3>
