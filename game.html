@@ -503,6 +503,7 @@
                 const card = {
                     id: i,
                     value: gameState.cardValue,
+                    originalValue: gameState.cardValue, // Store the original value for comparison
                     direction: null
                 };
                 
@@ -727,8 +728,8 @@
                 applyDirectionEffects('down', 'up');
             }
             
-            // Check for single card over 20 points
-            if (checkSingleCardOverLimit()) {
+            // Check for any card exceeding twice its original value
+            if (checkCardExceedsTwiceOriginal()) {
                 gameState.gameOverReason = 'card_over_limit';
                 endGame();
                 return;
@@ -792,16 +793,14 @@
             return false;
         }
         
-        // Check if any single card has value over 20
-        function checkSingleCardOverLimit() {
-            const limit = 20;
-            
+        // Check if any card exceeds twice its original value
+        function checkCardExceedsTwiceOriginal() {
             for (const card of gameState.upCards) {
-                if (card.value > limit) return true;
+                if (card.value > card.originalValue * 2) return true;
             }
             
             for (const card of gameState.downCards) {
-                if (card.value > limit) return true;
+                if (card.value > card.originalValue * 2) return true;
             }
             
             return false;
@@ -897,7 +896,7 @@
             } else if (gameState.gameOverReason === 'card_over_limit') {
                 finalResult.innerHTML = `
                     <p class="text-red-400 font-bold">遊戲失敗！</p>
-                    <p class="text-xl">有單一張牌的點數超過了20點</p>
+                    <p class="text-xl">有單一張牌的點數超過了原始點數的2倍</p>
                 `;
             } else if (gameState.gameOverReason === 'max_rounds') {
                 if (pointsChange < 0) {
@@ -966,6 +965,6 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9561ac18b339f218',t:'MTc1MDk5Mjk5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9561bb4c543cf1d0',t:'MTc1MDk5MzYyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 </body></html>
