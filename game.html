@@ -1,0 +1,971 @@
+<html lang="zh-TW"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>點數交易遊戲</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .up-direction {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+        
+        .down-direction {
+            background: linear-gradient(135deg, #F44336, #C62828);
+        }
+        
+        .market-up {
+            color: #4CAF50;
+        }
+        
+        .market-down {
+            color: #F44336;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        input[type="number"] {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.375rem;
+            color: white;
+            padding: 0.5rem;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        }
+        
+        .star-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            transition: color 0.3s ease;
+        }
+        
+        .star-button:hover {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow: auto;
+        }
+        
+        .code-modal-content {
+            background-color: #1a1a2e;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 80%;
+            max-width: 1200px;
+            border-radius: 10px;
+        }
+        
+        .code-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .code-modal-close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .code-modal-close:hover {
+            color: white;
+        }
+        
+        .code-content {
+            background-color: #0d1117;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            color: #e6edf3;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mt-1{margin-top:0.25rem}.mt-6{margin-top:1.5rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-2{height:0.5rem}.min-h-\[100px\]{min-height:100px}.min-h-\[200px\]{min-height:200px}.w-full{width:100%}.max-w-6xl{max-width:72rem}.flex-1{flex:1 1 0%}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.bg-gray-600{--tw-bg-opacity:1;background-color:rgb(75 85 99 / var(--tw-bg-opacity, 1))}.bg-gray-700{--tw-bg-opacity:1;background-color:rgb(55 65 81 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-green-500{--tw-bg-opacity:1;background-color:rgb(34 197 94 / var(--tw-bg-opacity, 1))}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity, 1))}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-8{padding-left:2rem;padding-right:2rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.text-left{text-align:left}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-green-400{--tw-text-opacity:1;color:rgb(74 222 128 / var(--tw-text-opacity, 1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity, 1))}.text-yellow-400{--tw-text-opacity:1;color:rgb(250 204 21 / var(--tw-text-opacity, 1))}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:bg-gray-600:hover{--tw-bg-opacity:1;background-color:rgb(75 85 99 / var(--tw-bg-opacity, 1))}.disabled\:cursor-not-allowed:disabled{cursor:not-allowed}.disabled\:opacity-50:disabled{opacity:0.5}@media (min-width: 640px){.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.md\:grid-cols-6{grid-template-columns:repeat(6, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}}@media (min-width: 1024px){.lg\:grid-cols-10{grid-template-columns:repeat(10, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:grid-cols-5{grid-template-columns:repeat(5, minmax(0, 1fr))}}</style></head>
+<body class="p-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Game Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">點數交易遊戲</h1>
+            <p class="text-xl text-gray-300">分配你的牌到上漲或下跌方向，看誰能在市場中生存！</p>
+        </div>
+        
+        <!-- Game Setup Section -->
+        <div id="setup-section" class="mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">選擇你的牌組</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="card bg-gray-700 p-4 rounded-lg text-center cursor-pointer hover:bg-gray-600" onclick="selectDeck(1)">
+                        <h3 class="text-xl font-bold mb-2">初級牌組</h3>
+                        <p class="mb-2">10張牌，每張10點</p>
+                        <p class="text-xl font-bold text-yellow-400">總計: 100點</p>
+                    </div>
+                    <div class="card bg-gray-700 p-4 rounded-lg text-center cursor-pointer hover:bg-gray-600" onclick="selectDeck(2)">
+                        <h3 class="text-xl font-bold mb-2">中級牌組</h3>
+                        <p class="mb-2">20張牌，每張20點</p>
+                        <p class="text-xl font-bold text-yellow-400">總計: 400點</p>
+                    </div>
+                    <div class="card bg-gray-700 p-4 rounded-lg text-center cursor-pointer hover:bg-gray-600" onclick="selectDeck(3)">
+                        <h3 class="text-xl font-bold mb-2">高級牌組</h3>
+                        <p class="mb-2">30張牌，每張30點</p>
+                        <p class="text-xl font-bold text-yellow-400">總計: 900點</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-700 p-4 rounded-lg mb-4">
+                    <h3 class="text-xl font-bold mb-3">遊戲參數設定</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block mb-2">回合衰減 (%)</label>
+                            <input type="number" id="base-decay-input" value="5" min="0" max="100" step="0.1" class="w-full">
+                            <p class="text-sm text-gray-400 mt-1">每回合所有牌的衰減率</p>
+                        </div>
+                        <div>
+                            <label class="block mb-2">同方向 (+%)</label>
+                            <input type="number" id="same-direction-input" value="15" min="0" max="100" step="0.1" class="w-full">
+                            <p class="text-sm text-gray-400 mt-1"></p>
+                        </div>
+                        <div>
+                            <label class="block mb-2">反方向 (-%)</label>
+                            <input type="number" id="opposite-direction-input" value="5" min="0" max="100" step="0.1" class="w-full">
+                            <p class="text-sm text-gray-400 mt-1"></p>
+                        </div>
+                        <div>
+                            <label class="block mb-2">最大回合數</label>
+                            <input type="number" id="max-rounds-input" value="100" min="1" max="1000" step="1" class="w-full">
+                            <p class="text-sm text-gray-400 mt-1">遊戲最多進行的回合數</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card Distribution Section -->
+        <div id="distribution-section" class="mb-8 hidden">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">分配你的牌</h2>
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-green-400">上漲方向</h3>
+                            <span id="up-count" class="text-xl font-bold">0張</span>
+                        </div>
+                        <div id="up-cards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 min-h-[200px] bg-gray-700 p-4 rounded-lg">
+                            <!-- Cards will be added here -->
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-red-400">下跌方向</h3>
+                            <span id="down-count" class="text-xl font-bold">0張</span>
+                        </div>
+                        <div id="down-cards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 min-h-[200px] bg-gray-700 p-4 rounded-lg">
+                            <!-- Cards will be added here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-bold">未分配的牌（點選上漲或下跌）</h3>
+                        <span id="unassigned-count" class="text-lg font-bold">0張</span>
+                    </div>
+                    <div id="unassigned-cards" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-10 gap-2 min-h-[100px] bg-gray-700 p-4 rounded-lg">
+                        <!-- Cards will be added here -->
+                    </div>
+                </div>
+                <div class="mt-6 text-center">
+                    <button id="start-game-btn" class="btn-primary px-8 py-3 rounded-lg font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled="">開始遊戲</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Play Section -->
+        <div id="gameplay-section" class="mb-8 hidden">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">遊戲進行中</h2>
+                    <div class="text-xl">
+                        回合: <span id="round-counter" class="font-bold">1</span> / <span id="max-rounds-display" class="font-bold">100</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-bold text-green-400">上漲方向</h3>
+                            <span id="up-points" class="text-xl font-bold">0點</span>
+                        </div>
+                        <div class="w-full bg-gray-600 rounded-full h-2 mb-4">
+                            <div id="up-progress" class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                        <div id="up-cards-display" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                            <!-- Cards will be displayed here -->
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-bold text-red-400">下跌方向</h3>
+                            <span id="down-points" class="text-xl font-bold">0點</span>
+                        </div>
+                        <div class="w-full bg-gray-600 rounded-full h-2 mb-4">
+                            <div id="down-progress" class="bg-red-500 h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                        <div id="down-cards-display" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                            <!-- Cards will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="market-direction-container" class="mb-6 text-center p-4 bg-gray-700 rounded-lg hidden">
+                    <h3 class="text-xl mb-2">市場方向</h3>
+                    <div id="market-direction" class="text-3xl font-bold pulse"></div>
+                </div>
+                
+                <div id="round-result" class="mb-6 p-4 bg-gray-700 rounded-lg hidden">
+                    <h3 class="text-xl font-bold mb-2 text-center">回合結果</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="mb-1">回合衰減: <span id="base-decay" class="font-bold">-5%</span></p>
+                            <p class="mb-1">同方向: <span id="same-direction" class="font-bold text-green-400">+15%</span></p>
+                            <p class="mb-1">反方向: <span id="opposite-direction" class="font-bold text-red-400">-5%</span></p>
+                        </div>
+                        <div>
+                            <p class="mb-1">本回合點數變化: <span id="round-point-change" class="font-bold">0</span></p>
+                            <p class="mb-1">累計點數變化: <span id="total-point-change" class="font-bold">0</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button id="next-round-btn" class="btn-primary px-8 py-3 rounded-lg font-bold text-lg">公佈市場方向</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Over Section -->
+        <div id="gameover-section" class="mb-8 hidden">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg text-center">
+                <h2 class="text-3xl font-bold mb-4">遊戲結束</h2>
+                <div id="final-result" class="text-2xl mb-6">
+                    <!-- Final result will be displayed here -->
+                </div>
+                <div class="result-card p-6 mb-6">
+                    <h3 class="text-xl font-bold mb-4">遊戲統計</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                        <div>
+                            <p class="mb-2">初始總點數: <span id="initial-total-points" class="font-bold">0</span></p>
+                            <p class="mb-2">最終總點數: <span id="final-total-points" class="font-bold">0</span></p>
+                            <p class="mb-2">點數變化: <span id="points-change" class="font-bold">0</span></p>
+                        </div>
+                        <div>
+                            <p class="mb-2">總回合數: <span id="total-rounds" class="font-bold">0</span></p>
+                            <p class="mb-2">表現: <span id="performance" class="font-bold">0%</span></p>
+                        </div>
+                    </div>
+                </div>
+                <button id="play-again-btn" class="btn-primary px-8 py-3 rounded-lg font-bold text-lg">再玩一次</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Star Button -->
+    <div class="star-button" id="star-button"></div>
+    
+    <!-- Code Modal -->
+    <div id="code-modal" class="code-modal">
+        <div class="code-modal-content">
+            <div class="code-modal-header">
+                <h2 class="text-xl font-bold">網頁程式碼</h2>
+                <span class="code-modal-close" id="close-modal">×</span>
+            </div>
+            <div class="code-content" id="code-content">
+                <!-- Code will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            deck: null,
+            cardValue: 0,
+            cardCount: 0,
+            totalPoints: 0,
+            upCards: [],
+            downCards: [],
+            unassignedCards: [],
+            round: 1,
+            maxRounds: 100,
+            baseDecayRate: 0.05,
+            sameDirectionBonus: 0.15,
+            oppositeDirectionPenalty: 0.05,
+            totalPointChange: 0,
+            initialTotalPoints: 0,
+            gamePhase: 'setup', // setup, distribution, gameplay, gameover
+            gameOverReason: '' // 'success', 'failure', 'max_rounds', 'card_over_limit'
+        };
+
+        // DOM Elements
+        const setupSection = document.getElementById('setup-section');
+        const distributionSection = document.getElementById('distribution-section');
+        const gameplaySection = document.getElementById('gameplay-section');
+        const gameoverSection = document.getElementById('gameover-section');
+        
+        const upCardsContainer = document.getElementById('up-cards');
+        const downCardsContainer = document.getElementById('down-cards');
+        const unassignedCardsContainer = document.getElementById('unassigned-cards');
+        
+        const upCountDisplay = document.getElementById('up-count');
+        const downCountDisplay = document.getElementById('down-count');
+        const unassignedCountDisplay = document.getElementById('unassigned-count');
+        
+        const startGameBtn = document.getElementById('start-game-btn');
+        const nextRoundBtn = document.getElementById('next-round-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        
+        const upPointsDisplay = document.getElementById('up-points');
+        const downPointsDisplay = document.getElementById('down-points');
+        const upProgressBar = document.getElementById('up-progress');
+        const downProgressBar = document.getElementById('down-progress');
+        
+        const upCardsDisplay = document.getElementById('up-cards-display');
+        const downCardsDisplay = document.getElementById('down-cards-display');
+        
+        const roundCounter = document.getElementById('round-counter');
+        const maxRoundsDisplay = document.getElementById('max-rounds-display');
+        const marketDirectionContainer = document.getElementById('market-direction-container');
+        const marketDirection = document.getElementById('market-direction');
+        const roundResult = document.getElementById('round-result');
+        
+        const baseDecayInput = document.getElementById('base-decay-input');
+        const sameDirectionInput = document.getElementById('same-direction-input');
+        const oppositeDirectionInput = document.getElementById('opposite-direction-input');
+        const maxRoundsInput = document.getElementById('max-rounds-input');
+        
+        const baseDecayDisplay = document.getElementById('base-decay');
+        const sameDirectionDisplay = document.getElementById('same-direction');
+        const oppositeDirectionDisplay = document.getElementById('opposite-direction');
+        const roundPointChangeDisplay = document.getElementById('round-point-change');
+        const totalPointChangeDisplay = document.getElementById('total-point-change');
+        
+        const finalResult = document.getElementById('final-result');
+        const initialTotalPointsDisplay = document.getElementById('initial-total-points');
+        const finalTotalPointsDisplay = document.getElementById('final-total-points');
+        const pointsChangeDisplay = document.getElementById('points-change');
+        const totalRoundsDisplay = document.getElementById('total-rounds');
+        const performanceDisplay = document.getElementById('performance');
+        
+        // Star button and code modal
+        const starButton = document.getElementById('star-button');
+        const codeModal = document.getElementById('code-modal');
+        const closeModal = document.getElementById('close-modal');
+        const codeContent = document.getElementById('code-content');
+
+        // Select deck
+        function selectDeck(deckType) {
+            // Get game parameters from inputs
+            gameState.baseDecayRate = parseFloat(baseDecayInput.value) / 100;
+            gameState.sameDirectionBonus = parseFloat(sameDirectionInput.value) / 100;
+            gameState.oppositeDirectionPenalty = parseFloat(oppositeDirectionInput.value) / 100;
+            gameState.maxRounds = parseInt(maxRoundsInput.value);
+            
+            switch(deckType) {
+                case 1:
+                    gameState.cardValue = 10;
+                    gameState.cardCount = 10;
+                    gameState.totalPoints = 100;
+                    break;
+                case 2:
+                    gameState.cardValue = 20;
+                    gameState.cardCount = 20;
+                    gameState.totalPoints = 400;
+                    break;
+                case 3:
+                    gameState.cardValue = 30;
+                    gameState.cardCount = 30;
+                    gameState.totalPoints = 900;
+                    break;
+            }
+            
+            gameState.initialTotalPoints = gameState.totalPoints;
+            gameState.deck = deckType;
+            gameState.gamePhase = 'distribution';
+            
+            setupSection.classList.add('hidden');
+            distributionSection.classList.remove('hidden');
+            
+            // Create cards
+            createCards();
+            updateCardCounts();
+            
+            // Update displays for game parameters
+            baseDecayDisplay.textContent = `-${(gameState.baseDecayRate * 100).toFixed(1)}%`;
+            sameDirectionDisplay.textContent = `+${(gameState.sameDirectionBonus * 100).toFixed(1)}%`;
+            oppositeDirectionDisplay.textContent = `-${(gameState.oppositeDirectionPenalty * 100).toFixed(1)}%`;
+            maxRoundsDisplay.textContent = gameState.maxRounds;
+        }
+        
+        // Create cards for distribution
+        function createCards() {
+            gameState.unassignedCards = [];
+            unassignedCardsContainer.innerHTML = '';
+            
+            for (let i = 0; i < gameState.cardCount; i++) {
+                const card = {
+                    id: i,
+                    value: gameState.cardValue,
+                    direction: null
+                };
+                
+                gameState.unassignedCards.push(card);
+                
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card bg-gray-600 p-3 rounded-lg text-center cursor-pointer hover:bg-gray-500';
+                cardElement.innerHTML = `
+                    <p class="font-bold">${card.value.toFixed(1)}點</p>
+                    <div class="flex justify-center gap-2 mt-2">
+                        <button class="up-btn bg-green-500 hover:bg-green-600 px-2 py-1 rounded text-xs" onclick="assignCard(${i}, 'up')">上漲</button>
+                        <button class="down-btn bg-red-500 hover:bg-red-600 px-2 py-1 rounded text-xs" onclick="assignCard(${i}, 'down')">下跌</button>
+                    </div>
+                `;
+                unassignedCardsContainer.appendChild(cardElement);
+            }
+        }
+        
+        // Assign card to direction
+        function assignCard(cardId, direction) {
+            const cardIndex = gameState.unassignedCards.findIndex(card => card.id === cardId);
+            if (cardIndex === -1) return;
+            
+            const card = gameState.unassignedCards[cardIndex];
+            card.direction = direction;
+            
+            gameState.unassignedCards.splice(cardIndex, 1);
+            
+            if (direction === 'up') {
+                gameState.upCards.push(card);
+            } else {
+                gameState.downCards.push(card);
+            }
+            
+            renderCards();
+            updateCardCounts();
+            
+            // Enable start button if all cards are assigned
+            if (gameState.unassignedCards.length === 0) {
+                startGameBtn.disabled = false;
+            } else {
+                startGameBtn.disabled = true;
+            }
+        }
+        
+        // Move card back to unassigned
+        function unassignCard(cardId, fromDirection) {
+            let sourceArray, targetIndex;
+            
+            if (fromDirection === 'up') {
+                sourceArray = gameState.upCards;
+                targetIndex = sourceArray.findIndex(card => card.id === cardId);
+            } else {
+                sourceArray = gameState.downCards;
+                targetIndex = sourceArray.findIndex(card => card.id === cardId);
+            }
+            
+            if (targetIndex === -1) return;
+            
+            const card = sourceArray[targetIndex];
+            card.direction = null;
+            
+            sourceArray.splice(targetIndex, 1);
+            gameState.unassignedCards.push(card);
+            
+            renderCards();
+            updateCardCounts();
+            
+            startGameBtn.disabled = true;
+        }
+        
+        // Render all cards
+        function renderCards() {
+            // Clear containers
+            upCardsContainer.innerHTML = '';
+            downCardsContainer.innerHTML = '';
+            unassignedCardsContainer.innerHTML = '';
+            
+            // Render up cards
+            gameState.upCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card up-direction p-3 rounded-lg text-center';
+                cardElement.innerHTML = `
+                    <p class="font-bold">${card.value.toFixed(1)}點</p>
+                    <button class="bg-gray-800 hover:bg-gray-900 px-2 py-1 rounded text-xs mt-2" onclick="unassignCard(${card.id}, 'up')">移除</button>
+                `;
+                upCardsContainer.appendChild(cardElement);
+            });
+            
+            // Render down cards
+            gameState.downCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card down-direction p-3 rounded-lg text-center';
+                cardElement.innerHTML = `
+                    <p class="font-bold">${card.value.toFixed(1)}點</p>
+                    <button class="bg-gray-800 hover:bg-gray-900 px-2 py-1 rounded text-xs mt-2" onclick="unassignCard(${card.id}, 'down')">移除</button>
+                `;
+                downCardsContainer.appendChild(cardElement);
+            });
+            
+            // Render unassigned cards
+            gameState.unassignedCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card bg-gray-600 p-3 rounded-lg text-center';
+                cardElement.innerHTML = `
+                    <p class="font-bold">${card.value.toFixed(1)}點</p>
+                    <div class="flex justify-center gap-2 mt-2">
+                        <button class="up-btn bg-green-500 hover:bg-green-600 px-2 py-1 rounded text-xs" onclick="assignCard(${card.id}, 'up')">上漲</button>
+                        <button class="down-btn bg-red-500 hover:bg-red-600 px-2 py-1 rounded text-xs" onclick="assignCard(${card.id}, 'down')">下跌</button>
+                    </div>
+                `;
+                unassignedCardsContainer.appendChild(cardElement);
+            });
+        }
+        
+        // Update card counts
+        function updateCardCounts() {
+            upCountDisplay.textContent = `${gameState.upCards.length}張`;
+            downCountDisplay.textContent = `${gameState.downCards.length}張`;
+            unassignedCountDisplay.textContent = `${gameState.unassignedCards.length}張`;
+        }
+        
+        // Start the game
+        startGameBtn.addEventListener('click', () => {
+            // Allow starting the game even if one direction has 0 cards
+            if (gameState.unassignedCards.length === 0) {
+                gameState.gamePhase = 'gameplay';
+                distributionSection.classList.add('hidden');
+                gameplaySection.classList.remove('hidden');
+                
+                // Calculate initial points for each direction
+                let upPoints = 0;
+                let downPoints = 0;
+                
+                gameState.upCards.forEach(card => {
+                    upPoints += card.value;
+                });
+                
+                gameState.downCards.forEach(card => {
+                    downPoints += card.value;
+                });
+                
+                // Update displays
+                upPointsDisplay.textContent = `${upPoints.toFixed(1)}點`;
+                downPointsDisplay.textContent = `${downPoints.toFixed(1)}點`;
+                
+                // Render cards in gameplay view
+                renderGameplayCards();
+            }
+        });
+        
+        // Render cards in gameplay view
+        function renderGameplayCards() {
+            upCardsDisplay.innerHTML = '';
+            downCardsDisplay.innerHTML = '';
+            
+            gameState.upCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card up-direction p-2 rounded-lg text-center text-sm';
+                cardElement.innerHTML = `<p class="font-bold">${card.value.toFixed(1)}點</p>`;
+                upCardsDisplay.appendChild(cardElement);
+            });
+            
+            gameState.downCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card down-direction p-2 rounded-lg text-center text-sm';
+                cardElement.innerHTML = `<p class="font-bold">${card.value.toFixed(1)}點</p>`;
+                downCardsDisplay.appendChild(cardElement);
+            });
+        }
+        
+        // Next round button handler
+        nextRoundBtn.addEventListener('click', () => {
+            if (nextRoundBtn.textContent === '公佈市場方向') {
+                revealMarketDirection();
+            } else {
+                processRound();
+            }
+        });
+        
+        // Reveal market direction
+        function revealMarketDirection() {
+            // Hide round result if visible
+            roundResult.classList.add('hidden');
+            
+            // Show market direction
+            marketDirectionContainer.classList.remove('hidden');
+            
+            // Randomly determine market direction
+            const isUp = Math.random() < 0.5;
+            
+            if (isUp) {
+                marketDirection.textContent = '上漲 ↑';
+                marketDirection.className = 'text-3xl font-bold pulse market-up';
+            } else {
+                marketDirection.textContent = '下跌 ↓';
+                marketDirection.className = 'text-3xl font-bold pulse market-down';
+            }
+            
+            // Change button text
+            nextRoundBtn.textContent = '下一步';
+            
+            // Store current market direction
+            gameState.currentMarketDirection = isUp ? 'up' : 'down';
+        }
+        
+        // Process round
+        function processRound() {
+            // Calculate point changes
+            let upPointsTotal = calculateTotalPoints(gameState.upCards);
+            let downPointsTotal = calculateTotalPoints(gameState.downCards);
+            
+            // Apply base decay to all cards
+            applyBaseDecay();
+            
+            // Apply direction effects
+            if (gameState.currentMarketDirection === 'up') {
+                // Up cards get bonus, down cards get penalty
+                applyDirectionEffects('up', 'down');
+            } else {
+                // Down cards get bonus, up cards get penalty
+                applyDirectionEffects('down', 'up');
+            }
+            
+            // Check for single card over 20 points
+            if (checkSingleCardOverLimit()) {
+                gameState.gameOverReason = 'card_over_limit';
+                endGame();
+                return;
+            }
+            
+            // Update points display
+            upPointsTotal = calculateTotalPoints(gameState.upCards);
+            downPointsTotal = calculateTotalPoints(gameState.downCards);
+            
+            upPointsDisplay.textContent = `${upPointsTotal.toFixed(1)}點`;
+            downPointsDisplay.textContent = `${downPointsTotal.toFixed(1)}點`;
+            
+            // Update progress bars
+            const upPercentage = (upPointsTotal / gameState.initialTotalPoints) * 100;
+            const downPercentage = (downPointsTotal / gameState.initialTotalPoints) * 100;
+            
+            upProgressBar.style.width = `${Math.min(100, upPercentage)}%`;
+            downProgressBar.style.width = `${Math.min(100, downPercentage)}%`;
+            
+            // Show round result
+            showRoundResult();
+            
+            // Update round counter
+            gameState.round++;
+            roundCounter.textContent = gameState.round;
+            
+            // Check if game is over
+            if (hasCardLessThanOne()) {
+                gameState.gameOverReason = 'success';
+                endGame();
+                return;
+            }
+            
+            // Check if max rounds reached
+            if (gameState.round > gameState.maxRounds) {
+                gameState.gameOverReason = 'max_rounds';
+                endGame();
+                return;
+            }
+            
+            // Hide market direction
+            marketDirectionContainer.classList.add('hidden');
+            
+            // Change button text back
+            nextRoundBtn.textContent = '公佈市場方向';
+            
+            // Re-render cards
+            renderGameplayCards();
+        }
+        
+        // Check if any card has value less than 1
+        function hasCardLessThanOne() {
+            for (const card of gameState.upCards) {
+                if (card.value < 1) return true;
+            }
+            
+            for (const card of gameState.downCards) {
+                if (card.value < 1) return true;
+            }
+            
+            return false;
+        }
+        
+        // Check if any single card has value over 20
+        function checkSingleCardOverLimit() {
+            const limit = 20;
+            
+            for (const card of gameState.upCards) {
+                if (card.value > limit) return true;
+            }
+            
+            for (const card of gameState.downCards) {
+                if (card.value > limit) return true;
+            }
+            
+            return false;
+        }
+        
+        // Calculate total points for a set of cards
+        function calculateTotalPoints(cards) {
+            return cards.reduce((total, card) => total + card.value, 0);
+        }
+        
+        // Apply base decay to all cards
+        function applyBaseDecay() {
+            const decayRate = gameState.baseDecayRate;
+            
+            gameState.upCards.forEach(card => {
+                card.value = card.value * (1 - decayRate);
+            });
+            
+            gameState.downCards.forEach(card => {
+                card.value = card.value * (1 - decayRate);
+            });
+        }
+        
+        // Apply direction effects
+        function applyDirectionEffects(correctDir, wrongDir) {
+            const correctCards = correctDir === 'up' ? gameState.upCards : gameState.downCards;
+            const wrongCards = wrongDir === 'up' ? gameState.upCards : gameState.downCards;
+            
+            // Correct direction gets bonus
+            correctCards.forEach(card => {
+                card.value = card.value * (1 + gameState.sameDirectionBonus);
+            });
+            
+            // Wrong direction gets penalty
+            wrongCards.forEach(card => {
+                card.value = card.value * (1 - gameState.oppositeDirectionPenalty);
+            });
+        }
+        
+        // Show round result
+        function showRoundResult() {
+            roundResult.classList.remove('hidden');
+            
+            // Calculate point changes
+            const upPointsTotal = calculateTotalPoints(gameState.upCards);
+            const downPointsTotal = calculateTotalPoints(gameState.downCards);
+            const currentTotalPoints = upPointsTotal + downPointsTotal;
+            
+            let roundPointChange = currentTotalPoints - gameState.totalPoints;
+            
+            // Ensure minimum change of 0.5 points
+            if (roundPointChange !== 0 && Math.abs(roundPointChange) < 0.5) {
+                roundPointChange = roundPointChange > 0 ? 0.5 : -0.5;
+            }
+            
+            gameState.totalPointChange += roundPointChange;
+            gameState.totalPoints = currentTotalPoints;
+            
+            // Update displays
+            baseDecayDisplay.textContent = `-${(gameState.baseDecayRate * 100).toFixed(1)}%`;
+            sameDirectionDisplay.textContent = `+${(gameState.sameDirectionBonus * 100).toFixed(1)}%`;
+            oppositeDirectionDisplay.textContent = `-${(gameState.oppositeDirectionPenalty * 100).toFixed(1)}%`;
+            roundPointChangeDisplay.textContent = roundPointChange.toFixed(1);
+            totalPointChangeDisplay.textContent = gameState.totalPointChange.toFixed(1);
+        }
+        
+        // End game
+        function endGame() {
+            gameState.gamePhase = 'gameover';
+            gameplaySection.classList.add('hidden');
+            gameoverSection.classList.remove('hidden');
+            
+            // Calculate final stats
+            const upPointsTotal = calculateTotalPoints(gameState.upCards);
+            const downPointsTotal = calculateTotalPoints(gameState.downCards);
+            const finalTotalPoints = upPointsTotal + downPointsTotal;
+            const pointsChange = finalTotalPoints - gameState.initialTotalPoints;
+            const performancePercentage = (pointsChange / gameState.initialTotalPoints) * 100;
+            
+            // Update final result message based on game over reason
+            if (gameState.gameOverReason === 'success') {
+                if (pointsChange < 0) {
+                    finalResult.innerHTML = `
+                        <p class="text-green-400 font-bold">恭喜！你成功減少了點數</p>
+                        <p class="text-xl">你的表現: <span class="text-green-400 font-bold">${performancePercentage.toFixed(1)}%</span></p>
+                    `;
+                } else {
+                    finalResult.innerHTML = `
+                        <p class="text-red-400 font-bold">很遺憾，你的點數增加了</p>
+                        <p class="text-xl">你的表現: <span class="text-red-400 font-bold">+${performancePercentage.toFixed(1)}%</span></p>
+                    `;
+                }
+            } else if (gameState.gameOverReason === 'card_over_limit') {
+                finalResult.innerHTML = `
+                    <p class="text-red-400 font-bold">遊戲失敗！</p>
+                    <p class="text-xl">有單一張牌的點數超過了20點</p>
+                `;
+            } else if (gameState.gameOverReason === 'max_rounds') {
+                if (pointsChange < 0) {
+                    finalResult.innerHTML = `
+                        <p class="text-yellow-400 font-bold">回合數已達上限</p>
+                        <p class="text-xl">你的表現: <span class="text-green-400 font-bold">${performancePercentage.toFixed(1)}%</span></p>
+                    `;
+                } else {
+                    finalResult.innerHTML = `
+                        <p class="text-yellow-400 font-bold">回合數已達上限</p>
+                        <p class="text-xl">你的表現: <span class="text-red-400 font-bold">+${performancePercentage.toFixed(1)}%</span></p>
+                    `;
+                }
+            }
+            
+            // Update stats
+            initialTotalPointsDisplay.textContent = gameState.initialTotalPoints.toFixed(1);
+            finalTotalPointsDisplay.textContent = finalTotalPoints.toFixed(1);
+            pointsChangeDisplay.textContent = pointsChange.toFixed(1);
+            totalRoundsDisplay.textContent = gameState.round - 1;
+            performanceDisplay.textContent = `${performancePercentage.toFixed(1)}%`;
+        }
+        
+        // Play again
+        playAgainBtn.addEventListener('click', () => {
+            // Reset game state
+            gameState.deck = null;
+            gameState.cardValue = 0;
+            gameState.cardCount = 0;
+            gameState.totalPoints = 0;
+            gameState.upCards = [];
+            gameState.downCards = [];
+            gameState.unassignedCards = [];
+            gameState.round = 1;
+            gameState.totalPointChange = 0;
+            gameState.gamePhase = 'setup';
+            gameState.gameOverReason = '';
+            
+            // Show setup section
+            gameoverSection.classList.add('hidden');
+            setupSection.classList.remove('hidden');
+            
+            // Reset round counter
+            roundCounter.textContent = '1';
+        });
+        
+        // Star button functionality
+        starButton.addEventListener('click', () => {
+            // Get the current HTML code
+            const htmlCode = document.documentElement.outerHTML;
+            
+            // Display the code in the modal
+            codeContent.textContent = htmlCode;
+            codeModal.style.display = 'block';
+        });
+        
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            codeModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === codeModal) {
+                codeModal.style.display = 'none';
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9561ac18b339f218',t:'MTc1MDk5Mjk5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+
+</body></html>
