@@ -227,7 +227,6 @@ window.addEventListener('load', calcProfit);
 <!-- 補救虧損小工具 -->
 <div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px solid #0275d8; border-radius: 12px; background-color: #fff;">
   <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 24px;">【補救虧損小工具】</h3>
-
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px 2em;">
     <div style="display: flex; align-items: center; justify-content: flex-end;">
       <label for="r_capital" style="white-space: nowrap;">投入資金（萬）</label>
@@ -246,7 +245,6 @@ window.addEventListener('load', calcProfit);
       <input id="r_points" type="number" value="120" style="width: 70px; margin-left: 0.5em; padding: 4px;">
     </div>
   </div>
-
   <div style="text-align: center; margin-top: 20px;">
     <div id="rescueResult1" style="font-size: 20px; font-weight: bold; color: #0275d8;">建議總點增加（點）：120</div>
     <div id="rescueResult2" style="font-size: 20px; font-weight: bold; color: #0275d8;">建議100價差（每組）：12.0</div>
@@ -272,7 +270,6 @@ function calcProfit() {
   const minPoints = Math.min(costPoints, marketPoints);
   const estimatedProfit = ((equity - capital) + (minPoints * 0.005)) / capital * 100;
   const truncated = Math.floor(estimatedProfit * 10) / 10;
-
   document.getElementById('result').textContent = `預估損益：${truncated.toFixed(1)}%`;
 }
 
@@ -281,11 +278,14 @@ function calcRescue() {
   const r_equity = parseFloat(document.getElementById('r_equity').value);
   const r_cash = parseFloat(document.getElementById('r_cash').value);
   const r_points = parseFloat(document.getElementById('r_points').value);
+
+  const result1 = document.getElementById('rescueResult1');
+  const result2 = document.getElementById('rescueResult2');
   const tipBox = document.getElementById('rescueTip');
 
   if (isNaN(r_capital) || isNaN(r_equity) || isNaN(r_cash) || isNaN(r_points) || r_cash === 0) {
-    document.getElementById('rescueResult1').textContent = '建議總點增加（點）：--';
-    document.getElementById('rescueResult2').textContent = '建議100價差（每組）：--';
+    result1.textContent = '建議總點增加（點）：--';
+    result2.textContent = '建議100價差（每組）：--';
     tipBox.style.display = 'none';
     return;
   }
@@ -293,10 +293,17 @@ function calcRescue() {
   const increasePoints = Math.round((r_capital - r_equity) * 200 - r_points);
   const groupCount = increasePoints / r_cash / 2;
 
-  document.getElementById('rescueResult1').textContent = `建議總點增加（點）：${increasePoints}`;
-  document.getElementById('rescueResult2').textContent = `建議100價差（每組）：${groupCount.toFixed(1)}`;
+  if (increasePoints < 0 || groupCount < 0) {
+    result1.textContent = '建議總點增加（點）：依照示範調整即可';
+    result2.textContent = '建議100價差（每組）：依照示範調整即可';
+    tipBox.style.display = 'none';
+    return;
+  }
 
-  if (groupCount > 8) {
+  result1.textContent = `建議總點增加（點）：${increasePoints}`;
+  result2.textContent = `建議100價差（每組）：${groupCount.toFixed(1)}`;
+
+  if (groupCount > 6) {
     tipBox.style.display = 'block';
   } else {
     tipBox.style.display = 'none';
@@ -306,16 +313,15 @@ function calcRescue() {
 document.querySelectorAll('#capital, #costPoints, #marketPoints, #equity').forEach(input => {
   input.addEventListener('input', calcProfit);
 });
-
 document.querySelectorAll('#r_capital, #r_equity, #r_cash, #r_points').forEach(input => {
   input.addEventListener('input', calcRescue);
 });
-
 window.addEventListener('load', () => {
   calcProfit();
   calcRescue();
 });
 </script>
+
 
   <footer>
     聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
