@@ -162,162 +162,107 @@
   <p><strong>持倉溫度：</strong>SCBC＝空頭價差，SPBP＝多頭價差。庫存持倉的換算溫度，可用於【多空溫度調整】。</p>
 </div>
 
-<div style="max-width: 720px; margin: 60px auto; padding: 20px; border: 2px solid #d9534f; border-radius: 12px; background-color: #fff;">
+<div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px solid #d9534f; border-radius: 12px; background-color: #fff;">
   <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 24px;">【預估損益小工具】*持倉全部歸零時</h3>
-
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px 2em;">
-
-    <!-- 左上 -->
     <div style="display: flex; align-items: center; justify-content: flex-end;">
-      <label for="capital" style="white-space: nowrap;">投入資金（萬）</label>
+      <label>投入資金（萬）</label>
       <input id="capital" type="number" value="40" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
     </div>
-
-    <!-- 右上 -->
     <div style="display: flex; align-items: center; justify-content: flex-start;">
-      <label for="costPoints" style="white-space: nowrap;">持倉成本（點）</label>
-      <input id="costPoints" type="number" value="100" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <label>持倉成本（點）</label>
+      <input id="costPoints" type="number" value="100" step="1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
     </div>
-
-    <!-- 左下 -->
     <div style="display: flex; align-items: center; justify-content: flex-end;">
-      <label for="equity" style="white-space: nowrap;">權益總值（萬）</label>
+      <label>權益總值（萬）</label>
       <input id="equity" type="number" value="40.5" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
     </div>
-
-    <!-- 右下 -->
     <div style="display: flex; align-items: center; justify-content: flex-start;">
-      <label for="marketPoints" style="white-space: nowrap;">即時總點（點）</label>
-      <input id="marketPoints" type="number" value="80" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <label>即時總點（點）</label>
+      <input id="marketPoints" type="number" value="80" step="1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
     </div>
-
   </div>
-
   <div style="text-align: center; margin-top: 20px;">
-    <div id="result" style="font-size: 22px; font-weight: bold; color: #d9534f;">預估損益：2.2%</div>
+    <div id="result" style="font-size: 22px; font-weight: bold; color: #d9534f;">預估損益：--%</div>
   </div>
 </div>
-
-<script>
-function calcProfit() {
-  const equity = parseFloat(document.getElementById('equity').value);
-  const costPoints = parseFloat(document.getElementById('costPoints').value);
-  const marketPoints = parseFloat(document.getElementById('marketPoints').value);
-  const capital = parseFloat(document.getElementById('capital').value);
-
-  if (isNaN(equity) || isNaN(costPoints) || isNaN(marketPoints) || isNaN(capital) || capital === 0) {
-    document.getElementById('result').textContent = '預估損益：--%';
-    return;
-  }
-
-  const minPoints = Math.min(costPoints, marketPoints);
-  const estimatedProfit = ((equity - capital) + (minPoints * 0.005)) / capital * 100;
-  const truncated = Math.floor(estimatedProfit * 10) / 10;
-
-  document.getElementById('result').textContent = `預估損益：${truncated.toFixed(1)}%`;
-}
-
-document.querySelectorAll('#capital, #costPoints, #marketPoints, #equity').forEach(input => {
-  input.addEventListener('input', calcProfit);
-});
-
-window.addEventListener('load', calcProfit);
-</script>
 
 <!-- 補救虧損小工具 -->
 <div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px solid #0275d8; border-radius: 12px; background-color: #fff;">
   <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 24px;">【補救虧損小工具】</h3>
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px 2em;">
     <div style="display: flex; align-items: center; justify-content: flex-end;">
-      <label for="r_capital" style="white-space: nowrap;">投入資金（萬）</label>
-      <input id="r_capital" type="number" value="40" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;" oninput="syncToQuickTool()">
+      <label>投入資金（萬）</label>
+      <input id="r_capital" type="number" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;" readonly>
     </div>
     <div style="display: flex; align-items: center; justify-content: flex-start;">
-      <label for="r_cash" style="white-space: nowrap;">可用金額（萬）</label>
+      <label>可用金額（萬）</label>
       <input id="r_cash" type="number" value="5.0" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
     </div>
     <div style="display: flex; align-items: center; justify-content: flex-end;">
-      <label for="r_equity" style="white-space: nowrap;">權益總值（萬）</label>
-      <input id="r_equity" type="number" value="38.8" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <label>權益總值（萬）</label>
+      <input id="r_equity" type="number" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;" readonly>
     </div>
     <div style="display: flex; align-items: center; justify-content: flex-start;">
-      <label for="r_points" style="white-space: nowrap;">即時總點（點）</label>
-      <input id="r_points" type="number" value="120" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <label>即時總點（點）</label>
+      <input id="r_points" type="number" step="1" style="width: 70px; margin-left: 0.5em; padding: 4px;" readonly>
     </div>
   </div>
   <div style="text-align: center; margin-top: 20px;">
-    <div id="rescueResult1" style="font-size: 20px; font-weight: bold; color: #0275d8;">建議總點增加（點）：120</div>
-    <div id="rescueResult2" style="font-size: 20px; font-weight: bold; color: #0275d8;">建議100價差（每組）：12.0</div>
-    <div id="rescueTip" style="display: none; margin-top: 12px; text-align: center; font-weight: bold; background-color: black; color: red; padding: 8px; border-radius: 8px;">
+    <div id="rescueResult1" style="font-size: 20px; font-weight: bold; color: #0275d8;">建議即時總點設定：</div>
+    <div id="rescueResult2" style="font-size: 20px; font-weight: bold; color: #0275d8;">建議100價差（每組）：--</div>
+    <div id="rescueTip" style="display: none; margin-top: 12px; font-weight: bold; background-color: black; color: red; padding: 8px; border-radius: 8px;">
       建議啟用停利增加可用金額
     </div>
   </div>
 </div>
 
-<!-- 即時總點換算小工具 -->
+<!-- 即時總點小工具 -->
 <div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px dashed #5bc0de; border-radius: 12px; background-color: #fff;">
   <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 16px;">【即時總點換算小工具】</h3>
   <div style="text-align: center;">
-    資金：<input type="number" id="funds" value="40" style="width: 70px; padding: 4px;">　
+    資金：<input type="number" id="funds" style="width: 70px; padding: 4px;" readonly>
     價差：<input type="number" id="spread" step="0.1" value="11.9" style="width: 70px; padding: 4px;">
   </div>
   <div style="text-align: center; margin-top: 20px;">
     即時總點：<span id="totalPoints" style="font-size: 20px; font-weight: bold;">-</span>
   </div>
-  <div style="margin-top: 10px; color: #888; font-size: 13px; text-align: center;" class="warning-text">
+  <div style="margin-top: 10px; color: #888; font-size: 13px; text-align: center;">
     ＊警語：即時總點結果僅供參考，投資人可自行調整，盈虧及風險應由投資人自行承擔。
   </div>
 </div>
 
-<!-- Script -->
 <script>
+function syncAllValues() {
+  const capital = document.getElementById('capital').value;
+  const equity = document.getElementById('equity').value;
+  const marketPoints = document.getElementById('marketPoints').value;
+
+  document.getElementById('r_capital').value = capital;
+  document.getElementById('r_equity').value = equity;
+  document.getElementById('r_points').value = marketPoints;
+  document.getElementById('funds').value = capital;
+
+  updateTotalPoints();
+  calcRescue();
+  calcProfit();
+}
+
 function calcProfit() {
   const equity = parseFloat(document.getElementById('equity').value);
   const costPoints = parseFloat(document.getElementById('costPoints').value);
   const marketPoints = parseFloat(document.getElementById('marketPoints').value);
   const capital = parseFloat(document.getElementById('capital').value);
+
   if (isNaN(equity) || isNaN(costPoints) || isNaN(marketPoints) || isNaN(capital) || capital === 0) {
     document.getElementById('result').textContent = '預估損益：--%';
     return;
   }
+
   const minPoints = Math.min(costPoints, marketPoints);
   const estimatedProfit = ((equity - capital) + (minPoints * 0.005)) / capital * 100;
   const truncated = Math.floor(estimatedProfit * 10) / 10;
   document.getElementById('result').textContent = `預估損益：${truncated.toFixed(1)}%`;
-}
-
-function calcRescue() {
-  const r_capital = parseFloat(document.getElementById('r_capital').value);
-  const r_equity = parseFloat(document.getElementById('r_equity').value);
-  const r_cash = parseFloat(document.getElementById('r_cash').value);
-  const r_points = parseFloat(document.getElementById('r_points').value);
-  const result1 = document.getElementById('rescueResult1');
-  const result2 = document.getElementById('rescueResult2');
-  const tipBox = document.getElementById('rescueTip');
-
-  if (isNaN(r_capital) || isNaN(r_equity) || isNaN(r_cash) || isNaN(r_points) || r_cash === 0) {
-    result1.textContent = '建議總點增加（點）：--';
-    result2.textContent = '建議100價差（每組）：--';
-    tipBox.style.display = 'none';
-    return;
-  }
-
-  const increasePoints = Math.round((r_capital - r_equity) * 200 - r_points);
-  let groupCount = increasePoints / r_cash / 2;
-
-  if (increasePoints < 0 || groupCount < 0) {
-    result1.textContent = '建議總點增加（點）：依照示範調整即可';
-    result2.textContent = '建議100價差（每組）：依照示範調整即可';
-    tipBox.style.display = 'none';
-    return;
-  }
-
-  // 限制上限為 55
-  if (groupCount > 55) groupCount = 55;
-
-  result1.textContent = `建議總點增加（點）：${increasePoints}`;
-  result2.textContent = `建議100價差（每組）：${groupCount.toFixed(1)}`;
-  tipBox.style.display = groupCount > 6 ? 'block' : 'none';
 }
 
 function updateTotalPoints() {
@@ -327,29 +272,43 @@ function updateTotalPoints() {
   document.getElementById('totalPoints').textContent = result;
 }
 
-// 同步【補救虧損】的資金到【即時總點】
-function syncToQuickTool() {
-  const rCapital = parseFloat(document.getElementById('r_capital').value);
-  if (!isNaN(rCapital)) {
-    document.getElementById('funds').value = rCapital;
-    updateTotalPoints();
+function calcRescue() {
+  const capital = parseFloat(document.getElementById('r_capital').value);
+  const equity = parseFloat(document.getElementById('r_equity').value);
+  const cash = parseFloat(document.getElementById('r_cash').value);
+  const currentPoints = parseFloat(document.getElementById('r_points').value);
+  const quickPoints = parseFloat(document.getElementById('totalPoints').textContent);
+
+  let increasePoints = Math.round((capital - equity) * 200 - currentPoints);
+  let spreadCount = "--";
+
+  if (increasePoints < 0) {
+    const base = Math.max(currentPoints, quickPoints || 0);
+    increasePoints = Math.round(base * 1.1);
+    spreadCount = "--";
+  } else {
+    spreadCount = increasePoints / cash / 2;
+    spreadCount = Math.min(spreadCount, 55); // 限制最多 55
+    spreadCount = Math.floor(spreadCount * 10) / 10;
   }
+
+  document.getElementById('rescueResult1').textContent = `建議即時總點設定：${increasePoints}`;
+  document.getElementById('rescueResult2').textContent = `建議100價差（每組）：${spreadCount}`;
+
+  const tip = document.getElementById('rescueTip');
+  tip.style.display = (spreadCount > 6) ? 'block' : 'none';
 }
 
 // 初始化與事件綁定
-document.querySelectorAll('#capital, #costPoints, #marketPoints, #equity').forEach(input => input.addEventListener('input', calcProfit));
-document.querySelectorAll('#r_capital, #r_equity, #r_cash, #r_points').forEach(input => input.addEventListener('input', () => {
-  calcRescue();
-  syncToQuickTool();
-}));
-document.getElementById('spread').addEventListener('input', updateTotalPoints);
-document.getElementById('funds').addEventListener('input', updateTotalPoints);
-
 window.addEventListener('load', () => {
-  calcProfit();
-  calcRescue();
-  syncToQuickTool();
+  syncAllValues();
 });
+document.getElementById('spread').addEventListener('input', () => {
+  updateTotalPoints();
+  calcRescue();
+});
+document.getElementById('r_cash').addEventListener('input', calcRescue);
+document.querySelectorAll('#capital, #equity, #marketPoints, #costPoints').forEach(el => el.addEventListener('input', syncAllValues));
 </script>
 
 </body>
