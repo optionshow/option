@@ -348,7 +348,7 @@ function calcRescue() {
   document.getElementById('rescueResult1').textContent = `建議即時總點設定：${increasePoints}`;
 
   // 計算建議100價差（每組）
-  const profit = ((equity - capital) + (Math.min(costPoints, currentPoints) * 0.005)) / capital * 100;
+  const formula = ((capital - equity) * 210 - costPoints) / (cash * 2);
 
   let result = 8;
   if (profit < 0 && cash > 0) {
