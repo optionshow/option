@@ -339,11 +339,10 @@ function calcRescue() {
   const quickPoints = parseFloat(document.getElementById('totalPoints').textContent.replace(/[^\d.]/g, ''));
 
   // 計算即時總點建議
-  let increasePoints = Math.round((capital - equity) * 200 - currentPoints);
-  if (increasePoints < 0) {
-    const base = Math.max(currentPoints, quickPoints || 0);
-    increasePoints = Math.round(base * 1.1);
-  }
+const minPoints = Math.round(currentPoints * 1.1);
+let increasePoints = Math.round((capital - equity) * 200 - currentPoints);
+increasePoints = Math.max(increasePoints, minPoints);
+document.getElementById('rescueResult1').textContent = `建議即時總點設定：${increasePoints}`;
 
   document.getElementById('rescueResult1').textContent = `建議即時總點設定：${increasePoints}`;
 
