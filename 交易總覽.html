@@ -162,72 +162,129 @@
   <p><strong>持倉溫度：</strong>SCBC＝空頭價差，SPBP＝多頭價差。庫存持倉的換算溫度，可用於【多空溫度調整】。</p>
 </div>
 
-<div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px solid #d9534f; border-radius: 12px; background-color: #fff;">
-  <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 24px;">【預估損益小工具】*持倉全部歸零時</h3>
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px 2em;">
-    <div style="display: flex; align-items: center; justify-content: flex-end;">
+<head>
+  <meta charset="UTF-8">
+  <title>損益工具</title>
+  <style>
+    body {
+      background-color: #f5f5f5;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    input[type='number']:not([readonly]) {
+      border: 2px solid red;
+    }
+
+    .tool-container {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 12px;
+      background-color: #fff;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 1em;
+    }
+
+    .grid-2col div {
+      display: flex;
+      align-items: center;
+    }
+
+    .grid-2col input {
+      width: 60px;
+      margin-left: 0.5em;
+      padding: 2px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 24px;
+    }
+
+    .result {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .warning-text {
+      margin-top: 10px;
+      color: #888;
+      font-size: 13px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 預估損益小工具 -->
+<div class="tool-container" style="border: 2px solid #d9534f;">
+  <h3 class="section-title">【預估損益小工具】*持倉全部歸零時</h3>
+  <div class="grid-2col">
+    <div style="justify-content: flex-end;">
       <label>投入資金（萬）</label>
-      <input id="capital" type="number" value="40" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <input id="capital" type="number" value="40" step="0.1">
     </div>
-    <div style="display: flex; align-items: center; justify-content: flex-start;">
+    <div style="justify-content: flex-start;">
       <label>持倉成本（點）</label>
-      <input id="costPoints" type="number" value="100" step="1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <input id="costPoints" type="number" value="100">
     </div>
-    <div style="display: flex; align-items: center; justify-content: flex-end;">
+    <div style="justify-content: flex-end;">
       <label>權益總值（萬）</label>
-      <input id="equity" type="number" value="40.5" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <input id="equity" type="number" value="40.5" step="0.1">
     </div>
-    <div style="display: flex; align-items: center; justify-content: flex-start;">
+    <div style="justify-content: flex-start;">
       <label>即時總點（點）</label>
-      <input id="marketPoints" type="number" value="80" step="1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <input id="marketPoints" type="number" value="80">
     </div>
   </div>
-  <div style="text-align: center; margin-top: 20px;">
-    <div id="result" style="font-size: 22px; font-weight: bold; color: #d9534f;">預估損益：--%</div>
-  </div>
+  <div class="result" id="result" style="color: #d9534f;">預估損益：2.2%</div>
 </div>
 
 <!-- 補救虧損小工具 -->
-<div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px solid #0275d8; border-radius: 12px; background-color: #fff;">
-  <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 24px;">【補救虧損小工具】</h3>
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px 2em;">
-    <div style="display: flex; align-items: center; justify-content: flex-end;">
+<div class="tool-container" style="border: 2px solid #0275d8;">
+  <h3 class="section-title">【補救虧損小工具】</h3>
+  <div class="grid-2col">
+    <div style="justify-content: flex-end;">
       <label>投入資金（萬）</label>
-      <input id="r_capital" type="number" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;" readonly>
+      <input id="r_capital" type="number" step="0.1" readonly>
     </div>
-    <div style="display: flex; align-items: center; justify-content: flex-start;">
+    <div style="justify-content: flex-start;">
       <label>可用金額（萬）</label>
-      <input id="r_cash" type="number" value="5.0" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;">
+      <input id="r_cash" type="number" value="5.0" step="0.1">
     </div>
-    <div style="display: flex; align-items: center; justify-content: flex-end;">
+    <div style="justify-content: flex-end;">
       <label>權益總值（萬）</label>
-      <input id="r_equity" type="number" step="0.1" style="width: 70px; margin-left: 0.5em; padding: 4px;" readonly>
+      <input id="r_equity" type="number" step="0.1" readonly>
     </div>
-    <div style="display: flex; align-items: center; justify-content: flex-start;">
+    <div style="justify-content: flex-start;">
       <label>即時總點（點）</label>
-      <input id="r_points" type="number" step="1" style="width: 70px; margin-left: 0.5em; padding: 4px;" readonly>
+      <input id="r_points" type="number" readonly>
     </div>
   </div>
-  <div style="text-align: center; margin-top: 20px;">
-    <div id="rescueResult1" style="font-size: 20px; font-weight: bold; color: #0275d8;">建議即時總點設定：</div>
-    <div id="rescueResult2" style="font-size: 20px; font-weight: bold; color: #0275d8;">建議100價差（每組）：--</div>
-    <div id="rescueTip" style="display: none; margin-top: 12px; font-weight: bold; background-color: black; color: red; padding: 8px; border-radius: 8px;">
-      建議啟用停利增加可用金額
-    </div>
-  </div>
+  <div class="result" id="rescueResult1" style="color: #0275d8;">建議即時總點設定：</div>
+  <div class="result" id="rescueResult2" style="color: #0275d8;">建議100價差（每組）：12.0</div>
 </div>
 
-<!-- 即時總點小工具 -->
-<div style="max-width: 720px; margin: 40px auto; padding: 20px; border: 2px dashed #5bc0de; border-radius: 12px; background-color: #fff;">
-  <h3 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 16px;">【即時總點換算小工具】</h3>
+<!-- 即時總點換算小工具 -->
+<div class="tool-container" style="border: 2px dashed #5bc0de;">
+  <h3 class="section-title">【即時總點換算小工具】</h3>
   <div style="text-align: center;">
-    資金：<input type="number" id="funds" style="width: 70px; padding: 4px;" readonly>
-    價差：<input type="number" id="spread" step="0.1" value="11.9" style="width: 70px; padding: 4px;">
+    資金：
+    <input type="number" id="funds" readonly>
+    價差：
+    <input type="number" id="spread" step="0.1" value="11.9">
   </div>
-  <div style="text-align: center; margin-top: 20px;">
-    即時總點：<span id="totalPoints" style="font-size: 20px; font-weight: bold;">-</span>
-  </div>
-  <div style="margin-top: 10px; color: #888; font-size: 13px; text-align: center;">
+  <div class="result" id="totalPoints">即時總點：-</div>
+  <div class="warning-text">
     ＊警語：即時總點結果僅供參考，投資人可自行調整，盈虧及風險應由投資人自行承擔。
   </div>
 </div>
@@ -262,6 +319,7 @@ function calcProfit() {
   const minPoints = Math.min(costPoints, marketPoints);
   const estimatedProfit = ((equity - capital) + (minPoints * 0.005)) / capital * 100;
   const truncated = Math.floor(estimatedProfit * 10) / 10;
+
   document.getElementById('result').textContent = `預估損益：${truncated.toFixed(1)}%`;
 }
 
@@ -269,46 +327,48 @@ function updateTotalPoints() {
   const funds = parseFloat(document.getElementById('funds').value) || 0;
   const spread = parseFloat(document.getElementById('spread').value) || 0;
   const result = Math.round(funds * spread * 2.62);
-  document.getElementById('totalPoints').textContent = result;
+  document.getElementById('totalPoints').textContent = `即時總點：${result}`;
 }
 
 function calcRescue() {
   const capital = parseFloat(document.getElementById('r_capital').value);
   const equity = parseFloat(document.getElementById('r_equity').value);
   const cash = parseFloat(document.getElementById('r_cash').value);
+  const costPoints = parseFloat(document.getElementById('costPoints').value);
   const currentPoints = parseFloat(document.getElementById('r_points').value);
-  const quickPoints = parseFloat(document.getElementById('totalPoints').textContent);
+  const quickPoints = parseFloat(document.getElementById('totalPoints').textContent.replace(/[^\d.]/g, ''));
 
+  // 計算即時總點建議
   let increasePoints = Math.round((capital - equity) * 200 - currentPoints);
-  let spreadCount = "--";
-
   if (increasePoints < 0) {
     const base = Math.max(currentPoints, quickPoints || 0);
     increasePoints = Math.round(base * 1.1);
-    spreadCount = "--";
-  } else {
-    spreadCount = increasePoints / cash / 2;
-    spreadCount = Math.min(spreadCount, 55); // 限制最多 55
-    spreadCount = Math.floor(spreadCount * 10) / 10;
   }
 
   document.getElementById('rescueResult1').textContent = `建議即時總點設定：${increasePoints}`;
-  document.getElementById('rescueResult2').textContent = `建議100價差（每組）：${spreadCount}`;
 
-  const tip = document.getElementById('rescueTip');
-  tip.style.display = (spreadCount > 6) ? 'block' : 'none';
+  // 計算建議100價差（每組）
+  const profit = ((equity - capital) + (Math.min(costPoints, currentPoints) * 0.005)) / capital * 100;
+
+  let result = 8;
+  if (profit < 0 && cash > 0) {
+    const formula = ((capital - equity) * 210 - costPoints) / (cash / 2);
+    result = Math.max(8, Math.min(50, Math.round(formula * 10) / 10));
+  }
+
+  document.getElementById('rescueResult2').textContent = `建議100價差（每組）：${result}`;
 }
 
-// 初始化與事件綁定
-window.addEventListener('load', () => {
-  syncAllValues();
-});
+// 綁定事件
+window.addEventListener('load', syncAllValues);
 document.getElementById('spread').addEventListener('input', () => {
   updateTotalPoints();
   calcRescue();
 });
 document.getElementById('r_cash').addEventListener('input', calcRescue);
-document.querySelectorAll('#capital, #equity, #marketPoints, #costPoints').forEach(el => el.addEventListener('input', syncAllValues));
+document.querySelectorAll('#capital, #equity, #marketPoints, #costPoints').forEach(el => {
+  el.addEventListener('input', syncAllValues);
+});
 </script>
 
 </body>
