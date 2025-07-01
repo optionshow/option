@@ -339,16 +339,16 @@ function calcRescue() {
   const quickPoints = parseFloat(document.getElementById('totalPoints').textContent.replace(/[^\d.]/g, ''));
 
   // 計算即時總點建議
-const basePoint = Math.max(currentPoints, quickPoints || 0);
-const minRequired = Math.round(basePoint * 1.1);
-let increasePoints = Math.round((capital - equity) * 200 - currentPoints);
-increasePoints = Math.max(increasePoints, minRequired);
+  let increasePoints = Math.round((capital - equity) * 200 - currentPoints);
+  if (increasePoints < 0) {
+    const base = Math.max(currentPoints, quickPoints || 0);
+    increasePoints = Math.round(base * 1.1);
+  }
 
-document.getElementById('rescueResult1').textContent = `建議即時總點設定：${increasePoints}`;
-
+  document.getElementById('rescueResult1').textContent = `建議即時總點設定：${increasePoints}`;
 
   // 計算建議100價差（每組）
-  const formula = ((capital - equity) * 210 - costPoints) / (cash * 2);
+  const profit = ((equity - capital) + (Math.min(costPoints, currentPoints) * 0.005)) / capital * 100;
 
   let result = 8;
   if (profit < 0 && cash > 0) {
