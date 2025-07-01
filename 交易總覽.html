@@ -163,12 +163,15 @@
 </div>
 
 <head>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
   <meta charset="UTF-8">
   <title>損益工具</title>
   <style>
     body {
+      font-family: "Microsoft JhengHei", sans-serif;
       background-color: #f5f5f5;
-      font-family: sans-serif;
       padding: 20px;
     }
 
@@ -177,8 +180,8 @@
     }
 
     .tool-container {
-      max-width: 720px;
-      margin: 40px auto;
+      max-width: 600px;
+      margin: 20px auto;
       padding: 20px;
       border-radius: 12px;
       background-color: #fff;
@@ -205,13 +208,13 @@
       text-align: center;
       font-size: 18px;
       font-weight: bold;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .result {
       text-align: center;
       margin-top: 20px;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
     }
 
@@ -246,7 +249,7 @@
       <input id="marketPoints" type="number" value="80">
     </div>
   </div>
-  <div class="result" id="result" style="color: #d9534f;">預估損益：2.2%</div>
+  <div class="result" id="result" style="color: #d9534f;">預估損益：--%</div>
 </div>
 
 <!-- 補救虧損小工具 -->
@@ -271,7 +274,7 @@
     </div>
   </div>
   <div class="result" id="rescueResult1" style="color: #0275d8;">建議即時總點設定：</div>
-  <div class="result" id="rescueResult2" style="color: #0275d8;">建議100價差（每組）：12.0</div>
+  <div class="result" id="rescueResult2" style="color: #0275d8;">建議100價差（每組）：--</div>
 </div>
 
 <!-- 即時總點換算小工具 -->
@@ -319,7 +322,6 @@ function calcProfit() {
   const minPoints = Math.min(costPoints, marketPoints);
   const estimatedProfit = ((equity - capital) + (minPoints * 0.005)) / capital * 100;
   const truncated = Math.floor(estimatedProfit * 10) / 10;
-
   document.getElementById('result').textContent = `預估損益：${truncated.toFixed(1)}%`;
 }
 
@@ -338,28 +340,28 @@ function calcRescue() {
   const currentPoints = parseFloat(document.getElementById('r_points').value);
   const quickPoints = parseFloat(document.getElementById('totalPoints').textContent.replace(/[^\d.]/g, ''));
 
-  // 計算即時總點建議
-  let increasePoints = Math.round((capital - equity) * 200 - currentPoints);
-  if (increasePoints < 0) {
-    const base = Math.max(currentPoints, quickPoints || 0);
-    increasePoints = Math.round(base * 1.1);
+  // 建議即時總點設定
+  let basePoints = Math.max(currentPoints, quickPoints || 0);
+  let increasePoints = Math.round(basePoints * 1.1);
+
+  if ((capital - equity) * 200 - currentPoints > 0) {
+    const raw = Math.round((capital - equity) * 200 - currentPoints);
+    increasePoints = Math.max(raw, increasePoints);
   }
 
   document.getElementById('rescueResult1').textContent = `建議即時總點設定：${increasePoints}`;
 
-  // 計算建議100價差（每組）
+  // 建議價差計算
   const profit = ((equity - capital) + (Math.min(costPoints, currentPoints) * 0.005)) / capital * 100;
-
   let result = 8;
   if (profit < 0 && cash > 0) {
     const formula = ((capital - equity) * 210 - costPoints) / (cash / 2);
-    result = Math.max(8, Math.min(50, Math.round(formula * 10) / 10));
+    result = Math.max(8, Math.min(40, Math.round(formula * 10) / 10));
   }
 
   document.getElementById('rescueResult2').textContent = `建議100價差（每組）：${result}`;
 }
 
-// 綁定事件
 window.addEventListener('load', syncAllValues);
 document.getElementById('spread').addEventListener('input', () => {
   updateTotalPoints();
