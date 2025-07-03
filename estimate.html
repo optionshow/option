@@ -199,8 +199,10 @@ updateTools();
   <input type="number" id="scInput" value="10" step="1" style="width: 60px;">&nbsp;&nbsp;
   <label>SP 數量:</label>
   <input type="number" id="spInput" value="35" step="1" style="width: 60px;"><br><br>
-  <div id="spreadResult" style="font-size: 1.2em; font-weight: bold; margin-top: 10px;">
-    價差試算結果：12.5
+
+  <div style="display: flex; justify-content: center; gap: 50px; margin-top: 10px; font-size: 1.2em; font-weight: bold;">
+    <div id="spreadResult">價差試算結果：12.5</div>
+    <div id="maxLossResult">最大預估虧損（$）：153125</div>
   </div>
 </div>
 
@@ -210,8 +212,12 @@ function updateSpreadTool() {
   const sc = parseInt(document.getElementById('scInput').value);
   const sp = parseInt(document.getElementById('spInput').value);
   const total = sc + sp;
-  const result = total > 0 ? (cost / total).toFixed(1) : '0.0';
-  document.getElementById('spreadResult').innerText = `價差試算結果：${result}`;
+  const spread = total > 0 ? (cost / total) : 0;
+  const maxQty = Math.max(sc, sp);
+  const maxLoss = Math.round((100 - spread) * maxQty * 50);
+
+  document.getElementById('spreadResult').innerText = `價差試算結果：${spread.toFixed(1)}`;
+  document.getElementById('maxLossResult').innerText = `最大預估虧損（$）：${maxLoss.toLocaleString()}`;
 }
 
 ['costInput', 'scInput', 'spInput'].forEach(id => {
@@ -220,6 +226,7 @@ function updateSpreadTool() {
 
 updateSpreadTool(); // 頁面初始計算
 </script>
+
 
 <!-- 插入圖片 -->
 <div style="text-align: center; margin-top: 40px;">
