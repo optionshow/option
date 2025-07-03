@@ -312,7 +312,7 @@ function updateProfit() {
 function updateTotalPoints() {
   const funds = parseFloat(document.getElementById('funds').value) || 0;
   const spread = parseFloat(document.getElementById('spread').value) || 0;
-  const total = Math.round(funds * spread * 2.62);
+  const total = Math.round(funds * spread * 2.79);
   document.getElementById('convertedPoints').textContent = `即時總點：${total}`;
   return total;
 }
