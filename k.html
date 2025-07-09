@@ -2,23 +2,26 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>圖表縮放顯示</title>
+  <title>圖表與說明</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background: #f5f5f5;
+      font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
     }
 
-    .scale-container {
-      transform: scale(0.8);
-      transform-origin: top left;
-      width: 100%;
-      overflow: hidden;
+    .container {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .chart-area {
+      zoom: 0.8; /* 縮小顯示，但不影響實際排版 */
     }
 
     .iframe-wrapper {
-      width: 2244px; /* 1795 / 0.8 */
       margin-bottom: 20px;
     }
 
@@ -26,20 +29,57 @@
       width: 1795px;
       border: none;
     }
+
+    .description-box {
+      width: 200px;
+      padding: 12px 16px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      line-height: 1.5;
+      font-size: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+
+    .description-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .description-box u {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <div class="scale-container">
-    <div class="iframe-wrapper">
-      <iframe height="444" seamless scrolling="no"
-        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTTRIJa0wiVqJQjUJhvvjmf5Aq9qPLUjtvqgU1_tAfU5H5Z5dODx-mlj94vz0HAoefIfctKIvrIyD_U/pubchart?oid=1066359246&amp;format=interactive">
-      </iframe>
+  <div class="container">
+    <div class="chart-area">
+      <div class="iframe-wrapper">
+        <iframe height="444" seamless scrolling="no"
+          src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTTRIJa0wiVqJQjUJhvvjmf5Aq9qPLUjtvqgU1_tAfU5H5Z5dODx-mlj94vz0HAoefIfctKIvrIyD_U/pubchart?oid=1066359246&amp;format=interactive">
+        </iframe>
+      </div>
+
+      <div class="iframe-wrapper">
+        <iframe height="488" seamless scrolling="no"
+          src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTTRIJa0wiVqJQjUJhvvjmf5Aq9qPLUjtvqgU1_tAfU5H5Z5dODx-mlj94vz0HAoefIfctKIvrIyD_U/pubchart?oid=1800923043&amp;format=interactive">
+        </iframe>
+      </div>
     </div>
 
-    <div class="iframe-wrapper">
-      <iframe height="488" seamless scrolling="no"
-        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTTRIJa0wiVqJQjUJhvvjmf5Aq9qPLUjtvqgU1_tAfU5H5Z5dODx-mlj94vz0HAoefIfctKIvrIyD_U/pubchart?oid=1800923043&amp;format=interactive">
-      </iframe>
+    <div class="description-box">
+      <strong>（圖表時間累計記錄）</strong>
+      <u>上圖</u><br>
+      黑線：指數<br>
+      菊線：布林％<br>
+      紅/綠-虛線：支撐壓力<br><br>
+
+      <u>下圖</u><br>
+      紅線：多空溫度<br>
+      藍柱：多空量能
     </div>
   </div>
 </body>
