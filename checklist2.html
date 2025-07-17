@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能交易週一~週五清單檢查</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; font-size: 1.5rem; }
+        .checklist-item:hover { background-color: #f8fafc; }
+        .completed { background-color: #f0f9ff; border-left: 4px solid #3b82f6; }
+        .section-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .setup-header { background-color: #10b981; }
+        .day1-header { background-color: #3b82f6; }
+        .day2-header { background-color: #f59e0b; }
+        .day3-header { background-color: #ef4444; }
+        .warning-box { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        .info-box { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+    </style>
+</head>
+<body class="bg-gray-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="section-header text-white p-6 rounded-lg mb-8 shadow-lg">
+            <h1 class="text-3xl font-bold mb-2">智能交易清單檢查</h1>
+            <p class="text-lg opacity-90">週一～週五 交易設定追蹤，＊週五夜盤不下單！</p>
+            <div class="mt-4 p-3 bg-white bg-opacity-20 rounded-lg">
+                <p class="text-lg font-semibold" style="font-size: 0.75em;">⚠️ 設定前請重整網頁，確保數據更新</p>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- Initial Setup Section -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="setup-header text-white p-4 rounded-t-lg cursor-pointer flex justify-between items-center" onclick="toggleSection('setup')">
+                <div>
+                    <h2 class="text-xl font-bold">🚀 首次設定（開始交易）</h2>
+                    <p class="text-lg opacity-90">參考智能交易2～2.5％設定</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="setup-counter">0/1</span>
+                    <button onclick="clearSection('setup')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition-colors">
+                        🗑️
+                    </button>
+                    <span class="text-2xl" id="setup-arrow">▼</span>
+                </div>
+            </div>
+            <div id="setup-content" class="p-6">
+                <div class="info-box p-4 rounded-lg mb-4">
+                    <p class="font-medium">📋 參考連結：</p>
+                    <a href="https://optionshow.github.io/option/checklist.html" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                        智能交易首次設定指南
+                    </a>
+                </div>
+                <div class="checklist-item p-4 border rounded-lg mb-3 cursor-pointer transition-colors" onclick="toggleCheck('setup-1')">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="setup-1" class="mr-3 w-5 h-5 text-blue-600">
+                        <span class="text-gray-800">完成首次設定，參考智能交易示範的參數</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 1 Section -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="day1-header text-white p-4 rounded-t-lg cursor-pointer flex justify-between items-center" onclick="toggleSection('day1')">
+                <div>
+                    <h2 class="text-xl font-bold">📅 週一日 / 週三夜（第一天）</h2>
+                    <p class="text-lg opacity-90">基本設定與交易條件建立</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="day1-counter">0/7</span>
+                    <button onclick="clearSection('day1')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition-colors">
+                        🗑️
+                    </button>
+                    <span class="text-2xl" id="day1-arrow">▼</span>
+                </div>
+            </div>
+            <div id="day1-content" class="p-6">
+                <div class="warning-box p-4 rounded-lg mb-4">
+                    <p class="font-medium">⚠️ 重要提醒：下單開始後，不建議變更【投入資金成本】 / 出入金</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors" onclick="toggleCheck('day1-1')">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" id="day1-1" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                            <div>
+                                <span class="text-gray-800 font-medium">基本設定：投入資金成本</span>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">更改【投入資金成本】，輸入目前庫存沒有部位的【權益總值】金額</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors" onclick="toggleCheck('day1-2')">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" id="day1-2" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                            <div>
+                                <span class="text-gray-800 font-medium">即時總點管控：</span>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">使用【即時總點換算小工具】，價差更改為 8，計算並設定即時總點管控</p>
+                                <a href="https://optionshow.github.io/option/%E5%81%9C%E6%90%8D%E5%81%9C%E5%88%A9%E8%A8%AD%E5%AE%9A.html" target="_blank" class="text-blue-600 hover:text-blue-800 underline text-sm">
+                                    🔗 即時總點換算小工具
+                                </a>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="bg-blue-50 p-3 rounded-lg mb-3">
+                        <h4 class="font-semibold text-blue-800 mb-2">📊 方向判斷：</h4>
+                        <div class="space-y-3">
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day1-3')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day1-3" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">方向判斷設定</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">✅ 打勾啟用（可同步示範）+ ❌ 多空溫度調整：取消打勾</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day1-4')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day1-4" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">確認方向判斷趨勢：合計方向/多空溫度</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">依照智能報價趨勢判斷，設定符合當前市場趨勢</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-50 p-3 rounded-lg mb-3">
+                        <h4 class="font-semibold text-green-800 mb-2">⚙️ 交易條件</h4>
+                        <div class="space-y-3">
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day1-5')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day1-5" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">動態Sell價設定</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">尋找價差接近 10 的Call和Put，記下成交價並輸入設定</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day1-6')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day1-6" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">複式單BP/BC價外設定100點</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">設定複式單 BP/BC 價外 100 點</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors" onclick="toggleCheck('day1-7')">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" id="day1-7" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                            <div>
+                                <span class="text-gray-800 font-medium">基本設定：保留可用餘額（50％）</span>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">將「保留可用餘額」從1000％改為50％，點擊「儲存」並確認</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 2 Section -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="day2-header text-white p-4 rounded-t-lg cursor-pointer flex justify-between items-center" onclick="toggleSection('day2')">
+                <div>
+                    <h2 class="text-xl font-bold">📅 週二 / 週四（第二天）</h2>
+                    <p class="text-lg opacity-90">調整交易參數與增加投入</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="day2-counter">0/5</span>
+                    <button onclick="clearSection('day2')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition-colors">
+                        🗑️
+                    </button>
+                    <span class="text-2xl" id="day2-arrow">▼</span>
+                </div>
+            </div>
+            <div id="day2-content" class="p-6">
+                <div class="space-y-4">
+                    <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors" onclick="toggleCheck('day2-1')">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" id="day2-1" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                            <div>
+                                <span class="text-gray-800 font-medium">方向判斷：打勾啟用</span>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">確認方向判斷依照智能報價趨勢判斷，設定符合當前市場趨勢</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="bg-green-50 p-3 rounded-lg mb-3">
+                        <h4 class="font-semibold text-green-800 mb-2">⚙️ 交易條件</h4>
+                        <div class="space-y-3">
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day2-2')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day2-2" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">動態Sell價確認</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">使用智能報價確認動態Sell價，尋找價差接近 10 的Call和Put</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day2-3')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day2-3" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">複式單BP/BC價外50點</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">設定複式單 BP/BC 價外 50 點，點擊「儲存」</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors" onclick="toggleCheck('day2-4')">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" id="day2-4" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                            <div>
+                                <span class="text-gray-800 font-medium">多空溫度調整：打勾啟用</span>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">打勾啟用多空溫度調整</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors" onclick="toggleCheck('day2-5')">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" id="day2-5" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                            <div>
+                                <span class="text-gray-800 font-medium">基本設定：保留可用餘額（1％～20％）</span>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">調整為1%~20%，若損益不佳（-1.5％）調整為1%</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 3 Section -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="day3-header text-white p-4 rounded-t-lg cursor-pointer flex justify-between items-center" onclick="toggleSection('day3')">
+                <div>
+                    <h2 class="text-xl font-bold">📅 週三日 / 週五日（結算日）</h2>
+                    <p class="text-lg opacity-90">結算日特殊設定與風險控制</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="day3-counter">0/7</span>
+                    <button onclick="clearSection('day3')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition-colors">
+                        🗑️
+                    </button>
+                    <span class="text-2xl" id="day3-arrow">▼</span>
+                </div>
+            </div>
+            <div id="day3-content" class="p-6">
+                <div class="warning-box p-4 rounded-lg mb-4">
+                    <p class="font-medium">🚨 結算日風險提醒：請特別注意損益狀況，適時調整策略</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors" onclick="toggleCheck('day3-1')">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" id="day3-1" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                            <div>
+                                <span class="text-gray-800 font-medium">方向判斷：全部取消打勾</span>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">減少建倉，取消方向判斷。若損益不佳（-1.5％）才勾選多空溫度建倉</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors" onclick="toggleCheck('day3-2')">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" id="day3-2" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                            <div>
+                                <span class="text-gray-800 font-medium">交易條件：動態Sell價設定30～44</span>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">結算日固定設定為40（30~44都可），不需參考智能報價的動態數值</p>
+                                <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">若損益不佳（-1.5％）固定設定為20（8~20都可）！</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="bg-purple-50 p-3 rounded-lg mb-3">
+                        <h4 class="font-semibold text-purple-800 mb-2">📈 即時總點管控</h4>
+                        <div class="space-y-3">
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day3-3')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day3-3" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">啟用日盤定時平倉</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">啟用並設定日盤定時平倉最高價功能</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day3-4')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day3-4" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">設定平倉時間為12點45分</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">確認平倉時間設定正確</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day3-5')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day3-5" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">計算平倉即時總點</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">根據SC+SP持倉數量總和×1~1.5倍計算（例如：164→164~246點）</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-50 p-3 rounded-lg mb-3">
+                        <h4 class="font-semibold text-red-800 mb-2">⚠️ 獲利不理想時</h4>
+                        <div class="space-y-3">
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day3-6')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day3-6" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">停損停利設定</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">針對SC+BC和SP+BP啟用「停利」/「停損」功能</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day3-7')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day3-7" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium">最終調整</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 1.2rem;">勾選多空溫度建倉，保留可用餘額調整為1%，點擊「儲存」</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Instructions -->
+        <div class="bg-white rounded-lg shadow-md p-6 relative">
+            <button onclick="clearAllChecks()" class="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                清空所有勾選
+            </button>
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">📖 使用說明</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div class="space-y-2">
+                    <p>• 點擊每天的標題可展開 / 收起該天的檢查項目</p>
+                    <p>• 完成每個項目後勾選對應的方框</p>
+                    <p>• 系統會自動記錄您的進度並保存到本地</p>
+                </div>
+                <div class="space-y-2">
+                    <p>• 點擊標題旁的🗑️圖示可清空該天的所有勾選</p>
+                    <p>• 勾選狀態會自動保存，下次開啟時會記住</p>
+                    <p>• 可隨時使用右上角按鈕清空所有勾選</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script>
+        // Load saved progress from localStorage
+        function loadProgress() {
+            const sections = ['setup', 'day1', 'day2', 'day3'];
+            sections.forEach(section => {
+                const saved = localStorage.getItem(`trading-checklist-${section}`);
+                if (saved) {
+                    const items = JSON.parse(saved);
+                    items.forEach(item => {
+                        const checkbox = document.getElementById(item);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                            checkbox.closest('.checklist-item').classList.add('completed');
+                        }
+                    });
+                }
+            });
+            updateAllCounters();
+        }
+
+        // Save progress to localStorage
+        function saveProgress(section) {
+            const checkboxes = document.querySelectorAll(`#${section}-content input[type="checkbox"]`);
+            const checkedItems = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.id);
+            localStorage.setItem(`trading-checklist-${section}`, JSON.stringify(checkedItems));
+        }
+
+        // Toggle checkbox and update progress
+        function toggleCheck(itemId) {
+            const checkbox = document.getElementById(itemId);
+            const item = checkbox.closest('.checklist-item');
+            const section = itemId.split('-')[0];
+            
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                item.classList.add('completed');
+            } else {
+                item.classList.remove('completed');
+            }
+            
+            updateCounter(section);
+            saveProgress(section);
+        }
+
+        // Toggle section visibility
+        function toggleSection(section) {
+            const content = document.getElementById(`${section}-content`);
+            const arrow = document.getElementById(`${section}-arrow`);
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                arrow.textContent = '▶';
+            }
+        }
+
+        // Update counter for specific section
+        function updateCounter(section) {
+            const checkboxes = document.querySelectorAll(`#${section}-content input[type="checkbox"]`);
+            const checked = document.querySelectorAll(`#${section}-content input[type="checkbox"]:checked`);
+            const counter = document.getElementById(`${section}-counter`);
+            
+            counter.textContent = `${checked.length}/${checkboxes.length}`;
+        }
+
+        // Update all counters
+        function updateAllCounters() {
+            ['setup', 'day1', 'day2', 'day3'].forEach(section => {
+                updateCounter(section);
+            });
+        }
+
+
+
+        // Clear all checks
+        function clearAllChecks() {
+            if (confirm('確定要清空所有勾選項目嗎？')) {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                const items = document.querySelectorAll('.checklist-item');
+                
+                checkboxes.forEach(cb => cb.checked = false);
+                items.forEach(item => item.classList.remove('completed'));
+                
+                ['setup', 'day1', 'day2', 'day3'].forEach(section => {
+                    localStorage.removeItem(`trading-checklist-${section}`);
+                });
+                
+                updateAllCounters();
+            }
+        }
+
+        // Clear specific section
+        function clearSection(section) {
+            if (confirm(`確定要清空${getSectionName(section)}的所有勾選項目嗎？`)) {
+                const checkboxes = document.querySelectorAll(`#${section}-content input[type="checkbox"]`);
+                const items = document.querySelectorAll(`#${section}-content .checklist-item`);
+                
+                checkboxes.forEach(cb => cb.checked = false);
+                items.forEach(item => item.classList.remove('completed'));
+                
+                localStorage.removeItem(`trading-checklist-${section}`);
+                updateCounter(section);
+            }
+        }
+
+        // Get section display name
+        function getSectionName(section) {
+            const names = {
+                'setup': '首次設定',
+                'day1': '第一天',
+                'day2': '第二天',
+                'day3': '結算日'
+            };
+            return names[section] || section;
+        }
+
+        // Expand all sections
+        function expandAll() {
+            ['setup', 'day1', 'day2', 'day3'].forEach(section => {
+                document.getElementById(`${section}-content`).style.display = 'block';
+                document.getElementById(`${section}-arrow`).textContent = '▼';
+            });
+        }
+
+        // Collapse all sections
+        function collapseAll() {
+            ['setup', 'day1', 'day2', 'day3'].forEach(section => {
+                document.getElementById(`${section}-content`).style.display = 'none';
+                document.getElementById(`${section}-arrow`).textContent = '▶';
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Collapse all sections by default
+            collapseAll();
+            
+            loadProgress();
+            
+            // Add click event listeners to prevent checkbox toggle when clicking the checkbox directly
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const section = this.id.split('-')[0];
+                    const item = this.closest('.checklist-item');
+                    
+                    if (this.checked) {
+                        item.classList.add('completed');
+                    } else {
+                        item.classList.remove('completed');
+                    }
+                    
+                    updateCounter(section);
+                    saveProgress(section);
+                });
+            });
+        });
+    </script>
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'960a2cca51c6f1e4',t:'MTc1Mjc1OTg3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+</body>
+
+<script>
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="m7-DV_6E7SMU4WXWF78MF";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+</script>
+
+</html>
