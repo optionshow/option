@@ -196,14 +196,26 @@
                 stockPeriods[cleanStock].push('三個月前');
             });
 
-            // Sort by frequency
+            // Sort by frequency, then by name for consistent ordering of ties
             const sortedStocks = Object.entries(stockCount)
-                .sort(([,a], [,b]) => b - a)
+                .sort(([nameA, countA], [nameB, countB]) => {
+                    if (countB !== countA) return countB - countA;
+                    return nameA.localeCompare(nameB);
+                })
                 .map(([stock, count]) => ({
                     name: stock,
                     count: count,
                     periods: [...new Set(stockPeriods[stock])]
                 }));
+
+            // Add ranking with proper tie handling
+            let currentRank = 1;
+            for (let i = 0; i < sortedStocks.length; i++) {
+                if (i > 0 && sortedStocks[i].count !== sortedStocks[i-1].count) {
+                    currentRank = i + 1;
+                }
+                sortedStocks[i].rank = currentRank;
+            }
 
             // Display results
             displayResults(sortedStocks);
@@ -226,15 +238,16 @@
 
             let html = '';
             top20Stocks.forEach((stock, index) => {
-                const rankColor = index === 0 ? 'bg-yellow-100 border-yellow-300' : 
-                                 index === 1 ? 'bg-gray-100 border-gray-300' : 
-                                 index === 2 ? 'bg-orange-100 border-orange-300' : 
+                const rank = stock.rank;
+                const rankColor = rank === 1 ? 'bg-yellow-100 border-yellow-300' : 
+                                 rank === 2 ? 'bg-gray-100 border-gray-300' : 
+                                 rank === 3 ? 'bg-orange-100 border-orange-300' : 
                                  'bg-blue-50 border-blue-200';
                 
-                const rankIcon = index === 0 ? '🥇' : 
-                                index === 1 ? '🥈' : 
-                                index === 2 ? '🥉' : 
-                                `${index + 1}`;
+                const rankIcon = rank === 1 ? '🥇' : 
+                                rank === 2 ? '🥈' : 
+                                rank === 3 ? '🥉' : 
+                                `${rank}`;
 
                 html += `
                     <div class="border-2 ${rankColor} rounded-lg p-4">
@@ -310,8 +323,15 @@
                 html += `
                     <div class="border border-gray-200 rounded-lg p-3 bg-gray-50">
                         <div class="flex justify-between items-start mb-2">
-                            <span class="text-sm font-medium text-gray-800">${entry.timestamp}</span>
-                            <span class="text-xs text-gray-500">資料月份：${entry.dataMonth}</span>
+                            <div class="flex-1">
+                                <span class="text-sm font-medium text-gray-800">${entry.timestamp}</span>
+                                <span class="text-xs text-gray-500 ml-2">資料月份：${entry.dataMonth}</span>
+                            </div>
+                            <button onclick="deleteHistoryEntry(${entry.id})" 
+                                    class="text-red-500 hover:text-red-700 text-xs px-2 py-1 hover:bg-red-50 rounded transition-colors"
+                                    title="刪除此記錄">
+                                ✕
+                            </button>
                         </div>
                         <div class="text-sm text-gray-600">
                             前三名：${top3Text}
@@ -323,8 +343,16 @@
             historyDiv.innerHTML = html;
         }
 
+        function deleteHistoryEntry(entryId) {
+            if (confirm('確定要刪除此更新記錄嗎？')) {
+                analysisHistory = analysisHistory.filter(entry => entry.id !== entryId);
+                localStorage.setItem('analysisHistory', JSON.stringify(analysisHistory));
+                displayUpdateHistory();
+            }
+        }
+
         function clearAllData() {
-            if (confirm('確定要清除所有資料嗎？此操作無法復原。')) {
+            if (confirm('確定要清除輸入資料和分析結果嗎？（更新記錄不會被清除）')) {
                 // Clear form data
                 document.getElementById('oneYearHoldings').value = '';
                 document.getElementById('sixMonthsHoldings').value = '';
@@ -335,15 +363,10 @@
                 document.getElementById('analysisResults').innerHTML = 
                     '<div class="text-gray-500 text-center py-8">點擊「分析持股排名」按鈕開始分析</div>';
                 
-                // Clear localStorage
+                // Clear only current analysis data, keep history
                 localStorage.removeItem('currentAnalysisData');
-                localStorage.removeItem('analysisHistory');
-                analysisHistory = [];
                 
-                // Update history display
-                displayUpdateHistory();
-                
-                alert('所有資料已清除');
+                alert('輸入資料和分析結果已清除');
             }
         }
 
@@ -353,5 +376,5 @@
         document.getElementById('threeMonthsHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('dataMonth').addEventListener('change', saveCurrentData);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cf213b068ff1c0',t:'MTc1NDgyNTA5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cf32eee04bf1c8',t:'MTc1NDgyNTgyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
