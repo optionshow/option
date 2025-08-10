@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台股基金標的分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">台股基金標的分析</h1>
+            <div class="flex flex-wrap items-center gap-4">
+                <div class="flex items-center">
+                    <label class="text-sm font-medium text-gray-700 mr-2">資料來源：</label>
+                    <a href="https://www.moneydj.com/funddj/ya/yp401000.djhtm?A=ET001005&B=901" 
+                       target="_blank" 
+                       class="text-blue-600 hover:text-blue-800 underline text-sm">
+                        MoneyDJ基金網
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <label class="text-sm font-medium text-gray-700 mr-2">資料月份：</label>
+                    <input type="month" id="dataMonth" value="2025-06" 
+                           class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <button onclick="clearAllData()" 
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    清除所有資料
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Input Section -->
+            <div class="space-y-6">
+                <!-- One Year Holdings -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">一年前三名持股明細</h2>
+                    <p class="text-sm text-gray-600 mb-3">（5％以上並增加持股）</p>
+                    <textarea id="oneYearHoldings" 
+                              placeholder="請輸入股票名稱，每行一個"
+                              class="w-full h-32 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none">健策
+貿聯-KY
+旺矽
+台積電
+台光電
+貿聯-KY
+旺矽
+台積電
+健策
+貿聯-KY
+富世達
+台積電
+奇鋐</textarea>
+                </div>
+
+                <!-- Six Months Holdings -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">六個月前三名持股明細</h2>
+                    <p class="text-sm text-gray-600 mb-3">（5％以上並增加持股）</p>
+                    <textarea id="sixMonthsHoldings" 
+                              placeholder="請輸入股票名稱，每行一個"
+                              class="w-full h-32 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none">台積電
+漢唐
+台光電
+旺矽
+智邦
+信驊
+台積電
+台光電
+漢唐
+旺矽</textarea>
+                </div>
+
+                <!-- Three Months Holdings -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">三個月前三名持股明細</h2>
+                    <p class="text-sm text-gray-600 mb-3">（5％以上並增加持股）</p>
+                    <textarea id="threeMonthsHoldings" 
+                              placeholder="請輸入股票名稱，每行一個"
+                              class="w-full h-24 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none">貿聯-KY
+富世達
+台積電
+奇鋐</textarea>
+                </div>
+
+                <button onclick="analyzeHoldings()" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium text-lg transition-colors shadow-lg">
+                    分析持股排名
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="space-y-6">
+                <!-- Analysis Results -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">持股頻率排名</h2>
+                    <div id="analysisResults" class="space-y-3">
+                        <div class="text-gray-500 text-center py-8">
+                            點擊「分析持股排名」按鈕開始分析
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update History -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">更新記錄</h2>
+                    <div id="updateHistory" class="space-y-2 max-h-64 overflow-y-auto">
+                        <div class="text-gray-500 text-center py-4">
+                            暫無更新記錄
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data from localStorage or default values
+        let analysisHistory = JSON.parse(localStorage.getItem('analysisHistory')) || [];
+        
+        // Load saved data on page load
+        window.onload = function() {
+            loadSavedData();
+            displayUpdateHistory();
+        };
+
+        function loadSavedData() {
+            const savedData = localStorage.getItem('currentAnalysisData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('dataMonth').value = data.dataMonth || '2025-06';
+                document.getElementById('oneYearHoldings').value = data.oneYear || '';
+                document.getElementById('sixMonthsHoldings').value = data.sixMonths || '';
+                document.getElementById('threeMonthsHoldings').value = data.threeMonths || '';
+            }
+        }
+
+        function saveCurrentData() {
+            const data = {
+                dataMonth: document.getElementById('dataMonth').value,
+                oneYear: document.getElementById('oneYearHoldings').value,
+                sixMonths: document.getElementById('sixMonthsHoldings').value,
+                threeMonths: document.getElementById('threeMonthsHoldings').value,
+                timestamp: new Date().toLocaleString('zh-TW')
+            };
+            localStorage.setItem('currentAnalysisData', JSON.stringify(data));
+            return data;
+        }
+
+        function analyzeHoldings() {
+            const oneYear = document.getElementById('oneYearHoldings').value.trim();
+            const sixMonths = document.getElementById('sixMonthsHoldings').value.trim();
+            const threeMonths = document.getElementById('threeMonthsHoldings').value.trim();
+            const dataMonth = document.getElementById('dataMonth').value;
+
+            if (!oneYear && !sixMonths && !threeMonths) {
+                alert('請至少輸入一個時期的持股資料');
+                return;
+            }
+
+            // Parse holdings from each period
+            const oneYearStocks = oneYear ? oneYear.split('\n').filter(stock => stock.trim()) : [];
+            const sixMonthsStocks = sixMonths ? sixMonths.split('\n').filter(stock => stock.trim()) : [];
+            const threeMonthsStocks = threeMonths ? threeMonths.split('\n').filter(stock => stock.trim()) : [];
+
+            // Count frequency of each stock
+            const stockCount = {};
+            const stockPeriods = {};
+
+            // Process each period
+            oneYearStocks.forEach(stock => {
+                const cleanStock = stock.trim();
+                stockCount[cleanStock] = (stockCount[cleanStock] || 0) + 1;
+                if (!stockPeriods[cleanStock]) stockPeriods[cleanStock] = [];
+                stockPeriods[cleanStock].push('一年前');
+            });
+
+            sixMonthsStocks.forEach(stock => {
+                const cleanStock = stock.trim();
+                stockCount[cleanStock] = (stockCount[cleanStock] || 0) + 1;
+                if (!stockPeriods[cleanStock]) stockPeriods[cleanStock] = [];
+                stockPeriods[cleanStock].push('六個月前');
+            });
+
+            threeMonthsStocks.forEach(stock => {
+                const cleanStock = stock.trim();
+                stockCount[cleanStock] = (stockCount[cleanStock] || 0) + 1;
+                if (!stockPeriods[cleanStock]) stockPeriods[cleanStock] = [];
+                stockPeriods[cleanStock].push('三個月前');
+            });
+
+            // Sort by frequency
+            const sortedStocks = Object.entries(stockCount)
+                .sort(([,a], [,b]) => b - a)
+                .map(([stock, count]) => ({
+                    name: stock,
+                    count: count,
+                    periods: [...new Set(stockPeriods[stock])]
+                }));
+
+            // Display results
+            displayResults(sortedStocks);
+
+            // Save data and add to history
+            const currentData = saveCurrentData();
+            addToHistory(currentData, sortedStocks);
+        }
+
+        function displayResults(sortedStocks) {
+            const resultsDiv = document.getElementById('analysisResults');
+            
+            if (sortedStocks.length === 0) {
+                resultsDiv.innerHTML = '<div class="text-gray-500 text-center py-8">沒有找到任何股票資料</div>';
+                return;
+            }
+
+            // Only show top 20 stocks
+            const top20Stocks = sortedStocks.slice(0, 20);
+
+            let html = '';
+            top20Stocks.forEach((stock, index) => {
+                const rankColor = index === 0 ? 'bg-yellow-100 border-yellow-300' : 
+                                 index === 1 ? 'bg-gray-100 border-gray-300' : 
+                                 index === 2 ? 'bg-orange-100 border-orange-300' : 
+                                 'bg-blue-50 border-blue-200';
+                
+                const rankIcon = index === 0 ? '🥇' : 
+                                index === 1 ? '🥈' : 
+                                index === 2 ? '🥉' : 
+                                `${index + 1}`;
+
+                html += `
+                    <div class="border-2 ${rankColor} rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <span class="text-lg font-bold mr-3">${rankIcon}</span>
+                                <span class="font-semibold text-lg text-gray-800">${stock.name}</span>
+                            </div>
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                出現 ${stock.count} 次
+                            </span>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            出現時期：${stock.periods.join('、')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Add summary if there are more than 20 stocks
+            if (sortedStocks.length > 20) {
+                html += `
+                    <div class="text-center text-gray-500 text-sm mt-4 p-3 bg-gray-100 rounded-lg">
+                        顯示前20名，共有 ${sortedStocks.length} 檔股票
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function addToHistory(data, results) {
+            const historyEntry = {
+                timestamp: data.timestamp,
+                dataMonth: data.dataMonth,
+                results: results,
+                id: Date.now()
+            };
+
+            analysisHistory.unshift(historyEntry);
+            
+            // Keep only last 10 entries
+            if (analysisHistory.length > 10) {
+                analysisHistory = analysisHistory.slice(0, 10);
+            }
+
+            localStorage.setItem('analysisHistory', JSON.stringify(analysisHistory));
+            displayUpdateHistory();
+        }
+
+        function displayUpdateHistory() {
+            const historyDiv = document.getElementById('updateHistory');
+            
+            if (analysisHistory.length === 0) {
+                historyDiv.innerHTML = '<div class="text-gray-500 text-center py-4">暫無更新記錄</div>';
+                return;
+            }
+
+            let html = '';
+            analysisHistory.forEach(entry => {
+                const top3 = entry.results.slice(0, 3);
+                let top3Text = '';
+                
+                if (top3.length > 0) {
+                    top3Text = top3.map((stock, index) => {
+                        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
+                        return `${medal} ${stock.name} (${stock.count}次)`;
+                    }).join(' ');
+                } else {
+                    top3Text = '無資料';
+                }
+
+                html += `
+                    <div class="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-sm font-medium text-gray-800">${entry.timestamp}</span>
+                            <span class="text-xs text-gray-500">資料月份：${entry.dataMonth}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            前三名：${top3Text}
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyDiv.innerHTML = html;
+        }
+
+        function clearAllData() {
+            if (confirm('確定要清除所有資料嗎？此操作無法復原。')) {
+                // Clear form data
+                document.getElementById('oneYearHoldings').value = '';
+                document.getElementById('sixMonthsHoldings').value = '';
+                document.getElementById('threeMonthsHoldings').value = '';
+                document.getElementById('dataMonth').value = '2025-06';
+                
+                // Clear results
+                document.getElementById('analysisResults').innerHTML = 
+                    '<div class="text-gray-500 text-center py-8">點擊「分析持股排名」按鈕開始分析</div>';
+                
+                // Clear localStorage
+                localStorage.removeItem('currentAnalysisData');
+                localStorage.removeItem('analysisHistory');
+                analysisHistory = [];
+                
+                // Update history display
+                displayUpdateHistory();
+                
+                alert('所有資料已清除');
+            }
+        }
+
+        // Auto-save data when inputs change
+        document.getElementById('oneYearHoldings').addEventListener('input', saveCurrentData);
+        document.getElementById('sixMonthsHoldings').addEventListener('input', saveCurrentData);
+        document.getElementById('threeMonthsHoldings').addEventListener('input', saveCurrentData);
+        document.getElementById('dataMonth').addEventListener('change', saveCurrentData);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cf213b068ff1c0',t:'MTc1NDgyNTA5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
