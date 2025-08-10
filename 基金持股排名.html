@@ -139,16 +139,22 @@
                 document.getElementById('oneYearHoldings').value = data.oneYear || '';
                 document.getElementById('sixMonthsHoldings').value = data.sixMonths || '';
                 document.getElementById('threeMonthsHoldings').value = data.threeMonths || '';
+                
+                // Load and display previous analysis results if they exist
+                if (data.lastResults) {
+                    displayResults(data.lastResults);
+                }
             }
         }
 
-        function saveCurrentData() {
+        function saveCurrentData(results = null) {
             const data = {
                 dataMonth: document.getElementById('dataMonth').value,
                 oneYear: document.getElementById('oneYearHoldings').value,
                 sixMonths: document.getElementById('sixMonthsHoldings').value,
                 threeMonths: document.getElementById('threeMonthsHoldings').value,
-                timestamp: new Date().toLocaleString('zh-TW')
+                timestamp: new Date().toLocaleString('zh-TW'),
+                lastResults: results
             };
             localStorage.setItem('currentAnalysisData', JSON.stringify(data));
             return data;
@@ -221,7 +227,7 @@
             displayResults(sortedStocks);
 
             // Save data and add to history
-            const currentData = saveCurrentData();
+            const currentData = saveCurrentData(sortedStocks);
             addToHistory(currentData, sortedStocks);
         }
 
@@ -376,5 +382,5 @@
         document.getElementById('threeMonthsHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('dataMonth').addEventListener('change', saveCurrentData);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cf32eee04bf1c8',t:'MTc1NDgyNTgyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cf3b728245f1c0',t:'MTc1NDgyNjE3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
