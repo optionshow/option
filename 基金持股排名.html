@@ -29,6 +29,15 @@
                     <input type="month" id="dataMonth" value="2025-06" 
                            class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
+                <button onclick="exportData()" 
+                        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    匯出資料
+                </button>
+                <button onclick="document.getElementById('importFile').click()" 
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    匯入資料
+                </button>
+                <input type="file" id="importFile" accept=".txt" style="display: none;" onchange="importData(event)">
                 <button onclick="clearAllData()" 
                         class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                     清除所有資料
@@ -376,11 +385,85 @@
             }
         }
 
+        function exportData() {
+            const currentData = localStorage.getItem('currentAnalysisData');
+            const historyData = localStorage.getItem('analysisHistory');
+            
+            const exportObject = {
+                version: '1.0',
+                exportDate: new Date().toLocaleString('zh-TW'),
+                currentAnalysisData: currentData ? JSON.parse(currentData) : null,
+                analysisHistory: historyData ? JSON.parse(historyData) : []
+            };
+            
+            const exportText = JSON.stringify(exportObject, null, 2);
+            const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `台股基金分析資料_${new Date().toISOString().slice(0, 10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('資料已匯出成功！');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate imported data structure
+                    if (!importedData.version || !importedData.exportDate) {
+                        throw new Error('無效的檔案格式');
+                    }
+                    
+                    // Confirm import
+                    if (!confirm(`確定要匯入資料嗎？\n\n匯出時間：${importedData.exportDate}\n\n這將會覆蓋目前的所有資料！`)) {
+                        return;
+                    }
+                    
+                    // Import current analysis data
+                    if (importedData.currentAnalysisData) {
+                        localStorage.setItem('currentAnalysisData', JSON.stringify(importedData.currentAnalysisData));
+                    }
+                    
+                    // Import analysis history
+                    if (importedData.analysisHistory) {
+                        analysisHistory = importedData.analysisHistory;
+                        localStorage.setItem('analysisHistory', JSON.stringify(analysisHistory));
+                    }
+                    
+                    // Reload the page data
+                    loadSavedData();
+                    displayUpdateHistory();
+                    
+                    alert('資料匯入成功！');
+                    
+                } catch (error) {
+                    alert('匯入失敗：檔案格式錯誤或檔案損壞');
+                    console.error('Import error:', error);
+                }
+            };
+            
+            reader.readAsText(file, 'UTF-8');
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
         // Auto-save data when inputs change
         document.getElementById('oneYearHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('sixMonthsHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('threeMonthsHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('dataMonth').addEventListener('change', saveCurrentData);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cf3b728245f1c0',t:'MTc1NDgyNjE3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d59141658df1dc',t:'MTc1NDg5MjYwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
