@@ -206,21 +206,21 @@
                 const cleanStock = stock.trim();
                 stockCount[cleanStock] = (stockCount[cleanStock] || 0) + 1;
                 if (!stockPeriods[cleanStock]) stockPeriods[cleanStock] = [];
-                stockPeriods[cleanStock].push('一年前');
+                stockPeriods[cleanStock].push('一年');
             });
 
             sixMonthsStocks.forEach(stock => {
                 const cleanStock = stock.trim();
                 stockCount[cleanStock] = (stockCount[cleanStock] || 0) + 1;
                 if (!stockPeriods[cleanStock]) stockPeriods[cleanStock] = [];
-                stockPeriods[cleanStock].push('六個月前');
+                stockPeriods[cleanStock].push('六個月');
             });
 
             threeMonthsStocks.forEach(stock => {
                 const cleanStock = stock.trim();
                 stockCount[cleanStock] = (stockCount[cleanStock] || 0) + 1;
                 if (!stockPeriods[cleanStock]) stockPeriods[cleanStock] = [];
-                stockPeriods[cleanStock].push('三個月前');
+                stockPeriods[cleanStock].push('三個月');
             });
 
             // Sort by frequency, then by name for consistent ordering of ties
@@ -288,7 +288,7 @@
                             </span>
                         </div>
                         <div class="text-sm text-gray-600">
-                            出現時期：${stock.periods.join('、')}
+                            排名時期：${stock.periods.join('、')}
                         </div>
                     </div>
                 `;
@@ -477,5 +477,5 @@
         document.getElementById('threeMonthsHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('dataMonth').addEventListener('change', saveCurrentData);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f54c4e1095f1f0',t:'MTc1NTIyNTMyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f56e15425bf1f4',t:'MTc1NTIyNjcwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
