@@ -60,6 +60,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Input Section -->
             <div class="space-y-6">
+                <!-- ETF Holdings -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">主動式ETF持股明細</h2>
+                    <textarea id="etfHoldings" 
+                              placeholder="請輸入股票名稱，每行一個"
+                              class="w-full h-32 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+                </div>
+
                 <!-- One Year Holdings -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">一年前三名持股明細</h2>
@@ -157,6 +165,7 @@
             if (savedData) {
                 const data = JSON.parse(savedData);
                 document.getElementById('dataMonth').value = data.dataMonth || '2025-06';
+                document.getElementById('etfHoldings').value = data.etf || '';
                 document.getElementById('oneYearHoldings').value = data.oneYear || '';
                 document.getElementById('sixMonthsHoldings').value = data.sixMonths || '';
                 document.getElementById('threeMonthsHoldings').value = data.threeMonths || '';
@@ -171,6 +180,7 @@
         function saveCurrentData(results = null) {
             const data = {
                 dataMonth: document.getElementById('dataMonth').value,
+                etf: document.getElementById('etfHoldings').value,
                 oneYear: document.getElementById('oneYearHoldings').value,
                 sixMonths: document.getElementById('sixMonthsHoldings').value,
                 threeMonths: document.getElementById('threeMonthsHoldings').value,
@@ -182,17 +192,19 @@
         }
 
         function analyzeHoldings() {
+            const etf = document.getElementById('etfHoldings').value.trim();
             const oneYear = document.getElementById('oneYearHoldings').value.trim();
             const sixMonths = document.getElementById('sixMonthsHoldings').value.trim();
             const threeMonths = document.getElementById('threeMonthsHoldings').value.trim();
             const dataMonth = document.getElementById('dataMonth').value;
 
-            if (!oneYear && !sixMonths && !threeMonths) {
+            if (!etf && !oneYear && !sixMonths && !threeMonths) {
                 alert('請至少輸入一個時期的持股資料');
                 return;
             }
 
             // Parse holdings from each period
+            const etfStocks = etf ? etf.split('\n').filter(stock => stock.trim()) : [];
             const oneYearStocks = oneYear ? oneYear.split('\n').filter(stock => stock.trim()) : [];
             const sixMonthsStocks = sixMonths ? sixMonths.split('\n').filter(stock => stock.trim()) : [];
             const threeMonthsStocks = threeMonths ? threeMonths.split('\n').filter(stock => stock.trim()) : [];
@@ -202,6 +214,13 @@
             const stockPeriods = {};
 
             // Process each period
+            etfStocks.forEach(stock => {
+                const cleanStock = stock.trim();
+                stockCount[cleanStock] = (stockCount[cleanStock] || 0) + 1;
+                if (!stockPeriods[cleanStock]) stockPeriods[cleanStock] = [];
+                stockPeriods[cleanStock].push('ETF');
+            });
+
             oneYearStocks.forEach(stock => {
                 const cleanStock = stock.trim();
                 stockCount[cleanStock] = (stockCount[cleanStock] || 0) + 1;
@@ -381,6 +400,7 @@
         function clearAllData() {
             if (confirm('確定要清除輸入資料和分析結果嗎？（更新記錄不會被清除）')) {
                 // Clear form data
+                document.getElementById('etfHoldings').value = '';
                 document.getElementById('oneYearHoldings').value = '';
                 document.getElementById('sixMonthsHoldings').value = '';
                 document.getElementById('threeMonthsHoldings').value = '';
@@ -472,10 +492,11 @@
         }
 
         // Auto-save data when inputs change
+        document.getElementById('etfHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('oneYearHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('sixMonthsHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('threeMonthsHoldings').addEventListener('input', saveCurrentData);
         document.getElementById('dataMonth').addEventListener('change', saveCurrentData);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f56e15425bf1f4',t:'MTc1NTIyNjcwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f57a1653a1f218',t:'MTc1NTIyNzE5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
