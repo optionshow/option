@@ -43,7 +43,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="setup-counter">0/1</span>
-                    <button onclick="clearSection('setup')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition-colors">
+                    <button onclick="clearSection('setup')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-1.5 rounded-full transition-colors text-sm">
                         🗑️
                     </button>
                     <span class="text-2xl" id="setup-arrow">▼</span>
@@ -74,7 +74,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="day1-counter">0/7</span>
-                    <button onclick="clearSection('day1')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition-colors">
+                    <button onclick="clearSection('day1')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-1.5 rounded-full transition-colors text-sm">
                         🗑️
                     </button>
                     <span class="text-2xl" id="day1-arrow">▼</span>
@@ -181,7 +181,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="day2-counter">0/5</span>
-                    <button onclick="clearSection('day2')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition-colors">
+                    <button onclick="clearSection('day2')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-1.5 rounded-full transition-colors text-sm">
                         🗑️
                     </button>
                     <span class="text-2xl" id="day2-arrow">▼</span>
@@ -256,7 +256,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="day3-counter">0/7</span>
-                    <button onclick="clearSection('day3')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition-colors">
+                    <button onclick="clearSection('day3')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-1.5 rounded-full transition-colors text-sm">
                         🗑️
                     </button>
                     <span class="text-2xl" id="day3-arrow">▼</span>
@@ -598,33 +598,29 @@
 
         // Clear all checks
         function clearAllChecks() {
-            if (confirm('確定要清空所有勾選項目嗎？')) {
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                const items = document.querySelectorAll('.checklist-item');
-                
-                checkboxes.forEach(cb => cb.checked = false);
-                items.forEach(item => item.classList.remove('completed'));
-                
-                ['setup', 'day1', 'day2', 'day3'].forEach(section => {
-                    localStorage.removeItem(`trading-checklist-${section}`);
-                });
-                
-                updateAllCounters();
-            }
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const items = document.querySelectorAll('.checklist-item');
+            
+            checkboxes.forEach(cb => cb.checked = false);
+            items.forEach(item => item.classList.remove('completed'));
+            
+            ['setup', 'day1', 'day2', 'day3'].forEach(section => {
+                localStorage.removeItem(`trading-checklist-${section}`);
+            });
+            
+            updateAllCounters();
         }
 
         // Clear specific section
         function clearSection(section) {
-            if (confirm(`確定要清空${getSectionName(section)}的所有勾選項目嗎？`)) {
-                const checkboxes = document.querySelectorAll(`#${section}-content input[type="checkbox"]`);
-                const items = document.querySelectorAll(`#${section}-content .checklist-item`);
-                
-                checkboxes.forEach(cb => cb.checked = false);
-                items.forEach(item => item.classList.remove('completed'));
-                
-                localStorage.removeItem(`trading-checklist-${section}`);
-                updateCounter(section);
-            }
+            const checkboxes = document.querySelectorAll(`#${section}-content input[type="checkbox"]`);
+            const items = document.querySelectorAll(`#${section}-content .checklist-item`);
+            
+            checkboxes.forEach(cb => cb.checked = false);
+            items.forEach(item => item.classList.remove('completed'));
+            
+            localStorage.removeItem(`trading-checklist-${section}`);
+            updateCounter(section);
         }
 
         // Get section display name
@@ -680,5 +676,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fd9dcb0112f255',t:'MTc1NTMxMjU0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fdab4fd7c2f251',t:'MTc1NTMxMzA5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
