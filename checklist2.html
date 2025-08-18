@@ -180,7 +180,7 @@
                     <p class="text-lg opacity-90">調整交易參數與增加投入</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="day2-counter">0/5</span>
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm" id="day2-counter">0/7</span>
                     <button onclick="clearSection('day2')" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-1.5 rounded-full transition-colors text-sm">
                         🗑️
                     </button>
@@ -207,7 +207,7 @@
                                     <input type="checkbox" id="day2-2" class="mr-3 w-5 h-5 text-blue-600 mt-1">
                                     <div>
                                         <span class="text-gray-800 font-medium text-xl">動態Sell價設定(日/夜盤，最少2次)</span>
-                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 0.9rem;">使用 智能報價 設定動態Sell價，尋找價差接近 8 的Call和Put</p>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 0.9rem;">使用 智能報價 設定動態Sell價，尋找價差接近 8 的Call和Put（若虧損，價差改接近14）</p>
                                     </div>
                                 </label>
                             </div>
@@ -242,6 +242,31 @@
                                 <p class="text-sm text-gray-600 mt-1" style="font-size: 0.9rem;">調整為50%~20%，若損益不佳（-2％）調整為2%</p>
                             </div>
                         </label>
+                    </div>
+
+                    <div class="bg-red-50 p-3 rounded-lg mb-3">
+                        <h4 class="font-semibold text-red-800 mb-2 text-xl">⚠️ 獲利不理想時</h4>
+                        <div class="space-y-3">
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day2-6')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day2-6" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium text-xl">停損停利設定</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 0.9rem;">針對SC+BC和SP+BP啟用「停利」/「停損」功能</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="checklist-item p-4 border rounded-lg cursor-pointer transition-colors bg-white" onclick="toggleCheck('day2-7')">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="day2-7" class="mr-3 w-5 h-5 text-blue-600 mt-1">
+                                    <div>
+                                        <span class="text-gray-800 font-medium text-xl">最終調整</span>
+                                        <p class="text-sm text-gray-600 mt-1" style="font-size: 0.9rem;">勾選多空溫度建倉，保留可用餘額調整為2%，點擊「儲存」</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -676,5 +701,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fdab4fd7c2f251',t:'MTc1NTMxMzA5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'970dc4a0f271f228',t:'MTc1NTQ4MTkwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
