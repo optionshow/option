@@ -30,24 +30,7 @@
                     主動群益台灣強棒(00982A.TW) - 持股分析
                 </a>
             </h1>
-            <div class="flex flex-wrap gap-4 text-sm">
-                <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 bg-yellow-100 border-l-4 border-yellow-500 rounded-sm"></div>
-                    <span>新增個股</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 bg-red-100 border-l-4 border-red-500 rounded-sm"></div>
-                    <span>比例增加</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 bg-green-100 border-l-4 border-green-500 rounded-sm"></div>
-                    <span>比例減少</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 bg-gray-100 rounded-sm"></div>
-                    <span>無變化</span>
-                </div>
-            </div>
+
         </div>
 
         <!-- Data Input Section -->
@@ -333,8 +316,34 @@
             // Create header with dates
             let headerHtml = `
                 <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
-                    <h3 class="text-xl font-semibold mb-2">持股比較分析</h3>
-                    <p class="text-blue-100">共 ${portfolioData.length} 個日期，${stockList.length} 檔個股</p>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">持股比較分析</h3>
+                            <p class="text-blue-100">共 ${portfolioData.length} 個日期，${stockList.length} 檔個股</p>
+                        </div>
+                        <div class="flex flex-wrap gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-yellow-100 border-l-4 border-yellow-500 rounded-sm"></div>
+                                <span>新增個股</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-red-100 border-l-4 border-red-500 rounded-sm"></div>
+                                <span>比例增加</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-green-100 border-l-4 border-green-500 rounded-sm"></div>
+                                <span>比例減少</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-orange-100 rounded-sm"></div>
+                                <span>高於平均</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-gray-100 rounded-sm"></div>
+                                <span>無變化</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="p-6">
                     <div class="overflow-x-auto">
@@ -362,8 +371,29 @@
 
             // Create rows for each stock
             stockList.forEach((stockName, index) => {
+                // Calculate average percentage for this stock first
+                let totalPercentage = 0, count = 0;
+                portfolioData.forEach(dayData => {
+                    const holding = dayData.holdings.find(h => h.name === stockName);
+                    if (holding) {
+                        totalPercentage += holding.percentage;
+                        count++;
+                    }
+                });
+                const averagePercentage = count > 0 ? totalPercentage / count : 0;
+                
+                // Get latest date holding for comparison
+                const latestData = portfolioData[portfolioData.length - 1];
+                const latestHolding = latestData.holdings.find(h => h.name === stockName);
+                const isAboveAverage = latestHolding && latestHolding.percentage > averagePercentage;
+                
+                let stockNameClass = 'py-2 px-3 font-medium text-gray-800 sticky left-0 bg-white border-r';
+                if (isAboveAverage) {
+                    stockNameClass = 'py-2 px-3 font-medium text-gray-800 sticky left-0 bg-orange-100 border-r';
+                }
+                
                 let rowHtml = `<tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="py-2 px-3 font-medium text-gray-800 sticky left-0 bg-white border-r">${index + 1}. ${stockName}</td>`;
+                    <td class="${stockNameClass}">${index + 1}. ${stockName}</td>`;
                 
                 portfolioData.forEach((dayData, dayIndex) => {
                     const holding = dayData.holdings.find(h => h.name === stockName);
@@ -414,18 +444,13 @@
                     }
                 });
                 
-                // Calculate and add average percentage for this stock
-                let totalPercentage = 0, count = 0;
-                portfolioData.forEach(dayData => {
-                    const holding = dayData.holdings.find(h => h.name === stockName);
-                    if (holding) {
-                        totalPercentage += holding.percentage;
-                        count++;
-                    }
-                });
-                const averagePercentage = count > 0 ? totalPercentage / count : 0;
+                // Add average percentage column with orange background if above average
+                let avgCellClass = 'py-2 px-3 text-center bg-blue-50 font-semibold text-blue-800';
+                if (isAboveAverage) {
+                    avgCellClass = 'py-2 px-3 text-center bg-orange-100 font-semibold text-orange-800';
+                }
                 
-                rowHtml += `<td class="py-2 px-3 text-center bg-blue-50 font-semibold text-blue-800">
+                rowHtml += `<td class="${avgCellClass}">
                     ${averagePercentage.toFixed(2)}%
                 </td>`;
                 
@@ -511,5 +536,5 @@
         
         document.getElementById('dateInput').value = getPreviousBusinessDay().toISOString().split('T')[0];
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'971981ee2060f1c0',t:'MTc1NTYwNTAwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'971993a22017f1fd',t:'MTc1NTYwNTczMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
