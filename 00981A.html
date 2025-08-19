@@ -299,14 +299,31 @@
                 });
             });
             
-            // Get the latest date data for sorting
-            const latestData = portfolioData[portfolioData.length - 1];
+            // Calculate average percentage for each stock and sort by average
             const stockList = Array.from(allStocks).sort((a, b) => {
-                const aHolding = latestData.holdings.find(h => h.name === a);
-                const bHolding = latestData.holdings.find(h => h.name === b);
-                const aPercentage = aHolding ? aHolding.percentage : 0;
-                const bPercentage = bHolding ? bHolding.percentage : 0;
-                return bPercentage - aPercentage; // Descending order
+                // Calculate average percentage for stock a
+                let aTotal = 0, aCount = 0;
+                portfolioData.forEach(dayData => {
+                    const holding = dayData.holdings.find(h => h.name === a);
+                    if (holding) {
+                        aTotal += holding.percentage;
+                        aCount++;
+                    }
+                });
+                const aAverage = aCount > 0 ? aTotal / aCount : 0;
+                
+                // Calculate average percentage for stock b
+                let bTotal = 0, bCount = 0;
+                portfolioData.forEach(dayData => {
+                    const holding = dayData.holdings.find(h => h.name === b);
+                    if (holding) {
+                        bTotal += holding.percentage;
+                        bCount++;
+                    }
+                });
+                const bAverage = bCount > 0 ? bTotal / bCount : 0;
+                
+                return bAverage - aAverage; // Descending order by average
             });
 
             // Create comparison table
@@ -335,6 +352,12 @@
                     </button>
                 </th>`;
             });
+            
+            // Add average column header
+            headerHtml += `<th class="text-center py-3 px-3 font-semibold text-gray-700 min-w-[100px] bg-blue-50">
+                <div>平均持股%</div>
+            </th>`;
+            
             headerHtml += '</tr></thead><tbody>';
 
             // Create rows for each stock
@@ -390,6 +413,21 @@
                         </td>`;
                     }
                 });
+                
+                // Calculate and add average percentage for this stock
+                let totalPercentage = 0, count = 0;
+                portfolioData.forEach(dayData => {
+                    const holding = dayData.holdings.find(h => h.name === stockName);
+                    if (holding) {
+                        totalPercentage += holding.percentage;
+                        count++;
+                    }
+                });
+                const averagePercentage = count > 0 ? totalPercentage / count : 0;
+                
+                rowHtml += `<td class="py-2 px-3 text-center bg-blue-50 font-semibold text-blue-800">
+                    ${averagePercentage.toFixed(2)}%
+                </td>`;
                 
                 rowHtml += '</tr>';
                 headerHtml += rowHtml;
@@ -473,5 +511,5 @@
         
         document.getElementById('dateInput').value = getPreviousBusinessDay().toISOString().split('T')[0];
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'971975c7f1eef1b8',t:'MTc1NTYwNDUwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'971981ee2060f1c0',t:'MTc1NTYwNTAwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
