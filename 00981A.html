@@ -21,8 +21,13 @@
             <h1 class="text-3xl font-bold text-gray-800 mb-4">
                 <a href="https://www.moneydj.com/ETF/X/Basic/Basic0007B.xdjhtm?etfid=00981A.TW" 
                    target="_blank" 
-                   class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                   class="text-blue-600 hover:text-blue-800 transition-colors duration-200 block mb-2">
                     主動統一台股增長(00981A.TW) - 持股分析
+                </a>
+                <a href="https://www.moneydj.com/ETF/X/Basic/Basic0007B.xdjhtm?etfid=00982A.TW" 
+                   target="_blank" 
+                   class="text-blue-600 hover:text-blue-800 transition-colors duration-200 block">
+                    主動群益台灣強棒(00982A.TW) - 持股分析
                 </a>
             </h1>
             <div class="flex flex-wrap gap-4 text-sm">
@@ -211,6 +216,7 @@
 
             // Parse stock data
             const holdings = [];
+            const stockMap = new Map(); // Use Map to consolidate duplicate stocks
             const lines = stockDataText.trim().split('\n');
             
             for (let line of lines) {
@@ -219,9 +225,19 @@
                     const name = parts.slice(0, -1).join(' ');
                     const percentage = parseFloat(parts[parts.length - 1]);
                     if (!isNaN(percentage)) {
-                        holdings.push({name, percentage});
+                        // If stock already exists, add to existing percentage
+                        if (stockMap.has(name)) {
+                            stockMap.set(name, stockMap.get(name) + percentage);
+                        } else {
+                            stockMap.set(name, percentage);
+                        }
                     }
                 }
+            }
+            
+            // Convert Map to array
+            for (let [name, percentage] of stockMap) {
+                holdings.push({name, percentage});
             }
 
             if (holdings.length === 0) {
@@ -457,5 +473,5 @@
         
         document.getElementById('dateInput').value = getPreviousBusinessDay().toISOString().split('T')[0];
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9718dc8d903cf1cc',t:'MTc1NTU5ODIzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97196f3ef255f228',t:'MTc1NTYwNDIzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
