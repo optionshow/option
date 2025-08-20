@@ -202,6 +202,7 @@
             // Parse stock data
             const holdings = [];
             const stockMap = new Map(); // Use Map to consolidate duplicate stocks
+            const stockCounts = new Map(); // Track how many times each stock appears
             const lines = stockDataText.trim().split('\n');
             
             for (let line of lines) {
@@ -210,19 +211,23 @@
                     const name = parts.slice(0, -1).join(' ');
                     const percentage = parseFloat(parts[parts.length - 1]);
                     if (!isNaN(percentage)) {
-                        // If stock already exists, add to existing percentage
+                        // If stock already exists, add to existing percentage and increment count
                         if (stockMap.has(name)) {
                             stockMap.set(name, stockMap.get(name) + percentage);
+                            stockCounts.set(name, stockCounts.get(name) + 1);
                         } else {
                             stockMap.set(name, percentage);
+                            stockCounts.set(name, 1);
                         }
                     }
                 }
             }
             
-            // Convert Map to array
-            for (let [name, percentage] of stockMap) {
-                holdings.push({name, percentage});
+            // Convert Map to array and calculate averages for duplicates
+            for (let [name, totalPercentage] of stockMap) {
+                const count = stockCounts.get(name);
+                const averagePercentage = count > 1 ? totalPercentage / count : totalPercentage;
+                holdings.push({name, percentage: averagePercentage});
             }
 
             if (holdings.length === 0) {
@@ -534,5 +539,5 @@
         
         document.getElementById('dateInput').value = getPreviousBusinessDay().toISOString().split('T')[0];
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'971a1c5de519f224',t:'MTc1NTYxMTMzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97229d4577988494',t:'MTc1NTcwMDQ5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
