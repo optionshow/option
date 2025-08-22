@@ -467,7 +467,7 @@
             const summaryDiv = document.createElement('div');
             summaryDiv.className = 'bg-white rounded-xl shadow-lg p-6 mt-6';
             
-            let summaryHtml = '<h3 class="text-lg font-semibold text-gray-800 mb-4">統計摘要</h3><div class="grid md:grid-cols-3 gap-4">';
+            let summaryHtml = '<h3 class="text-lg font-semibold text-gray-800 mb-4">統計摘要</h3><div class="flex flex-wrap gap-4">';
             
             portfolioData.forEach((dayData, index) => {
                 const previousData = index > 0 ? portfolioData[index - 1] : null;
@@ -495,9 +495,9 @@
                 }
                 
                 summaryHtml += `
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h4 class="font-semibold text-gray-800 mb-2">${dayData.date.substring(5)}</h4>
-                        <div class="space-y-1 text-sm">
+                    <div class="border border-gray-200 rounded-lg p-4 flex-shrink-0">
+                        <h4 class="font-semibold text-gray-800 mb-2 whitespace-nowrap">${dayData.date.substring(5)}</h4>
+                        <div class="space-y-1 text-sm whitespace-nowrap">
                             <div>總持股：${dayData.holdings.length} 檔</div>
                             ${previousData ? `
                                 <div class="text-yellow-600">新增：${newStocks} 檔</div>
@@ -537,5 +537,5 @@
         
         document.getElementById('dateInput').value = getPreviousBusinessDay().toISOString().split('T')[0];
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9722b28d3675f1b8',t:'MTc1NTcwMTM2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97317133b0cbf20d',t:'MTc1NTg1NTk3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
