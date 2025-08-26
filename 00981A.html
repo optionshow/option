@@ -522,9 +522,10 @@
                             <div>總持股：${dayData.holdings.length} 檔</div>
                             ${previousData ? `
                                 <div class="text-yellow-600">新增：${newStocks} 檔</div>
-                                <div class="text-red-600">增加：${increasedStocks} 檔</div>
-                                <div class="text-green-600">減少：${decreasedStocks} 檔</div>
+                                <div class="text-red-600">比例增加：${increasedStocks} 檔</div>
+                                <div class="text-green-600">比例減少：${decreasedStocks} 檔</div>
                                 <div class="text-green-600">移除：${removedStocks} 檔</div>
+                                <div class="text-xs text-gray-500 mt-1">與前一日期比較</div>
                             ` : '<div class="text-gray-500">基準日期</div>'}
                         </div>
                     </div>
@@ -558,5 +559,5 @@
         
         document.getElementById('dateInput').value = getPreviousBusinessDay().toISOString().split('T')[0];
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97319a03c7d6f238',t:'MTc1NTg1NzY0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975070fc4371f1c8',t:'MTc1NjE4MTAyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
