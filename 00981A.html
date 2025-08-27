@@ -356,6 +356,10 @@
                                 <div class="w-4 h-4 bg-orange-100 rounded-sm"></div>
                                 <span>高於平均</span>
                             </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-orange-300 rounded-sm"></div>
+                                <span>持續增加</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -401,8 +405,25 @@
                 const latestHolding = latestData.holdings.find(h => h.name === stockName);
                 const isAboveAverage = latestHolding && latestHolding.percentage > averagePercentage;
                 
+                // Check if stock has been consistently increasing
+                let isConsistentlyIncreasing = false;
+                if (portfolioData.length > 1) {
+                    isConsistentlyIncreasing = true;
+                    for (let i = 1; i < portfolioData.length; i++) {
+                        const currentHolding = portfolioData[i].holdings.find(h => h.name === stockName);
+                        const previousHolding = portfolioData[i - 1].holdings.find(h => h.name === stockName);
+                        
+                        if (!currentHolding || !previousHolding || currentHolding.percentage <= previousHolding.percentage) {
+                            isConsistentlyIncreasing = false;
+                            break;
+                        }
+                    }
+                }
+                
                 let stockNameClass = 'py-2 px-3 font-medium text-gray-800 sticky left-0 bg-white border-r';
-                if (isAboveAverage) {
+                if (isConsistentlyIncreasing) {
+                    stockNameClass = 'py-2 px-3 font-medium text-gray-800 sticky left-0 bg-orange-300 border-r';
+                } else if (isAboveAverage) {
                     stockNameClass = 'py-2 px-3 font-medium text-gray-800 sticky left-0 bg-orange-100 border-r';
                 }
                 
@@ -468,7 +489,9 @@
                 
                 // Add average percentage column with orange background if above average
                 let avgCellClass = 'py-2 px-3 text-center bg-blue-50 font-semibold text-blue-800';
-                if (isAboveAverage) {
+                if (isConsistentlyIncreasing) {
+                    avgCellClass = 'py-2 px-3 text-center bg-orange-300 font-semibold text-orange-900';
+                } else if (isAboveAverage) {
                     avgCellClass = 'py-2 px-3 text-center bg-orange-100 font-semibold text-orange-800';
                 }
                 
@@ -559,5 +582,5 @@
         
         document.getElementById('dateInput').value = getPreviousBusinessDay().toISOString().split('T')[0];
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975070fc4371f1c8',t:'MTc1NjE4MTAyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9757ef9b11aff209',t:'MTc1NjI1OTYxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
