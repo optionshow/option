@@ -405,17 +405,30 @@
                 const latestHolding = latestData.holdings.find(h => h.name === stockName);
                 const isAboveAverage = latestHolding && latestHolding.percentage > averagePercentage;
                 
-                // Check if stock has been consistently increasing
+                // Check if stock has been consistently increasing (including newly added stocks that increase after being added)
                 let isConsistentlyIncreasing = false;
                 if (portfolioData.length > 1) {
-                    isConsistentlyIncreasing = true;
-                    for (let i = 1; i < portfolioData.length; i++) {
-                        const currentHolding = portfolioData[i].holdings.find(h => h.name === stockName);
-                        const previousHolding = portfolioData[i - 1].holdings.find(h => h.name === stockName);
-                        
-                        if (!currentHolding || !previousHolding || currentHolding.percentage <= previousHolding.percentage) {
-                            isConsistentlyIncreasing = false;
+                    // Find the first date this stock appears
+                    let firstAppearanceIndex = -1;
+                    for (let i = 0; i < portfolioData.length; i++) {
+                        const holding = portfolioData[i].holdings.find(h => h.name === stockName);
+                        if (holding) {
+                            firstAppearanceIndex = i;
                             break;
+                        }
+                    }
+                    
+                    // If stock appears and there are subsequent dates, check for consistent increases
+                    if (firstAppearanceIndex >= 0 && firstAppearanceIndex < portfolioData.length - 1) {
+                        isConsistentlyIncreasing = true;
+                        for (let i = firstAppearanceIndex + 1; i < portfolioData.length; i++) {
+                            const currentHolding = portfolioData[i].holdings.find(h => h.name === stockName);
+                            const previousHolding = portfolioData[i - 1].holdings.find(h => h.name === stockName);
+                            
+                            if (!currentHolding || !previousHolding || currentHolding.percentage <= previousHolding.percentage) {
+                                isConsistentlyIncreasing = false;
+                                break;
+                            }
                         }
                     }
                 }
@@ -582,5 +595,5 @@
         
         document.getElementById('dateInput').value = getPreviousBusinessDay().toISOString().split('T')[0];
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9757ef9b11aff209',t:'MTc1NjI1OTYxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97629c36b5903321',t:'MTc1NjM3MTU0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
