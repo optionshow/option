@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2canvas for Screenshot -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         /* Custom scrollbar for dark theme */
         ::-webkit-scrollbar {
@@ -34,7 +36,7 @@
             <i data-lucide="activity" class="w-6 h-6 text-indigo-400"></i>
             <h1 class="text-xl font-bold text-white tracking-wide">關鍵點位戰情室</h1>
         </div>
-        <div class="flex items-center gap-4 text-sm">
+        <div class="flex items-center gap-3 text-sm">
            <div class="flex items-center gap-2 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
              <span class="text-slate-400">過濾閾值:</span>
              <input 
@@ -44,16 +46,24 @@
                 class="w-16 bg-transparent text-center focus:outline-none text-indigo-300 font-mono"
              />
            </div>
+           
+           <button 
+             id="export-btn"
+             class="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded-full transition-colors cursor-pointer shadow-lg shadow-indigo-900/20"
+           >
+             <i data-lucide="image-down" class="w-4 h-4"></i> 匯出圖片
+           </button>
+
            <button 
              id="clear-btn"
-             class="flex items-center gap-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+             class="flex items-center gap-1 text-slate-400 hover:text-white transition-colors cursor-pointer ml-2"
            >
              <i data-lucide="refresh-ccw" class="w-4 h-4"></i> 清除
            </button>
         </div>
     </header>
 
-    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+    <main id="capture-area" class="flex-1 flex flex-col md:flex-row overflow-hidden relative bg-slate-950">
         
         <!-- Column 1: Input -->
         <div class="w-full md:w-1/3 flex flex-col border-r border-slate-800 min-h-[300px]">
@@ -74,7 +84,7 @@
                 <span id="point-count" class="text-indigo-400">0 筆數據</span>
             </div>
             
-            <div id="points-list" class="flex-1 overflow-y-auto p-2 space-y-2">
+            <div id="points-list" class="flex-1 overflow-y-auto p-2 space-y-1">
                 <!-- Content will be injected here via JS -->
             </div>
         </div>
@@ -94,6 +104,9 @@
 
     <script>
         // --- Configuration & State ---
+        const STORAGE_KEY_TEXT = 'kpa_saved_text';
+        const STORAGE_KEY_THRESHOLD = 'kpa_saved_threshold';
+
         const defaultText = `核心點位 (B2)
 27707
 趨勢 Bias0
@@ -111,23 +124,84 @@
         const thresholdInput = document.getElementById('threshold-input');
         const inputText = document.getElementById('input-text');
         const clearBtn = document.getElementById('clear-btn');
+        const exportBtn = document.getElementById('export-btn');
         const pointsListEl = document.getElementById('points-list');
         const pointCountEl = document.getElementById('point-count');
         const vizContainerEl = document.getElementById('viz-container');
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
-            inputText.value = defaultText;
+            loadState(); // Load saved data
+            analyze();   // Initial analysis
+        });
+
+        inputText.addEventListener('input', () => {
+            saveState();
             analyze();
         });
 
-        inputText.addEventListener('input', analyze);
-        thresholdInput.addEventListener('input', analyze);
+        thresholdInput.addEventListener('input', () => {
+            saveState();
+            analyze();
+        });
         
         clearBtn.addEventListener('click', () => {
             inputText.value = '';
+            saveState();
             analyze();
         });
+
+        exportBtn.addEventListener('click', exportImage);
+
+        // --- Persistence Logic (Local Storage) ---
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY_TEXT, inputText.value);
+            localStorage.setItem(STORAGE_KEY_THRESHOLD, thresholdInput.value);
+        }
+
+        function loadState() {
+            const savedText = localStorage.getItem(STORAGE_KEY_TEXT);
+            const savedThreshold = localStorage.getItem(STORAGE_KEY_THRESHOLD);
+
+            if (savedText !== null) {
+                inputText.value = savedText;
+            } else {
+                inputText.value = defaultText;
+            }
+
+            if (savedThreshold !== null) {
+                thresholdInput.value = savedThreshold;
+            }
+        }
+
+        // --- Export Logic ---
+        function exportImage() {
+            const element = document.getElementById('capture-area');
+            const originalBtnText = exportBtn.innerHTML;
+            
+            // Show loading state
+            exportBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> 處理中...`;
+            lucide.createIcons();
+
+            html2canvas(element, {
+                backgroundColor: '#020617', // slate-950
+                scale: 2 // High resolution
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `戰情分析_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // Restore button
+                exportBtn.innerHTML = originalBtnText;
+                lucide.createIcons();
+            }).catch(err => {
+                console.error("Export failed:", err);
+                alert("匯出失敗，請重試");
+                exportBtn.innerHTML = originalBtnText;
+                lucide.createIcons();
+            });
+        }
 
         // --- Core Logic ---
         function analyze() {
@@ -286,18 +360,19 @@
                                   point.type === 'support' ? 'text-green-400' : 
                                   point.type === 'core' ? 'text-amber-400' : 'text-indigo-400';
                 
+                // ADJUSTMENT: Reduced padding (p-3 -> p-2) and text size (text-2xl -> text-lg)
                 listHtml += `
-                <div class="relative group flex items-center justify-between p-3 rounded-lg border transition-all hover:scale-[1.01] hover:shadow-lg ${colors}">
+                <div class="relative group flex items-center justify-between p-2 rounded-lg border transition-all hover:scale-[1.01] hover:shadow-lg ${colors}">
                   <div class="flex flex-col max-w-[70%]">
-                    <span class="text-xs opacity-70 mb-1 flex items-center gap-1 font-medium truncate">
+                    <span class="text-[10px] opacity-70 mb-0.5 flex items-center gap-1 font-medium truncate">
                       <i data-lucide="${icon}" class="w-3 h-3 ${iconColor}"></i>
                       ${point.label === '未定義' ? '未知屬性' : point.label}
                     </span>
-                    <span class="text-2xl font-mono font-bold tracking-tight">
+                    <span class="text-lg font-mono font-bold tracking-tight">
                       ${point.value.toLocaleString()}
                     </span>
                   </div>
-                  <div class="text-[10px] text-right opacity-30 max-w-[80px] truncate hidden md:block">
+                  <div class="text-[9px] text-right opacity-30 max-w-[80px] truncate hidden md:block">
                      ${point.originalLine}
                   </div>
                 </div>`;
