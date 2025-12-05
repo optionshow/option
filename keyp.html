@@ -291,9 +291,6 @@
                 }
             });
 
-            // Sort Descending
-            extractedPoints.sort((a, b) => b.value - a.value);
-
             // Deduplicate
             const uniquePoints = extractedPoints.filter((point, index, self) =>
                 index === self.findIndex((t) => (
@@ -301,7 +298,31 @@
                 ))
             );
 
-            render(uniquePoints);
+            // --- FILTER: Remove points within 0.5% of Core Point ---
+            const corePoint = uniquePoints.find(p => p.type === 'core');
+            let finalPoints = uniquePoints;
+
+            if (corePoint) {
+                const buffer = corePoint.value * 0.005; // 0.5%
+                const upper = corePoint.value + buffer;
+                const lower = corePoint.value - buffer;
+
+                finalPoints = uniquePoints.filter(p => {
+                    // Keep the core point itself
+                    if (p === corePoint) return true;
+                    
+                    // Filter out if value is within [lower, upper]
+                    if (p.value >= lower && p.value <= upper) {
+                        return false;
+                    }
+                    return true;
+                });
+            }
+
+            // Sort Descending (after filtering)
+            finalPoints.sort((a, b) => b.value - a.value);
+
+            render(finalPoints);
         }
 
         // --- Helpers ---
