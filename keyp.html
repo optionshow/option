@@ -66,8 +66,8 @@
     <main id="capture-area" class="flex-1 flex flex-col md:flex-row overflow-hidden relative bg-slate-950">
         
         <!-- Column 1: Input -->
-        <div class="w-full md:w-1/3 flex flex-col border-r border-slate-800 min-h-[300px]">
-            <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+        <div class="w-full md:w-1/3 flex flex-col border-r border-slate-800 min-h-[300px] relative">
+            <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800 shrink-0">
                 原始情報輸入
             </div>
             <textarea
@@ -75,11 +75,13 @@
                 class="flex-1 w-full bg-slate-950 p-4 resize-none focus:outline-none focus:ring-1 focus:ring-indigo-900 text-slate-300 text-sm leading-relaxed font-mono"
                 placeholder="請在此貼上包含點位的分析文字..."
             ></textarea>
+            <!-- Hidden div for export rendering -->
+            <div id="input-text-export-view" class="hidden absolute inset-0 top-[41px] z-20 bg-slate-950 p-4 text-slate-300 text-sm leading-relaxed font-mono whitespace-pre-wrap overflow-hidden pointer-events-none"></div>
         </div>
 
         <!-- Column 2: List Analysis -->
         <div class="w-full md:w-1/3 flex flex-col border-r border-slate-800 bg-slate-900/50 min-h-[300px] relative">
-            <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800 flex justify-between">
+            <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800 flex justify-between shrink-0">
                 <span>點位排序 (高 → 低)</span>
                 <span id="point-count" class="text-indigo-400">0 筆數據</span>
             </div>
@@ -91,7 +93,7 @@
 
         <!-- Column 3: Visualization -->
         <div class="w-full md:w-1/3 flex flex-col bg-slate-950 relative min-h-[300px]">
-            <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+            <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800 shrink-0">
                 戰場分佈圖
             </div>
             
@@ -128,6 +130,7 @@
         const pointsListEl = document.getElementById('points-list');
         const pointCountEl = document.getElementById('point-count');
         const vizContainerEl = document.getElementById('viz-container');
+        const inputTextExportView = document.getElementById('input-text-export-view');
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -179,28 +182,45 @@
             const element = document.getElementById('capture-area');
             const originalBtnText = exportBtn.innerHTML;
             
-            // Show loading state
+            // 1. Prepare for capture: populate hidden div with textarea content and show it
+            inputTextExportView.textContent = inputText.value;
+            inputTextExportView.classList.remove('hidden');
+            // Temporarily hide the real textarea to avoid ghosting issues
+            inputText.classList.add('opacity-0');
+
+            // Show loading state on button
             exportBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> 處理中...`;
             lucide.createIcons();
 
-            html2canvas(element, {
-                backgroundColor: '#020617', // slate-950
-                scale: 2 // High resolution
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `戰情分析_${new Date().toISOString().slice(0,10)}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                
-                // Restore button
-                exportBtn.innerHTML = originalBtnText;
-                lucide.createIcons();
-            }).catch(err => {
-                console.error("Export failed:", err);
-                alert("匯出失敗，請重試");
-                exportBtn.innerHTML = originalBtnText;
-                lucide.createIcons();
-            });
+            // Use a slight delay to ensure DOM updates before capture
+            setTimeout(() => {
+                html2canvas(element, {
+                    backgroundColor: '#020617', // slate-950
+                    scale: 2 // High resolution
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `戰情分析_${new Date().toISOString().slice(0,10)}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    // Restore UI
+                    exportBtn.innerHTML = originalBtnText;
+                    lucide.createIcons();
+                    // Restore input area state
+                    inputTextExportView.classList.add('hidden');
+                    inputText.classList.remove('opacity-0');
+
+                }).catch(err => {
+                    console.error("Export failed:", err);
+                    alert("匯出失敗，請重試");
+                    // Restore UI on error
+                    exportBtn.innerHTML = originalBtnText;
+                    lucide.createIcons();
+                    // Restore input area state
+                    inputTextExportView.classList.add('hidden');
+                    inputText.classList.remove('opacity-0');
+                });
+            }, 100);
         }
 
         // --- Core Logic ---
