@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日瘦臉助手</title>
+    <!-- Tailwind CSS (樣式庫) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons (圖示庫) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* 自定義動畫與樣式 */
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out forwards;
+        }
+        /* 圓形進度條轉向 */
+        .circle-progress {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        /* 隱藏捲軸但保持滾動 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 pb-16 selection:bg-rose-100">
+
+    <!-- 應用程式容器 -->
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-slate-50 relative flex flex-col">
+        
+        <!-- 頂部導航與標題 -->
+        <header class="bg-white shadow-sm sticky top-0 z-20">
+            <div class="px-4 py-4 flex justify-between items-center">
+                <h1 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    ✨ 每日瘦臉助手
+                </h1>
+                <button onclick="resetDay()" class="text-xs text-slate-400 underline hover:text-slate-600">
+                    重置進度
+                </button>
+            </div>
+            
+            <!-- 分頁籤 (Tabs) -->
+            <div class="flex px-4 gap-2 pb-2" id="tabs-container">
+                <!-- 由 JS 動態生成 -->
+            </div>
+        </header>
+
+        <!-- 主要內容區 -->
+        <main class="flex-1 px-4 py-6" id="main-content">
+            <!-- 由 JS 動態生成：清單視圖 或 工具視圖 -->
+        </main>
+
+        <!-- 底部資訊 -->
+        <footer class="fixed bottom-0 w-full max-w-md bg-white border-t border-slate-100 py-3 text-center text-xs text-slate-400 z-10">
+            記得搭配乳液，保持放鬆心情 🌿
+        </footer>
+    </div>
+
+    <!-- 邏輯腳本 -->
+    <script>
+        // ================= 數據與狀態 =================
+        const ROUTINE_DATA = {
+            morning: {
+                title: "早晨喚醒",
+                colorClass: "from-rose-100 to-rose-200",
+                barColor: "bg-rose-400",
+                icon: "🌅",
+                tasks: [
+                    { id: "lymph_massage", name: "鎖骨淋巴排毒", desc: "握拳指關節，耳後刮推至鎖骨", type: "counter", target: 40, unit: "下", defaultSpeed: 1500 },
+                    { id: "aeiou_face", name: "AEIOU 發音操", desc: "誇張張嘴發聲，活動全臉", type: "counter", target: 10, unit: "循環", defaultSpeed: 3000 }
+                ]
+            },
+            noon: {
+                title: "午間微雕",
+                colorClass: "from-orange-100 to-orange-200",
+                barColor: "bg-orange-400",
+                icon: "☀️",
+                tasks: [
+                    { 
+                        id: "chopstick_smile", 
+                        name: "咬筷子微笑訓練", 
+                        desc: "咬住筷子，嘴角上提超過筷子水平線", 
+                        type: "timer_sets", 
+                        duration: 30, 
+                        targetSets: 4, // 增加為 4 組
+                        restTime: 10,
+                        // 每組的特定指令
+                        setInstructions: {
+                            1: "保持微笑，感受臉頰酸痛",
+                            2: "保持微笑，緩慢左右轉頭",
+                            3: "保持微笑，緩慢上下抬頭",
+                            4: "保持微笑，往左上右上抬頭"
+                        }
+                    }
+                ]
+            },
+            evening: {
+                title: "晚間放鬆",
+                colorClass: "from-indigo-100 to-indigo-200",
+                barColor: "bg-indigo-400",
+                icon: "🌙",
+                tasks: [
+                    { id: "mewing", name: "舌頭頂上顎", desc: "舌根貼上顎，頭後仰拉伸", type: "timer_reps", duration: 10, targetSets: 5, restTime: 3 },
+                    { id: "masseter_massage", name: "咀嚼肌按摩", desc: "手指關節按揉臉頰兩側酸痛點", type: "timer", duration: 60, targetSets: 1, restTime: 0 }
+                ]
+            }
+        };
+
+        // 全域狀態
+        let state = {
+            currentTab: 'morning',
+            completedTasks: JSON.parse(localStorage.getItem('faceSlim_completed') || '{}'),
+            activeTask: null,
+            // 工具狀態 (用於清理計時器)
+            activeInterval: null,
+            activeTimeout: null
+        };
+
+        // ================= 音效功能 =================
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx && AudioContext) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playTone(freq, type, duration, gainVal = 0.1) {
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.value = gainVal;
+                osc.start();
+                setTimeout(() => osc.stop(), duration);
+            } catch(e) { console.error(e); }
+        }
+
+        const playBeep = () => playTone(880, 'sine', 200, 0.1);
+        const playStart = () => playTone(600, 'sine', 400, 0.1); // 開始音效
+        const playTick = () => playTone(400, 'square', 50, 0.03);
+        const playSuccess = () => {
+            initAudio();
+            if(!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(659.25, now + 0.1);
+            gain.gain.value = 0.1;
+            osc.start();
+            setTimeout(() => osc.stop(), 400);
+        };
+
+        // ================= 核心邏輯 =================
+
+        function saveProgress() {
+            localStorage.setItem('faceSlim_completed', JSON.stringify(state.completedTasks));
+            render(); // 重新渲染更新進度條
+        }
+
+        function resetDay() {
+            if(confirm('確定要重置今天的進度嗎？')) {
+                state.completedTasks = {};
+                state.activeTask = null;
+                saveProgress();
+            }
+        }
+
+        function switchTab(tab) {
+            clearActiveTimers();
+            state.currentTab = tab;
+            state.activeTask = null;
+            render();
+        }
+
+        function openTask(taskId) {
+            const task = ROUTINE_DATA[state.currentTab].tasks.find(t => t.id === taskId);
+            state.activeTask = task;
+            render();
+        }
+
+        function backToList() {
+            clearActiveTimers();
+            state.activeTask = null;
+            render();
+        }
+
+        function completeTask(taskId) {
+            state.completedTasks[taskId] = true;
+            saveProgress();
+            // 稍微延遲後返回，讓使用者聽到成功音效
+            setTimeout(() => {
+                backToList();
+            }, 500);
+        }
+
+        function clearActiveTimers() {
+            if (state.activeInterval) clearInterval(state.activeInterval);
+            if (state.activeTimeout) clearTimeout(state.activeTimeout);
+            state.activeInterval = null;
+            state.activeTimeout = null;
+        }
+
+        // ================= 渲染功能 (View) =================
+
+        function render() {
+            renderTabs();
+            renderMain();
+            lucide.createIcons();
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tabs-container');
+            container.innerHTML = '';
+
+            Object.entries(ROUTINE_DATA).forEach(([key, data]) => {
+                const isActive = state.currentTab === key;
+                
+                // 計算進度
+                const tasks = data.tasks;
+                const completedCount = tasks.filter(t => state.completedTasks[t.id]).length;
+                const progressPct = Math.round((completedCount / tasks.length) * 100);
+
+                const btn = document.createElement('button');
+                btn.className = `flex-1 py-3 rounded-xl transition-all relative overflow-hidden ${isActive ? 'bg-white shadow-md ring-2 ring-slate-100' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}`;
+                btn.onclick = () => switchTab(key);
+                
+                let progressHtml = '';
+                if (isActive) {
+                    progressHtml = `<div class="absolute bottom-0 left-0 h-1 transition-all duration-500 ${data.barColor}" style="width: ${progressPct}%"></div>`;
+                }
+
+                btn.innerHTML = `
+                    <div class="relative z-10 flex flex-col items-center ${isActive ? 'text-slate-700' : ''}">
+                        <span class="text-lg mb-1">${data.icon}</span>
+                        <span class="text-xs font-bold">${data.title}</span>
+                    </div>
+                    ${progressHtml}
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function renderMain() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = '';
+
+            if (state.activeTask) {
+                renderDetailView(main, state.activeTask);
+            } else {
+                renderListView(main);
+            }
+        }
+
+        function renderListView(container) {
+            const currentData = ROUTINE_DATA[state.currentTab];
+            
+            // Header Card
+            const header = document.createElement('div');
+            header.className = `p-4 rounded-2xl bg-gradient-to-br ${currentData.colorClass} text-slate-700 mb-6 animate-fade-in`;
+            let tips = "";
+            if(state.currentTab === 'morning') tips = "早上消水腫是關鍵，動作輕柔。";
+            if(state.currentTab === 'noon') tips = "利用午休時間，鍛鍊微笑肌。";
+            if(state.currentTab === 'evening') tips = "放鬆緊繃的肌肉，為明天做準備。";
+            
+            header.innerHTML = `
+                <h3 class="font-bold text-lg mb-1">準備好了嗎？</h3>
+                <p class="text-sm opacity-80">${tips}</p>
+            `;
+            container.appendChild(header);
+
+            // Tasks
+            const listDiv = document.createElement('div');
+            listDiv.className = "space-y-4 animate-fade-in";
+            
+            currentData.tasks.forEach(task => {
+                const isDone = state.completedTasks[task.id];
+                const btn = document.createElement('button');
+                btn.onclick = () => openTask(task.id);
+                btn.className = `w-full p-4 rounded-2xl border transition-all flex items-center justify-between group text-left
+                    ${isDone ? 'bg-slate-50 border-slate-100 opacity-70' : 'bg-white border-slate-200 shadow-sm hover:shadow-md hover:border-rose-200'}`;
+                
+                const iconContent = isDone 
+                    ? `<i data-lucide="check-circle" class="w-6 h-6"></i>` 
+                    : (task.type === 'counter' ? `<i data-lucide="hash" class="w-5 h-5"></i>` : `<i data-lucide="clock" class="w-5 h-5"></i>`);
+                
+                const iconClass = isDone 
+                    ? 'bg-green-100 text-green-600' 
+                    : 'bg-slate-100 text-slate-500 group-hover:bg-rose-100 group-hover:text-rose-500';
+
+                const subText = task.type === 'counter' 
+                    ? `目標: ${task.target} ${task.unit}`
+                    : `目標: ${task.duration}秒 × ${task.targetSets}組`;
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center ${iconClass}">
+                            ${iconContent}
+                        </div>
+                        <div>
+                            <h4 class="font-bold ${isDone ? 'text-slate-400 line-through' : 'text-slate-700'}">${task.name}</h4>
+                            <div class="text-xs text-slate-400 mt-1"><span class="bg-slate-100 px-2 py-0.5 rounded">${subText}</span></div>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 group-hover:text-rose-400"></i>
+                `;
+                listDiv.appendChild(btn);
+            });
+            container.appendChild(listDiv);
+
+            // Trophy logic
+            const allDone = currentData.tasks.every(t => state.completedTasks[t.id]);
+            if (allDone) {
+                const trophy = document.createElement('div');
+                trophy.className = "mt-8 p-6 text-center bg-white rounded-2xl shadow-sm border border-yellow-100 animate-fade-in";
+                trophy.innerHTML = `
+                    <i data-lucide="trophy" class="w-12 h-12 text-yellow-400 mx-auto mb-2"></i>
+                    <h3 class="font-bold text-slate-800">該時段目標達成！</h3>
+                    <p class="text-sm text-slate-500">持之以恆，臉型一定會改變！</p>
+                `;
+                container.appendChild(trophy);
+            }
+        }
+
+        function renderDetailView(container, task) {
+            container.innerHTML = `
+                <div class="animate-fade-in">
+                    <button onclick="backToList()" class="mb-4 text-slate-500 flex items-center gap-1 hover:text-slate-800">
+                        <i data-lucide="chevron-right" class="rotate-180 w-4 h-4"></i> 返回清單
+                    </button>
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-slate-800 mb-1">${task.name}</h2>
+                        <p class="text-slate-500">${task.desc}</p>
+                    </div>
+                    <div id="tool-container"></div>
+                </div>
+            `;
+            
+            const toolContainer = document.getElementById('tool-container');
+            if (task.type === 'counter') {
+                initCounterTool(toolContainer, task);
+            } else {
+                initTimerTool(toolContainer, task);
+            }
+        }
+
+        // ================= 計數器工具邏輯 (Counter) =================
+        function initCounterTool(container, task) {
+            let count = 0;
+            let isAuto = false;
+            let speed = task.defaultSpeed || 2000;
+
+            const renderUI = () => {
+                const progress = Math.min((count / task.target) * 100, 100);
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center">
+                        <div class="text-sm text-slate-500 mb-2 font-medium">目標：${task.target} ${task.unit}</div>
+                        <div class="relative w-full h-4 bg-slate-100 rounded-full mb-6 overflow-hidden">
+                            <div class="absolute top-0 left-0 h-full bg-rose-400 transition-all duration-300 ease-out" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="text-6xl font-bold text-slate-700 mb-2 font-mono">${count}</div>
+                        
+                        <!-- 自動控制區 -->
+                        <div class="w-full bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-slate-500 flex items-center gap-1"><i data-lucide="zap" class="w-3 h-3"></i> 自動計數</span>
+                                <span class="text-xs text-slate-400 bg-white px-2 py-0.5 rounded border border-slate-200">${(speed/1000).toFixed(1)} 秒/下</span>
+                            </div>
+                            ${isAuto ? `
+                            <div class="flex justify-center gap-4 mb-3">
+                                <button id="btn-slow" class="p-2 bg-white rounded-full shadow-sm text-slate-400 hover:text-rose-500"><span class="text-xs font-bold">變慢</span></button>
+                                <button id="btn-fast" class="p-2 bg-white rounded-full shadow-sm text-slate-400 hover:text-green-500"><span class="text-xs font-bold">變快</span></button>
+                            </div>` : ''}
+                            <button id="btn-auto" class="w-full py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2 ${isAuto ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-500 hover:bg-slate-300'}">
+                                ${isAuto ? '<i data-lucide="pause" class="w-4 h-4"></i> 暫停自動' : '<i data-lucide="play" class="w-4 h-4"></i> 開始自動計數'}
+                            </button>
+                        </div>
+
+                        <div class="flex gap-4 w-full">
+                            <button id="btn-reset" class="flex-1 py-4 rounded-xl border-2 border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600">
+                                <i data-lucide="rotate-ccw" class="w-6 h-6 mx-auto"></i>
+                            </button>
+                            <button id="btn-manual" class="flex-[2] py-4 rounded-xl text-white shadow-lg transition-all text-xl font-bold ${isAuto ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-rose-500 shadow-rose-200 hover:bg-rose-600 active:scale-95'}" ${isAuto ? 'disabled' : ''}>
+                                +1 (手動)
+                            </button>
+                        </div>
+                         <p class="text-xs text-slate-400 mt-4 flex items-center gap-1 justify-center">
+                            <i data-lucide="volume-2" class="w-3 h-3"></i> 提示：開啟聲音，跟著節奏做
+                        </p>
+                    </div>
+                `;
+                lucide.createIcons();
+                bindEvents();
+            };
+
+            const checkComplete = () => {
+                if (count >= task.target) {
+                    playSuccess();
+                    clearActiveTimers();
+                    completeTask(task.id);
+                    return true;
+                }
+                return false;
+            };
+
+            const autoTick = () => {
+                count++;
+                if (checkComplete()) return;
+                playTick();
+                renderUI();
+            };
+
+            const startAuto = () => {
+                isAuto = true;
+                playTick(); // start sound
+                state.activeInterval = setInterval(autoTick, speed);
+                renderUI();
+            };
+
+            const stopAuto = () => {
+                isAuto = false;
+                clearActiveTimers();
+                renderUI();
+            };
+
+            const bindEvents = () => {
+                document.getElementById('btn-manual')?.addEventListener('click', () => {
+                    count++;
+                    playTick();
+                    if (!checkComplete()) renderUI();
+                });
+                document.getElementById('btn-reset')?.addEventListener('click', () => {
+                    count = 0;
+                    stopAuto();
+                });
+                document.getElementById('btn-auto')?.addEventListener('click', () => {
+                    if (isAuto) stopAuto(); else startAuto();
+                });
+                document.getElementById('btn-slow')?.addEventListener('click', () => {
+                    speed = Math.min(5000, speed + 200);
+                    clearActiveTimers();
+                    state.activeInterval = setInterval(autoTick, speed);
+                    renderUI();
+                });
+                document.getElementById('btn-fast')?.addEventListener('click', () => {
+                    speed = Math.max(500, speed - 200);
+                    clearActiveTimers();
+                    state.activeInterval = setInterval(autoTick, speed);
+                    renderUI();
+                });
+            };
+
+            renderUI();
+        }
+
+        // ================= 計時器工具邏輯 (Timer) =================
+        function initTimerTool(container, task) {
+            let timeLeft = task.duration;
+            let currentSet = 1;
+            let isActive = false;
+            let isResting = false;
+
+            // SVG 參數
+            const radius = 88;
+            const circumference = 2 * Math.PI * radius;
+
+            const renderUI = () => {
+                const totalTime = isResting ? task.restTime : task.duration;
+                const progressPct = ((totalTime - timeLeft) / totalTime) * 100;
+                const dashOffset = circumference * (1 - progressPct / 100);
+                
+                const statusColor = isResting ? 'text-green-400' : 'text-orange-400';
+                const statusBg = isResting ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600';
+                const btnColor = isResting ? 'bg-green-500 shadow-green-200 hover:bg-green-600' : 'bg-orange-500 shadow-orange-200 hover:bg-orange-600';
+
+                // 取得特定組數指令 (若無則顯示預設)
+                const currentInstruction = task.setInstructions && task.setInstructions[currentSet] 
+                    ? task.setInstructions[currentSet] 
+                    : (task.setInstructions ? "保持動作" : "");
+
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center">
+                        <div class="flex justify-between w-full mb-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBg}">
+                                ${isResting ? '休息中' : '訓練中'}
+                            </span>
+                            <span class="text-sm text-slate-500 font-medium">第 ${currentSet} / ${task.targetSets} 組</span>
+                        </div>
+                        
+                        <!-- 動態指令區 -->
+                        ${!isResting && currentInstruction ? `
+                        <div class="w-full bg-orange-50 border border-orange-100 rounded-lg p-2 text-center mb-4 animate-fade-in">
+                            <span class="text-xs text-orange-400 font-bold block mb-0.5">本組重點</span>
+                            <span class="text-sm font-bold text-slate-700">${currentInstruction}</span>
+                        </div>
+                        ` : ''}
+                        ${isResting ? `
+                        <div class="w-full bg-green-50 border border-green-100 rounded-lg p-2 text-center mb-4 animate-fade-in">
+                            <span class="text-sm font-bold text-green-700">放鬆臉部，準備下一組...</span>
+                        </div>
+                        ` : ''}
+
+                        <div class="relative w-48 h-48 flex items-center justify-center mb-6">
+                            <svg class="w-full h-full circle-progress">
+                                <circle cx="96" cy="96" r="${radius}" stroke="#f1f5f9" stroke-width="12" fill="transparent"></circle>
+                                <circle cx="96" cy="96" r="${radius}" stroke="currentColor" stroke-width="12" fill="transparent" 
+                                    class="${statusColor} transition-all duration-1000 ease-linear"
+                                    style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${dashOffset}; stroke-linecap: round;"
+                                ></circle>
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span class="text-5xl font-bold text-slate-700 font-mono">${timeLeft}</span>
+                                <span class="text-sm text-slate-400">秒</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 w-full">
+                            <button id="timer-reset" class="flex-1 py-4 rounded-xl border-2 border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600">
+                                <i data-lucide="rotate-ccw" class="w-6 h-6 mx-auto"></i>
+                            </button>
+                            <button id="timer-toggle" class="flex-[2] py-4 rounded-xl text-white shadow-lg transition-all text-xl font-bold flex justify-center items-center gap-2 ${btnColor}">
+                                ${isActive ? '<i data-lucide="pause" class="w-6 h-6"></i> 暫停' : '<i data-lucide="play" class="w-6 h-6"></i> 開始'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+                bindEvents();
+            };
+
+            const tick = () => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    renderUI();
+                } else {
+                    // Time is up
+                    playBeep();
+                    
+                    // 這裡不清除 interval，而是根據狀態決定是否繼續
+                    // clearInterval(state.activeInterval);
+                    // isActive = false;
+
+                    if (isResting) {
+                        // 休息結束，"自動" 進入下一組
+                        isResting = false;
+                        currentSet++;
+                        timeLeft = task.duration;
+                        playStart(); // 播放開始音效提示用戶
+                        renderUI();
+                        // isActive 保持 true，interval 繼續跑，不用重新 setInterval
+                    } else {
+                        // 訓練結束
+                        if (currentSet < task.targetSets) {
+                            // 還有下一組
+                            if (task.restTime > 0) {
+                                isResting = true;
+                                timeLeft = task.restTime;
+                                // isActive 保持 true，自動進入休息倒數
+                                renderUI();
+                            } else {
+                                // 無休息，直接下一組
+                                currentSet++;
+                                timeLeft = task.duration;
+                                playStart();
+                                renderUI();
+                            }
+                        } else {
+                            // 全部結束
+                            clearInterval(state.activeInterval);
+                            state.activeInterval = null;
+                            isActive = false;
+                            playSuccess();
+                            completeTask(task.id);
+                        }
+                    }
+                }
+            };
+
+            const toggleTimer = () => {
+                if (isActive) {
+                    clearInterval(state.activeInterval);
+                    state.activeInterval = null;
+                    isActive = false;
+                } else {
+                    isActive = true;
+                    playStart(); // 播放一個開始音效示意
+                    state.activeInterval = setInterval(tick, 1000);
+                }
+                renderUI();
+            };
+
+            const resetTimer = () => {
+                clearActiveTimers();
+                isActive = false;
+                isResting = false;
+                currentSet = 1;
+                timeLeft = task.duration;
+                renderUI();
+            };
+
+            const bindEvents = () => {
+                document.getElementById('timer-toggle')?.addEventListener('click', toggleTimer);
+                document.getElementById('timer-reset')?.addEventListener('click', resetTimer);
+            };
+
+            renderUI();
+        }
+
+        // 啟動應用
+        render();
+
+    </script>
+</body>
+</html>
