@@ -66,7 +66,7 @@
     <main id="capture-area" class="flex-1 flex flex-col md:flex-row overflow-hidden relative bg-slate-950">
         
         <!-- Column 1: Input -->
-        <div class="w-full md:w-1/3 flex flex-col border-r border-slate-800 min-h-[300px] relative">
+        <div id="col-input" class="w-full md:w-1/3 flex flex-col border-r border-slate-800 min-h-[300px] relative">
             <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800 shrink-0">
                 原始情報輸入
             </div>
@@ -80,7 +80,7 @@
         </div>
 
         <!-- Column 2: List Analysis -->
-        <div class="w-full md:w-1/3 flex flex-col border-r border-slate-800 bg-slate-900/50 min-h-[300px] relative">
+        <div id="col-list" class="w-full md:w-1/3 flex flex-col border-r border-slate-800 bg-slate-900/50 min-h-[300px] relative">
             <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800 flex justify-between shrink-0">
                 <span>點位排序 (高 → 低)</span>
                 <span id="point-count" class="text-indigo-400">0 筆數據</span>
@@ -92,7 +92,7 @@
         </div>
 
         <!-- Column 3: Visualization -->
-        <div class="w-full md:w-1/3 flex flex-col bg-slate-950 relative min-h-[300px]">
+        <div id="col-viz" class="w-full md:w-1/3 flex flex-col bg-slate-950 relative min-h-[300px]">
             <div class="p-3 bg-slate-900 text-xs text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800 shrink-0">
                 戰場分佈圖
             </div>
@@ -131,6 +131,11 @@
         const pointCountEl = document.getElementById('point-count');
         const vizContainerEl = document.getElementById('viz-container');
         const inputTextExportView = document.getElementById('input-text-export-view');
+
+        // Column Elements for Export manipulation
+        const captureArea = document.getElementById('capture-area');
+        const colList = document.getElementById('col-list');
+        const colViz = document.getElementById('col-viz');
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -179,43 +184,94 @@
 
         // --- Export Logic ---
         function exportImage() {
-            const element = document.getElementById('capture-area');
             const originalBtnText = exportBtn.innerHTML;
             
-            // 1. Prepare for capture: populate hidden div with textarea content and show it
-            inputTextExportView.textContent = inputText.value;
-            inputTextExportView.classList.remove('hidden');
-            inputText.classList.add('opacity-0');
-
-            // Show loading state on button
+            // Show loading state
             exportBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> 處理中...`;
             lucide.createIcons();
 
+            // 1. PREPARE STYLES FOR FULL CAPTURE
+            // Store original classes/styles
+            const originalVizContainerClasses = vizContainerEl.className;
+            const originalPointsListClasses = pointsListEl.className;
+            const originalVizInner = vizContainerEl.querySelector('div');
+            const originalVizInnerHeight = originalVizInner ? originalVizInner.style.minHeight : '';
+            
+            // Expand Input Text
+            inputTextExportView.textContent = inputText.value;
+            inputTextExportView.classList.remove('hidden');
+            inputTextExportView.classList.remove('absolute', 'inset-0'); // Remove absolute to allow expansion
+            inputTextExportView.classList.add('relative', 'min-h-full'); // Allow growth
+            inputText.classList.add('hidden'); // Fully hide original textarea
+
+            // Expand Viz & List Containers (Remove scrolling)
+            vizContainerEl.classList.remove('overflow-y-auto');
+            vizContainerEl.classList.add('overflow-visible', 'h-auto');
+            
+            pointsListEl.classList.remove('overflow-y-auto');
+            pointsListEl.classList.add('overflow-visible', 'h-auto');
+
+            // Calculate Optimal Height for Visualization based on points
+            // Each point ~60px height to look good + padding
+            const pointCount = pointsListEl.children.length;
+            const optimalVizHeight = Math.max(600, pointCount * 70); // Ensure at least 600px
+            
+            if (originalVizInner) {
+                originalVizInner.style.minHeight = `${optimalVizHeight}px`;
+            }
+
+            // Remove constraints from main capture area
+            const originalCaptureAreaStyle = captureArea.style.cssText;
+            captureArea.style.height = 'auto';
+            captureArea.style.overflow = 'visible';
+
+            // Wait for DOM to reflow then capture
             setTimeout(() => {
-                html2canvas(element, {
-                    backgroundColor: '#020617', // slate-950 for dark mode
-                    scale: 2 // High resolution
+                html2canvas(captureArea, {
+                    backgroundColor: '#020617', // slate-950
+                    scale: 2, // High resolution
+                    windowHeight: captureArea.scrollHeight, // Force full height capture
+                    height: captureArea.scrollHeight
                 }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = `戰情分析_${new Date().toISOString().slice(0,10)}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                     
-                    // Restore UI
+                    // --- RESTORE UI ---
                     exportBtn.innerHTML = originalBtnText;
                     lucide.createIcons();
-                    inputTextExportView.classList.add('hidden');
-                    inputText.classList.remove('opacity-0');
+
+                    // Restore Input
+                    inputTextExportView.classList.add('hidden', 'absolute', 'inset-0');
+                    inputTextExportView.classList.remove('relative', 'min-h-full');
+                    inputText.classList.remove('hidden');
+
+                    // Restore Viz & List
+                    vizContainerEl.className = originalVizContainerClasses;
+                    pointsListEl.className = originalPointsListClasses;
+                    
+                    if (originalVizInner) {
+                        originalVizInner.style.minHeight = originalVizInnerHeight;
+                    }
+
+                    // Restore Main
+                    captureArea.style.cssText = originalCaptureAreaStyle;
 
                 }).catch(err => {
                     console.error("Export failed:", err);
                     alert("匯出失敗，請重試");
+                    // Restore on error
                     exportBtn.innerHTML = originalBtnText;
                     lucide.createIcons();
-                    inputTextExportView.classList.add('hidden');
-                    inputText.classList.remove('opacity-0');
+                    inputTextExportView.classList.add('hidden', 'absolute', 'inset-0');
+                    inputText.classList.remove('hidden');
+                    vizContainerEl.className = originalVizContainerClasses;
+                    pointsListEl.className = originalPointsListClasses;
+                    if (originalVizInner) originalVizInner.style.minHeight = originalVizInnerHeight;
+                    captureArea.style.cssText = originalCaptureAreaStyle;
                 });
-            }, 100);
+            }, 300); // Increased timeout slightly to ensure layout stability
         }
 
         // --- Core Logic ---
@@ -431,6 +487,8 @@
                 const minVal = Math.min(...points.map(p => p.value));
                 const range = maxVal - minVal || 1;
 
+                // Ensure Viz container has a minimum height to start with, 
+                // but the dynamic calculation in exportImage will override this for screenshots.
                 let vizHtml = `<div class="relative w-full max-w-xs h-full min-h-[500px]">`;
                 
                 // Axis Line
