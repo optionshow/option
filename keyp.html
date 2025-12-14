@@ -134,8 +134,6 @@
 
         // Column Elements for Export manipulation
         const captureArea = document.getElementById('capture-area');
-        const colList = document.getElementById('col-list');
-        const colViz = document.getElementById('col-viz');
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -190,51 +188,36 @@
             exportBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> 處理中...`;
             lucide.createIcons();
 
-            // 1. PREPARE STYLES FOR FULL CAPTURE
-            // Store original classes/styles
-            const originalVizContainerClasses = vizContainerEl.className;
-            const originalPointsListClasses = pointsListEl.className;
-            const originalVizInner = vizContainerEl.querySelector('div');
-            const originalVizInnerHeight = originalVizInner ? originalVizInner.style.minHeight : '';
-            
-            // Expand Input Text
+            // 1. Prepare Textarea Workaround (Sync content)
+            // Note: html2canvas has trouble rendering scrolling within textareas.
+            // We use a div to display the text, but we won't expand it this time.
+            // We try to match scrollTop to capture what's visible, though html2canvas support for this varies.
             inputTextExportView.textContent = inputText.value;
+            inputTextExportView.scrollTop = inputText.scrollTop; 
             inputTextExportView.classList.remove('hidden');
-            inputTextExportView.classList.remove('absolute', 'inset-0'); // Remove absolute to allow expansion
-            inputTextExportView.classList.add('relative', 'min-h-full'); // Allow growth
-            inputText.classList.add('hidden'); // Fully hide original textarea
+            inputText.classList.add('opacity-0');
 
-            // Expand Viz & List Containers (Remove scrolling)
-            vizContainerEl.classList.remove('overflow-y-auto');
-            vizContainerEl.classList.add('overflow-visible', 'h-auto');
-            
-            pointsListEl.classList.remove('overflow-y-auto');
-            pointsListEl.classList.add('overflow-visible', 'h-auto');
-
-            // Calculate Optimal Height for Visualization based on points
-            // Each point ~60px height to look good + padding
-            const pointCount = pointsListEl.children.length;
-            const optimalVizHeight = Math.max(600, pointCount * 70); // Ensure at least 600px
-            
-            if (originalVizInner) {
-                originalVizInner.style.minHeight = `${optimalVizHeight}px`;
-            }
-
-            // Remove constraints from main capture area
-            const originalCaptureAreaStyle = captureArea.style.cssText;
-            captureArea.style.height = 'auto';
-            captureArea.style.overflow = 'visible';
-
-            // Wait for DOM to reflow then capture
+            // 2. Capture Viewport Only
+            // We capture document.body to include the header and layout exactly as seen.
             setTimeout(() => {
-                html2canvas(captureArea, {
+                const width = document.documentElement.clientWidth;
+                const height = document.documentElement.clientHeight;
+
+                html2canvas(document.body, {
                     backgroundColor: '#020617', // slate-950
                     scale: 2, // High resolution
-                    windowHeight: captureArea.scrollHeight, // Force full height capture
-                    height: captureArea.scrollHeight
+                    width: width,
+                    height: height,
+                    windowWidth: width,
+                    windowHeight: height,
+                    x: window.scrollX,
+                    y: window.scrollY,
+                    scrollX: 0,
+                    scrollY: 0,
+                    useCORS: true
                 }).then(canvas => {
                     const link = document.createElement('a');
-                    link.download = `戰情分析_${new Date().toISOString().slice(0,10)}.png`;
+                    link.download = `戰情分析_截圖_${new Date().toISOString().slice(0,10)}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                     
@@ -243,20 +226,8 @@
                     lucide.createIcons();
 
                     // Restore Input
-                    inputTextExportView.classList.add('hidden', 'absolute', 'inset-0');
-                    inputTextExportView.classList.remove('relative', 'min-h-full');
-                    inputText.classList.remove('hidden');
-
-                    // Restore Viz & List
-                    vizContainerEl.className = originalVizContainerClasses;
-                    pointsListEl.className = originalPointsListClasses;
-                    
-                    if (originalVizInner) {
-                        originalVizInner.style.minHeight = originalVizInnerHeight;
-                    }
-
-                    // Restore Main
-                    captureArea.style.cssText = originalCaptureAreaStyle;
+                    inputTextExportView.classList.add('hidden');
+                    inputText.classList.remove('opacity-0');
 
                 }).catch(err => {
                     console.error("Export failed:", err);
@@ -264,14 +235,10 @@
                     // Restore on error
                     exportBtn.innerHTML = originalBtnText;
                     lucide.createIcons();
-                    inputTextExportView.classList.add('hidden', 'absolute', 'inset-0');
-                    inputText.classList.remove('hidden');
-                    vizContainerEl.className = originalVizContainerClasses;
-                    pointsListEl.className = originalPointsListClasses;
-                    if (originalVizInner) originalVizInner.style.minHeight = originalVizInnerHeight;
-                    captureArea.style.cssText = originalCaptureAreaStyle;
+                    inputTextExportView.classList.add('hidden');
+                    inputText.classList.remove('opacity-0');
                 });
-            }, 300); // Increased timeout slightly to ensure layout stability
+            }, 100);
         }
 
         // --- Core Logic ---
