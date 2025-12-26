@@ -11,6 +11,90 @@
       background: #f9f9f9;
     }
 
+    /* --- 科技感漸層刊頭樣式 --- */
+    .tech-header {
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: white;
+      padding: 2.5rem 1rem;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      margin-bottom: 2rem;
+      overflow: hidden; /* 重要：隱藏滑出範圍外的按鈕 */
+    }
+
+    .tech-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .tech-header a {
+      color: #4ade80;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .tech-header a:hover {
+      color: #86efac;
+      text-decoration: underline;
+    }
+
+    /* --- 修改：LINE 按鈕 (Header 版 - 自動滑入效果) --- */
+    .header-line-btn {
+      /* 修改 1：改為 fixed，讓它固定在螢幕視窗右上角，而非只在 Header 內 */
+      position: fixed; 
+      top: 20px;
+      right: 20px;
+      background-color: #06C755;
+      color: white !important; 
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-weight: bold;
+      text-decoration: none !important;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1.1rem;
+      
+      /* 修改 2：提高 z-index 到 100 (大於 Modal 的 50 與 Toast 的 99) */
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      z-index: 100;
+
+      /* --- 動畫設定 --- */
+      /* 初始狀態：往右移出畫面 */
+      transform: translateX(300%); 
+      opacity: 0; 
+      /* 設定滑入的緩衝動畫 */
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease, background-color 0.2s;
+    }
+
+    /* 滑入後的狀態 class */
+    .header-line-btn.show {
+      transform: translateX(0); /* 回到原位 */
+      opacity: 1;
+    }
+
+    /* Hover 效果 (需覆蓋 transform) */
+    .header-line-btn:hover {
+      background-color: #05a546;
+      transform: scale(1.05) !important; /* 強制覆蓋，確保放大效果運作 */
+      color: white !important;
+      transition: transform 0.2s; /* Hover 時反應變快 */
+    }
+
+    .header-line-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    /* 圖片卡片樣式 */
     .photo-card {
       display: inline-block;
       width: 80px;
@@ -21,6 +105,7 @@
       overflow: hidden;
       transition: transform 0.3s ease;
       text-align: center;
+      vertical-align: top;
     }
 
     .photo-card img {
@@ -35,8 +120,10 @@
       font-size: 0.875rem;
       color: #333;
       padding: 4px;
+      line-height: 1.2;
     }
 
+    /* Modal 燈箱樣式 */
     .modal {
       display: none;
       position: fixed;
@@ -45,7 +132,7 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.9);
       align-items: center;
       justify-content: center;
       flex-direction: column;
@@ -59,6 +146,8 @@
       max-width: 90%;
       max-height: 80vh;
       margin-bottom: 1rem;
+      border: 2px solid white;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
     }
 
     .modal-caption {
@@ -73,47 +162,231 @@
       top: 50%;
       transform: translateY(-50%);
       color: white;
-      font-size: 2.5rem;
+      font-size: 3rem;
       font-weight: bold;
       cursor: pointer;
-      opacity: 0.5;
+      opacity: 0.7;
       text-decoration: none;
-      padding: 0 10px;
+      padding: 20px;
       z-index: 60;
+      user-select: none;
     }
 
-    .modal-nav.left {
-      left: 2vw;
+    .modal-nav:hover {
+      opacity: 1;
+      color: #06C755;
     }
 
-    .modal-nav.right {
-      right: 2vw;
+    .modal-nav.left { left: 1vw; }
+    .modal-nav.right { right: 1vw; }
+
+    /* --- Toast 通知 --- */
+    .line-toast {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      background: white;
+      padding: 18px 22px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      max-width: 350px;
+      transform: translateX(120%);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border-left: 6px solid #06C755;
+    }
+
+    .line-toast.show {
+      transform: translateX(0);
+    }
+
+    .line-toast-title {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .line-toast-text {
+      font-size: 1.2rem;
+      color: #444;
+      line-height: 1.4;
+    }
+
+    .line-toast-close {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 16px;
+      color: #999;
+      cursor: pointer;
+    }
+
+    /* --- CTA 區塊樣式 --- */
+    .cta-banner {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 30px auto;
+      text-align: center;
+      border: 2px solid rgba(255,255,255,0.1);
+      max-width: 600px;
+      box-shadow: 0 10px 25px rgba(30, 60, 114, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 100px;
+      height: 100px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+    
+    .cta-title {
+      color: white;
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .cta-desc {
+      color: #bbdefb;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+    
+    .cta-button {
+      background-color: #00E676; 
+      color: #004d40;
+      padding: 12px 36px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 1.2rem;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
+      transition: all 0.3s;
+      animation: pulse-green 2s infinite;
+    }
+    
+    .cta-button:hover {
+      background-color: #69F0AE;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 230, 118, 0.6);
+    }
+
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(0, 230, 118, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+    }
+
+    @media (max-width: 480px) {
+      .header-line-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem; 
+      }
+      .header-line-btn span {
+        display: none;
+      }
+      .header-line-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+      .line-toast {
+        max-width: 90vw;
+        right: 5vw;
+        top: 80px;
+      }
+    }
+
+    @keyframes pulse-gold {
+      0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(217, 119, 6, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
     }
   </style>
 </head>
-<body class="p-4">
+<body class="p-0 m-0">
 
-  <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">💰 智能交易 百萬示範績效</h1>
-  <p class="text-center text-blue-600 underline mb-2">
-    <a href="https://ost.capitalfutures.com.tw/Trade/Example/100" target="_blank">【示範樣本連結】</a>   <a href="https://optionshow.github.io/option/performance.html" target="_blank">【績效報表連結】</a>
-  </p>
-  <p class="text-center text-gray-600 mb-6 text-sm font-semibold">設定與績效，即時 / 公開 / 透明 。 每週起始資金回歸百萬，獲利出金，虧損補齊</p>
+  <!-- Header -->
+  <header class="tech-header text-center">
+    
+    <!-- 右上角 LINE 按鈕 (有 ID 以便 JS 控制) -->
+    <a href="https://lin.ee/n3bZgtk" target="_blank" id="headerLineBtn" class="header-line-btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.288 9.923c0-4.646-4.99-8.423-11.144-8.423-6.154 0-11.144 3.777-11.144 8.423 0 4.162 3.687 7.647 8.7 8.303.339.073.799.224.916.513.104.258.069.66.035.92-.095.731-.433 2.56-.47 3.097-.04.577.305 1.056.843.578 5.766-5.115 7.844-6.074 8.657-7.072 2.219-2.583 3.607-4.49 3.607-6.34z"/>
+      </svg>
+      <span>LINE＠諮詢</span>
+    </a>
 
-  <!-- 相片區塊 -->
-  <div class="text-center max-w-4xl mx-auto">
-    <!-- 使用 JS 動態產出 photo-card 與 modal -->
+    <h1 class="text-3xl font-bold mb-4 tracking-wide text-white drop-shadow-md">💰 智能交易 百萬示範績效</h1>
+    
+    <p class="mb-4 text-sm md:text-base">
+      <a href="https://ost.capitalfutures.com.tw/Trade/Example/100" target="_blank" class="mx-2">【示範樣本連結】</a>
+      <span class="text-gray-400">|</span>
+      <a href="https://optionshow.github.io/option/performance.html" target="_blank" class="mx-2">【績效報表連結】</a>
+    </p>
+    
+    <div class="max-w-2xl mx-auto border-t border-gray-600 pt-4 mt-2">
+      <p class="text-gray-200 text-sm font-semibold leading-relaxed">
+        設定與績效，即時 / 公開 / 透明 <br class="md:hidden">
+        每週起始資金回歸百萬，獲利出金，虧損補齊
+      </p>
+    </div>
+  </header>
+
+  <!-- 原有相片區塊 -->
+  <div class="text-center max-w-4xl mx-auto px-4" id="gallery-legacy">
+    <!-- JS 產生內容 -->
   </div>
 
-  <footer class="text-center mt-12 text-sm text-gray-500">
+  <h2 class="text-2xl font-bold text-center text-gray-800 mt-12 mb-4">2026百萬示範績效</h2>
+
+  <!-- CTA 區塊 -->
+  <div class="cta-banner mx-4">
+    <p class="cta-title">🚀 想了解 2026 最新智能策略？</p>
+    <p class="cta-desc">加入官方 LINE，即時掌握每週績效與參數設定</p>
+    <a href="https://lin.ee/n3bZgtk" target="_blank" class="cta-button">
+      💬 立即諮詢 LINE@
+    </a>
+  </div>
+
+  <!-- 2026 相片區塊 -->
+  <div class="text-center max-w-4xl mx-auto px-4 pb-12" id="gallery-2026">
+    <!-- JS 產生內容 -->
+  </div>
+
+  <footer class="text-center mt-12 mb-8 text-sm text-gray-500">
     &copy; 選擇權智能交易 | <a href="index.html" class="text-blue-500 font-bold">回首頁</a>
   </footer>
 
-  <script>
-    const totalImages = 41;
-    const container = document.querySelector('.max-w-4xl');
+  <!-- Toast -->
+  <div id="line-toast" class="line-toast">
+    <div class="line-toast-close" onclick="closeToast()">✕</div>
+    <div class="line-toast-title">👋 需要協助嗎？</div>
+    <div class="line-toast-text">
+      點擊上方按鈕加入 LINE@<br>
+      即時詢問 2026 最新績效細節！
+    </div>
+  </div>
 
-    for (let i = 1; i <= totalImages; i++) {
-      container.innerHTML += `
+  <script>
+    const totalImagesLegacy = 42;
+    const totalImages2026 = 3;
+    const containerLegacy = document.getElementById('gallery-legacy');
+    const container2026 = document.getElementById('gallery-2026');
+
+    // 1. 生成原有圖片 (img1 ~ img42)
+    for (let i = 1; i <= totalImagesLegacy; i++) {
+      containerLegacy.innerHTML += `
         <div class="photo-card">
           <a href="#img${i}"><img src="images/img${i}.jpg" alt="展示圖${i}"></a>
           <div class="photo-caption">第${i}週</div>
@@ -121,10 +394,23 @@
       `;
     }
 
-    for (let i = 1; i <= totalImages; i++) {
-      const prev = i === 1 ? totalImages : i - 1;
-      const next = i === totalImages ? 1 : i + 1;
-      container.innerHTML += `
+    // 2025 績效回顧遊戲按鈕
+    containerLegacy.innerHTML += `
+      <div class="photo-card" style="overflow: visible; vertical-align: top;">
+        <a href="https://gemini.google.com/share/3de133ddd410" target="_blank" 
+           style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100px; background-color: #D97706; text-decoration: none; border-radius: 8px; animation: pulse-gold 2s infinite;">
+          <div style="color: white; font-weight: bold; font-size: 14px; line-height: 1.2;">
+            2025<br>績效回顧
+          </div>
+        </a>
+      </div>
+    `;
+
+    // Modal 生成 (Legacy)
+    for (let i = 1; i <= totalImagesLegacy; i++) {
+      const prev = i === 1 ? totalImagesLegacy : i - 1;
+      const next = i === totalImagesLegacy ? 1 : i + 1;
+      containerLegacy.innerHTML += `
         <div id="img${i}" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
           <a href="#img${prev}" class="modal-nav left">&#10094;</a>
           <div style="text-align: center;">
@@ -136,25 +422,66 @@
       `;
     }
 
+    // 2. 生成 2026 圖片
+    for (let i = 1; i <= totalImages2026; i++) {
+      const fileSuffix = i.toString().padStart(2, '0'); 
+      const fileName = `2026${fileSuffix}`;
+      container2026.innerHTML += `
+        <div class="photo-card">
+          <a href="#img${fileName}"><img src="images/${fileName}.jpg" alt="2026第${i}週"></a>
+          <div class="photo-caption">第${i}週</div>
+        </div>
+      `;
+    }
+
+    // Modal 生成 (2026)
+    for (let i = 1; i <= totalImages2026; i++) {
+      const currentSuffix = i.toString().padStart(2, '0');
+      const currentId = `2026${currentSuffix}`;
+      const prevNum = i === 1 ? totalImages2026 : i - 1;
+      const prevId = `2026${prevNum.toString().padStart(2, '0')}`;
+      const nextNum = i === totalImages2026 ? 1 : i + 1;
+      const nextId = `2026${nextNum.toString().padStart(2, '0')}`;
+
+      container2026.innerHTML += `
+        <div id="img${currentId}" class="modal" onclick="if(!event.target.closest('.modal-nav')) location.href='#';">
+          <a href="#img${prevId}" class="modal-nav left">&#10094;</a>
+          <div style="text-align: center;">
+            <div class="modal-caption">2026 第${i}週</div>
+            <img src="images/2026${currentSuffix}.jpg" class="modal-content" alt="2026第${i}週圖片放大">
+          </div>
+          <a href="#img${nextId}" class="modal-nav right">&#10095;</a>
+        </div>
+      `;
+    }
+
+    // 3. 導航邏輯
+    function getTargetId(currentIdRaw, direction) {
+      const current = parseInt(currentIdRaw);
+      if (isNaN(current)) return null;
+      if (current <= 1000) { 
+        if (direction === 'next') return current === totalImagesLegacy ? 1 : current + 1;
+        else return current === 1 ? totalImagesLegacy : current - 1;
+      }
+      if (current >= 202600) {
+        const currentIdx = current - 202600;
+        let nextIdx;
+        if (direction === 'next') nextIdx = currentIdx === totalImages2026 ? 1 : currentIdx + 1;
+        else nextIdx = currentIdx === 1 ? totalImages2026 : currentIdx - 1;
+        return `2026${nextIdx.toString().padStart(2, '0')}`;
+      }
+      return null;
+    }
+
     document.addEventListener('keydown', function(e) {
       const currentId = location.hash.replace('#img', '');
       if (!currentId) return;
-
-      const current = parseInt(currentId);
-      if (isNaN(current)) return;
-
       let targetId;
-      if (e.key === 'ArrowRight') {
-        targetId = current === totalImages ? 1 : current + 1;
-      } else if (e.key === 'ArrowLeft') {
-        targetId = current === 1 ? totalImages : current - 1;
-      }
-      if (targetId) {
-        location.href = `#img${targetId}`;
-      }
+      if (e.key === 'ArrowRight') targetId = getTargetId(currentId, 'next');
+      else if (e.key === 'ArrowLeft') targetId = getTargetId(currentId, 'prev');
+      if (targetId) location.href = `#img${targetId}`;
     });
 
-    // Touch swipe support
     let touchStartX = 0;
     document.addEventListener('touchstart', function(e) {
       touchStartX = e.changedTouches[0].screenX;
@@ -164,24 +491,33 @@
       const touchEndX = e.changedTouches[0].screenX;
       const diffX = touchStartX - touchEndX;
       const currentId = location.hash.replace('#img', '');
-      const current = parseInt(currentId);
-      if (isNaN(current)) return;
-
+      if (!currentId) return;
       if (Math.abs(diffX) > 50) {
         let targetId;
-        if (diffX > 0) {
-          targetId = current === totalImages ? 1 : current + 1;
-        } else {
-          targetId = current === 1 ? totalImages : current - 1;
-        }
-        location.href = `#img${targetId}`;
+        if (diffX > 0) targetId = getTargetId(currentId, 'next');
+        else targetId = getTargetId(currentId, 'prev');
+        if (targetId) location.href = `#img${targetId}`;
       }
     });
+
+    // --- 修改：自動顯示邏輯 (包含 Header 按鈕與 Toast) ---
+    setTimeout(() => {
+      // 顯示右下角 Toast
+      const toast = document.getElementById('line-toast');
+      toast.classList.add('show');
+
+      // 顯示右上角 Header 按鈕
+      const headerBtn = document.getElementById('headerLineBtn');
+      if(headerBtn) headerBtn.classList.add('show');
+    }, 3000); // 3秒後顯示
+
+    function closeToast() {
+      const toast = document.getElementById('line-toast');
+      toast.classList.remove('show');
+    }
   </script>
 </body>
-
 <script>
 (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="m7-DV_6E7SMU4WXWF78MF";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
 </script>
-
 </html>
