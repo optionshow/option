@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資深交易員的選擇權實戰風控課 | 64分鐘深度解密</title>
+    <meta name="description" content="不講空泛理論，只講實戰邏輯。8堂影音課程，從資金控管到自動化風控，揭開長期獲利的秘密。">
+    
+    <!-- Google Fonts: Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        course: {
+                            bg: '#f8fafc',       // Slate 50
+                            primary: '#2563eb',  // Blue 600
+                            dark: '#1e293b',     // Slate 800
+                            accent: '#f97316',   // Orange 500
+                            success: '#10b981',  // Emerald 500
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #2563eb, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .shadow-glow {
+            box-shadow: 0 10px 40px -10px rgba(37, 99, 235, 0.2);
+        }
+        /* Custom scrollbar for playlist if needed */
+        .playlist-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .playlist-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 3px;
+        }
+        .active-chapter {
+            border-color: #2563eb !important;
+            background-color: #eff6ff !important;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1), 0 2px 4px -1px rgba(37, 99, 235, 0.06) !important;
+        }
+    </style>
+</head>
+<body class="bg-course-bg text-slate-800 antialiased">
+
+    <!-- Header / Nav -->
+    <header class="bg-white/90 backdrop-blur-md fixed w-full z-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="bar-chart-2" class="h-6 w-6 text-course-primary"></i>
+                <span class="font-bold text-lg tracking-wide text-slate-900">選擇權智能交易</span>
+            </div>
+            <a href="https://lin.ee/n3bZgtk" target="_blank" class="hidden md:flex items-center gap-2 bg-course-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-lg shadow-blue-500/30">
+                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                洽詢訂購
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 overflow-hidden relative" id="player-section">
+        <!-- Background Decor -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-4xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-course-primary text-sm font-bold mb-6">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    </span>
+                    AI彙整資料解說 · 共 8 個單元
+                </div>
+                
+                <h1 class="text-4xl md:text-6xl font-black leading-tight mb-6 text-slate-900">
+                    別再用運氣賭博。<br>
+                    <span class="gradient-text">掌握 64 分鐘的交易數學邏輯。</span>
+                </h1>
+                
+                <p class="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                    這不是一般的行銷影片，這是一套完整的交易系統設計藍圖。<br>
+                    從資金控管 SOP 到自動化價差保護，一次看懂長期獲利的底層架構。
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mb-6">
+                    <a href="https://lin.ee/n3bZgtk" target="_blank" class="flex items-center justify-center gap-2 bg-course-accent hover:bg-orange-600 text-white text-xl px-8 py-4 rounded-xl font-bold transition duration-300 shadow-xl shadow-orange-500/30 transform hover:-translate-y-1">
+                        <i data-lucide="message-circle" class="w-6 h-6"></i>
+                        洽詢訂購
+                    </a>
+                </div>
+                
+                <p class="text-sm text-slate-500 font-medium">
+                    <i data-lucide="eye" class="w-4 h-4 inline align-text-bottom mr-1 text-slate-400"></i>
+                    超過 <span id="viewer-counter" class="text-course-primary font-bold">168</span> 位完成觀看
+                </p>
+            </div>
+
+            <!-- Real Video Player -->
+            <div class="mt-12 relative max-w-5xl mx-auto">
+                <div class="absolute inset-0 bg-gradient-to-t from-course-bg via-transparent to-transparent z-0 h-20 bottom-0 pointer-events-none"></div>
+                <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black aspect-video relative z-10">
+                    
+                    <!-- Video Tag -->
+                    <!-- controlsList="nodownload" hides the download button -->
+                    <!-- oncontextmenu="return false" prevents right-click menu -->
+                    <video id="main-video" class="w-full h-full object-contain" controls controlsList="nodownload" oncontextmenu="return false;">
+                        <source src="https://optionshow.github.io/option/Video/01.mp4" type="video/mp4">
+                        您的瀏覽器不支援影片播放。
+                    </video>
+
+                    <!-- Title Overlay -->
+                </div>
+                <div class="mt-4 text-center md:text-left flex items-center justify-between">
+                    <div>
+                        <span class="text-sm font-bold text-course-primary uppercase tracking-wider mb-1 block" id="current-chapter-label">現正播放：第 01 章</span>
+                        <h3 class="text-xl md:text-2xl font-bold text-slate-900" id="current-video-title">核心策略與設計理念</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Course Curriculum (Clickable) -->
+        <section class="py-20 bg-slate-50" id="curriculum">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">課程章節選單</h2>
+                    <p class="text-slate-600 text-lg">點擊下方章節，立即開始播放</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Module 1 -->
+                    <div onclick="playChapter('01', '核心策略與設計理念', '01:38', this)" class="chapter-card active-chapter cursor-pointer bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                <span class="font-bold text-xl">01</span>
+                            </div>
+                            <i data-lucide="play-circle" class="w-6 h-6 text-slate-300 group-hover:text-course-primary transition"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-slate-800">核心策略與設計理念</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">交易是為了生活品質，而非生存壓力的核心價值。</p>
+                    </div>
+
+                    <!-- Module 2 -->
+                    <div onclick="playChapter('02', '動態 Sell 價', '01:46', this)" class="chapter-card cursor-pointer bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                <span class="font-bold text-xl">02</span>
+                            </div>
+                            <i data-lucide="play-circle" class="w-6 h-6 text-slate-300 group-hover:text-course-primary transition"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-slate-800">動態 Sell 價</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">深入解析系統如何抓取最優溢價點位，不再盲目進場。</p>
+                    </div>
+
+                    <!-- Module 3 -->
+                    <div onclick="playChapter('03', '標準化資金管理 SOP', '01:22', this)" class="chapter-card cursor-pointer bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                <span class="font-bold text-xl">03</span>
+                            </div>
+                            <i data-lucide="play-circle" class="w-6 h-6 text-slate-300 group-hover:text-course-primary transition"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-slate-800">標準化資金管理 SOP</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">揭密三階層資金控管黃金比例，確保長期生存。</p>
+                    </div>
+
+                    <!-- Module 4 -->
+                    <div onclick="playChapter('04', '智能多空溫度風控', '01:29', this)" class="chapter-card cursor-pointer bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                <span class="font-bold text-xl">04</span>
+                            </div>
+                            <i data-lucide="play-circle" class="w-6 h-6 text-slate-300 group-hover:text-course-primary transition"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-slate-800">智能多空溫度風控</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">市場過熱時系統如何自動調節部位，避開極端行情。</p>
+                    </div>
+
+                    <!-- Module 5 -->
+                    <div onclick="playChapter('05', '獲利保護機制', '00:59', this)" class="chapter-card cursor-pointer bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                <span class="font-bold text-xl">05</span>
+                            </div>
+                            <i data-lucide="play-circle" class="w-6 h-6 text-slate-300 group-hover:text-course-primary transition"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-slate-800">獲利保護機制</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">詳解「保利降部位」機制，讓獲利落袋為安。</p>
+                    </div>
+
+                    <!-- Module 6 -->
+                    <div onclick="playChapter('06', '一鍵同步示範設定', '01:23', this)" class="chapter-card cursor-pointer bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                <span class="font-bold text-xl">06</span>
+                            </div>
+                            <i data-lucide="play-circle" class="w-6 h-6 text-slate-300 group-hover:text-course-primary transition"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-slate-800">一鍵同步示範設定</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">如何 3 秒複製資深交易員的參數，直接站在巨人的肩膀上。</p>
+                    </div>
+
+                    <!-- Module 7 -->
+                    <div onclick="playChapter('07', '手機雲端設定與執行', '01:12', this)" class="chapter-card cursor-pointer bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                <span class="font-bold text-xl">07</span>
+                            </div>
+                            <i data-lucide="play-circle" class="w-6 h-6 text-slate-300 group-hover:text-course-primary transition"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-slate-800">手機雲端設定與執行</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">上班族如何用手機輕鬆管理全自動交易。</p>
+                    </div>
+
+                    <!-- Module 8 -->
+                    <div onclick="playChapter('08', '真實績效與透明化', '01:24', this)" class="chapter-card cursor-pointer bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                                <span class="font-bold text-xl">08</span>
+                            </div>
+                            <i data-lucide="play-circle" class="w-6 h-6 text-slate-300 group-hover:text-course-primary transition"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-slate-800">真實績效與透明化</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">公開檢視真倉實戰紀錄，驗證策略的穩定性與真實性。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Free Section -->
+        <section class="py-20 bg-white border-t border-slate-100">
+            <div class="max-w-4xl mx-auto px-4 text-center">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">為什麼我們要公開這些內容？</h2>
+                <p class="text-lg text-slate-600 leading-relaxed mb-8">
+                    這套課程原本是為了內部培訓交易員設計的。<br>
+                    但我們發現，太多投資人因為缺乏正確的風控觀念，在市場上受傷。<br>
+                    我們相信，<span class="bg-yellow-100 px-1 font-bold text-slate-800">「先有正確的觀念，工具才能發揮價值」。</span>
+                </p>
+                <p class="text-slate-600 mb-10">
+                    即使你看完課程後決定不使用我們的系統，這 64 分鐘的風控邏輯，<br>
+                    也足以讓你未來的交易生涯受用無窮。
+                </p>
+
+                <a href="https://lin.ee/n3bZgtk" target="_blank" class="inline-flex items-center gap-2 bg-course-success hover:bg-emerald-600 text-white text-lg px-8 py-3 rounded-full font-bold transition shadow-lg shadow-emerald-500/30">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    洽詢訂購
+                </a>
+            </div>
+        </section>
+
+    <!-- Footer -->
+    <footer class="bg-course-dark text-slate-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <div class="flex items-center gap-2 mb-2 justify-center md:justify-start text-white">
+                    <i data-lucide="bar-chart-2" class="h-6 w-6 text-course-primary"></i>
+                    <span class="font-bold text-lg tracking-wide">選擇權智能交易</span>
+                </div>
+                <p class="text-sm">Empowering Traders with Logic & Automation.</p>
+            </div>
+            <div class="text-center md:text-right text-xs">
+                <p>&copy; 2025 Smart Trader System. All rights reserved.</p>
+                <p class="mt-2 text-slate-500">風險提示：選擇權交易具有風險，請依個人風險承受能力操作。<br>本課程內容僅供教學參考，不代表任何投資建議。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Lucide Icons & Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // Counter Logic
+        let count = 168;
+        const maxCount = 188;
+        const counterElement = document.getElementById('viewer-counter');
+        
+        setInterval(() => {
+            if(count < maxCount) {
+                count++;
+                counterElement.innerText = count;
+            }
+        }, 30000); // 更改為 30000 毫秒 (30秒)
+
+        // Video Player Logic
+        function playChapter(chapterNum, title, duration, element) {
+            const videoPlayer = document.getElementById('main-video');
+            const titleElement = document.getElementById('current-video-title');
+            const labelElement = document.getElementById('current-chapter-label');
+            const playerSection = document.getElementById('player-section');
+
+            // Update Video Source (Assuming filenames are 01.mp4, 02.mp4, etc.)
+            // Using GitHub Pages base URL structure based on request
+            videoPlayer.src = `https://optionshow.github.io/option/Video/${chapterNum}.mp4`;
+            
+            // Update UI Text
+            titleElement.innerText = title;
+            labelElement.innerText = `現正播放：第 ${chapterNum} 章`;
+
+            // Update Active Card Styling
+            document.querySelectorAll('.chapter-card').forEach(card => {
+                card.classList.remove('active-chapter');
+            });
+            element.classList.add('active-chapter');
+
+            // Scroll to player smoothly
+            playerSection.scrollIntoView({ behavior: 'smooth' });
+
+            // Auto Play
+            videoPlayer.play().catch(e => console.log("Auto-play prevented by browser policy, user needs to interact first."));
+        }
+    </script>
+</body>
+</html>
