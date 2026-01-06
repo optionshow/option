@@ -136,18 +136,19 @@
     <section class="relative h-screen flex items-center justify-center hero-bg">
         <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/50 via-brand-dark/70 to-brand-dark"></div>
         
-        <!-- Width increased from max-w-7xl to max-w-[90rem] (approx 1440px) -->
-        <div class="relative max-w-[90rem] w-full mx-auto px-6 sm:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-between">
-            <!-- Text Content - Increased width ratio -->
-            <div class="w-full md:w-3/5 xl:w-2/3 text-center md:text-left pt-20 md:pt-0">
+        <!-- Width reduced from max-w-[90rem] to max-w-7xl to bring content closer -->
+        <!-- Changed justify-between to justify-center with gap to control spacing -->
+        <div class="relative max-w-7xl w-full mx-auto px-6 sm:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-20">
+            <!-- Text Content -->
+            <div class="w-full md:w-1/2 lg:w-3/5 text-center md:text-left pt-20 md:pt-0">
                 <div class="inline-block px-4 py-1 mb-4 border border-brand-gold/50 rounded-full bg-brand-gold/10 backdrop-blur-sm">
                     <span class="text-brand-gold text-sm font-bold tracking-wide uppercase">For Professional Traders</span>
                 </div>
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 text-shadow">
+                <h1 class="text-4xl md:text-5xl lg:text-7xl font-black text-white leading-tight mb-6 text-shadow">
                     拒絕盯盤人生，<br>
                     讓<span class="text-[#2563eb]">智能交易</span>為你<br>加薪。
                 </h1>
-                <p class="text-lg md:text-xl lg:text-2xl text-slate-300 mb-8 max-w-3xl leading-relaxed">
+                <p class="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl leading-relaxed">
                     我們不強調「一夜暴富」，<br>而是強調<strong>「穩定現金流」</strong>與<strong>「生活品質」</strong>的兼得。<br>
                     交易是為了更好的生活，而不是犧牲生活。
                 </p>
@@ -163,11 +164,11 @@
                 </div>
             </div>
             
-            <!-- Hero Image Visual (Symbolic) - Adjusted width ratio -->
-            <div class="w-full md:w-2/5 xl:w-1/3 mt-10 md:mt-0 relative hidden md:block flex justify-end">
+            <!-- Hero Image Visual (Symbolic) -->
+            <div class="w-full md:w-1/2 lg:w-2/5 mt-10 md:mt-0 relative hidden md:block flex justify-center md:justify-end">
                 <!-- Decorative Elements -->
                 <div class="absolute -top-10 -right-10 w-64 h-64 bg-brand-accent/20 rounded-full blur-3xl"></div>
-                <div class="relative z-10 glass-card p-6 rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition duration-500 max-w-md ml-auto">
+                <div class="relative z-10 glass-card p-6 rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition duration-500 w-full max-w-md">
                     <div class="flex items-center gap-4 mb-4 border-b border-gray-700 pb-4">
                         <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
                             <i data-lucide="shield-check" class="text-green-400 w-6 h-6"></i>
