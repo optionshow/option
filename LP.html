@@ -601,33 +601,49 @@
         lucide.createIcons();
 
         let currentAudio = null;
+        let currentFilename = null;
 
         function playAudio(filename, element) {
-            // Remove playing class from all items
-            document.querySelectorAll('.audio-item').forEach(el => {
-                el.classList.remove('playing');
-            });
+            // 1. 如果點擊的是當前正在播放（或暫停）的檔案
+            if (currentAudio && currentFilename === filename) {
+                if (currentAudio.paused) {
+                    // 繼續播放
+                    currentAudio.play();
+                    element.classList.add('playing');
+                } else {
+                    // 暫停播放
+                    currentAudio.pause();
+                    element.classList.remove('playing');
+                }
+                return; // 直接結束，不建立新的音訊物件
+            }
 
-            // If same file is clicked and playing, pause it (toggle logic)
-            // For simplicity, we restart or play new.
+            // 2. 如果點擊的是不同檔案，先重置上一個
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
+                // 移除所有項目的播放狀態樣式
+                document.querySelectorAll('.audio-item').forEach(el => {
+                    el.classList.remove('playing');
+                });
             }
 
-            // Play new audio
+            // 3. 播放新的音訊
+            currentFilename = filename;
             currentAudio = new Audio('Music/' + filename);
+            
             currentAudio.play().then(() => {
-                // Add playing class for visual feedback
                 element.classList.add('playing');
             }).catch(error => {
                 console.error("Audio playback failed:", error);
                 alert("播放失敗：請確認 'Music' 資料夾中是否存在 " + filename);
             });
             
-            // Remove playing class when audio ends
+            // 4. 播放結束時的處理
             currentAudio.onended = function() {
                 element.classList.remove('playing');
+                currentFilename = null;
+                currentAudio = null;
             };
         }
 
