@@ -73,7 +73,6 @@
             border: 1px solid rgba(51, 65, 85, 1); /* Default border slate-700 */
         }
         
-        /* 強制覆蓋樣式，確保動畫效果明顯 */
         div.pain-card.active-state {
             border-color: #ef4444 !important; /* Red-500 */
             box-shadow: 0 0 20px rgba(239, 68, 68, 0.3), inset 0 0 10px rgba(239, 68, 68, 0.1) !important;
@@ -88,6 +87,29 @@
         div.pain-card.active-state .icon-svg {
             color: #f87171 !important; /* Red-400 */
             filter: drop-shadow(0 0 5px rgba(248, 113, 113, 0.5));
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #fbbf24;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #475569;
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -104,8 +126,10 @@
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-8">
                         <a href="#problem" class="hover:text-brand-gold transition px-3 py-2 rounded-md text-sm font-medium">痛點分析</a>
+                        <a href="#comparison" class="hover:text-brand-gold transition px-3 py-2 rounded-md text-sm font-medium">超級比一比</a>
                         <a href="#features" class="hover:text-brand-gold transition px-3 py-2 rounded-md text-sm font-medium">核心功能</a>
                         <a href="#tour" class="hover:text-brand-gold transition px-3 py-2 rounded-md text-sm font-medium">系統導覽</a>
+                        <a href="#calculator" class="hover:text-brand-gold transition px-3 py-2 rounded-md text-sm font-medium">獲利試算</a>
                         <a href="#proof" class="hover:text-brand-gold transition px-3 py-2 rounded-md text-sm font-medium">實戰績效</a>
                         <a href="https://lin.ee/n3bZgtk" target="_blank" class="bg-[#00B900] hover:bg-[#009900] text-white px-5 py-2 rounded-full font-bold transition duration-300 shadow-lg shadow-green-900/50 flex items-center gap-1">
                             <i data-lucide="message-circle" class="w-4 h-4"></i>
@@ -125,8 +149,9 @@
         <div class="hidden md:hidden bg-brand-primary" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="#problem" class="text-gray-300 hover:text-brand-gold block px-3 py-2 rounded-md text-base font-medium">痛點分析</a>
+                <a href="#comparison" class="text-gray-300 hover:text-brand-gold block px-3 py-2 rounded-md text-base font-medium">超級比一比</a>
                 <a href="#features" class="text-gray-300 hover:text-brand-gold block px-3 py-2 rounded-md text-base font-medium">核心功能</a>
-                <a href="#tour" class="text-gray-300 hover:text-brand-gold block px-3 py-2 rounded-md text-base font-medium">系統導覽</a>
+                <a href="#calculator" class="text-gray-300 hover:text-brand-gold block px-3 py-2 rounded-md text-base font-medium">獲利試算</a>
                 <a href="https://lin.ee/n3bZgtk" target="_blank" class="text-[#00B900] block px-3 py-2 rounded-md text-base font-bold">LINE諮詢</a>
             </div>
         </div>
@@ -136,8 +161,6 @@
     <section class="relative h-screen flex items-center justify-center hero-bg">
         <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/50 via-brand-dark/70 to-brand-dark"></div>
         
-        <!-- Width reduced from max-w-[90rem] to max-w-7xl to bring content closer -->
-        <!-- Changed justify-between to justify-center with gap to control spacing -->
         <div class="relative max-w-7xl w-full mx-auto px-6 sm:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-20">
             <!-- Text Content -->
             <div class="w-full md:w-1/2 lg:w-3/5 text-center md:text-left pt-20 md:pt-0">
@@ -242,15 +265,52 @@
         </div>
     </section>
 
-    <!-- Value Prop Interlude -->
-    <section class="py-16 bg-brand-dark relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fbbf24 1px, transparent 1px); background-size: 30px 30px;"></div>
-        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <h2 class="text-2xl md:text-3xl font-bold text-brand-gold mb-6">我們重新定義選擇權交易：穩定與生活兼得</h2>
-            <p class="text-lg text-slate-300 leading-relaxed">
-                這不是另一個帶單群組，這是一套將資深交易員邏輯代碼化的<strong class="text-white">智能輔助系統</strong>。<br>
-                我們深知，對於上班族與專業人士而言，<strong class="text-white bg-brand-accent/20 px-2 py-1 rounded">「穩定現金流」</strong>遠比高風險的暴利更具價值。
-            </p>
+    <!-- NEW SECTION: Comparison Table -->
+    <section id="comparison" class="py-20 bg-brand-dark relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-brand-gold font-bold tracking-widest uppercase text-sm">VS Comparison</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mt-2">為什麼你需要智能交易？</h2>
+                <p class="text-slate-400 mt-4">一張表看懂「人工交易」與「智能程式」的巨大差異</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="p-4 border-b-2 border-slate-700 w-1/4"></th>
+                            <th class="p-4 border-b-2 border-slate-700 w-1/3 text-center text-slate-400 font-medium">傳統人工交易</th>
+                            <th class="p-4 border-b-2 border-brand-gold w-1/3 text-center bg-brand-gold/10 rounded-t-xl">
+                                <span class="text-brand-gold font-bold text-xl flex items-center justify-center gap-2">
+                                    <i data-lucide="cpu" class="w-5 h-5"></i> 智能交易
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-slate-300">
+                        <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition">
+                            <td class="p-6 font-bold text-white">盯盤時間</td>
+                            <td class="p-6 text-center text-slate-400">每天 4-5 小時<br><span class="text-xs">身心俱疲</span></td>
+                            <td class="p-6 text-center font-bold text-white bg-brand-gold/5">0 小時<br><span class="text-xs text-brand-gold">雲端自動執行</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition">
+                            <td class="p-6 font-bold text-white">情緒影響</td>
+                            <td class="p-6 text-center text-slate-400">容易追高殺低<br><span class="text-xs">凹單不止損</span></td>
+                            <td class="p-6 text-center font-bold text-white bg-brand-gold/5">100% 紀律<br><span class="text-xs text-brand-gold">無情緒干擾</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition">
+                            <td class="p-6 font-bold text-white">風控速度</td>
+                            <td class="p-6 text-center text-slate-400">人手來不及<br><span class="text-xs">黑天鵝直接畢業</span></td>
+                            <td class="p-6 text-center font-bold text-white bg-brand-gold/5">毫秒級觸發<br><span class="text-xs text-brand-gold">自動買進保護</span></td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-6 font-bold text-white">獲利模式</td>
+                            <td class="p-6 text-center text-slate-400">大起大落<br><span class="text-xs">賺得快賠得更快</span></td>
+                            <td class="p-6 text-center font-bold text-white bg-brand-gold/5">穩健現金流<br><span class="text-xs text-brand-gold">穩定累積財富</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 
@@ -343,6 +403,49 @@
                     </ul>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: ROI Calculator -->
+    <section id="calculator" class="py-20 bg-brand-dark border-t border-slate-800">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <span class="text-brand-gold font-bold tracking-widest uppercase text-sm">Cashflow Simulator</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mt-2">算算看，智能交易能為你加薪多少？</h2>
+                <p class="text-slate-400 mt-4">拉動下方滑桿，預估您的每月被動收入</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-2xl border border-slate-700 shadow-2xl">
+                <div class="mb-8">
+                    <label for="capital" class="block text-slate-300 mb-4 text-lg font-medium">您的投入資金：<span id="capital-display" class="text-brand-gold font-bold text-2xl ml-2">NT$ 500,000</span></label>
+                    <input type="range" id="capital" min="350000" max="3000000" step="50000" value="500000" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between text-xs text-slate-500 mt-2">
+                        <span>35萬</span>
+                        <span>300萬</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div class="text-center md:text-left">
+                        <p class="text-slate-400 mb-1">預估每月現金流</p>
+                        <p class="text-4xl font-bold text-green-400" id="monthly-roi">NT$ 12,500</p>
+                        <p class="text-xs text-slate-500 mt-1">*以平均月報酬 2.5% 保守估算</p>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <p class="text-slate-400 mb-1">預估年化報酬</p>
+                        <p class="text-4xl font-bold text-brand-gold" id="yearly-roi">NT$ 150,000</p>
+                        <p class="text-xs text-slate-500 mt-1">*不含複利效果</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-slate-700 text-center">
+                    <a href="https://lin.ee/n3bZgtk" target="_blank" class="inline-flex items-center gap-2 text-white bg-brand-accent hover:bg-amber-600 px-8 py-3 rounded-full font-bold transition transform hover:scale-105 shadow-lg">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        我要開始打造現金流
+                    </a>
+                </div>
+            </div>
+            <p class="text-xs text-slate-600 text-center mt-4">※ 試算結果僅供參考，實際獲利會隨市場波動與個人參數設定而異，過去績效不代表未來表現。</p>
         </div>
     </section>
 
@@ -637,6 +740,33 @@
     <!-- Initialize Lucide Icons & Audio Script -->
     <script>
         lucide.createIcons();
+
+        // -------------------------
+        // ROI Calculator Logic
+        // -------------------------
+        const capitalInput = document.getElementById('capital');
+        const capitalDisplay = document.getElementById('capital-display');
+        const monthlyRoiDisplay = document.getElementById('monthly-roi');
+        const yearlyRoiDisplay = document.getElementById('yearly-roi');
+
+        function updateROI() {
+            const capital = parseInt(capitalInput.value);
+            // Format capital with commas
+            capitalDisplay.innerText = 'NT$ ' + capital.toLocaleString();
+
+            // Assume ~2.5% monthly return
+            const monthlyReturn = Math.round(capital * 0.025);
+            const yearlyReturn = monthlyReturn * 12;
+
+            monthlyRoiDisplay.innerText = 'NT$ ' + monthlyReturn.toLocaleString();
+            yearlyRoiDisplay.innerText = 'NT$ ' + yearlyReturn.toLocaleString();
+        }
+
+        if(capitalInput) {
+            capitalInput.addEventListener('input', updateROI);
+            // Initialize
+            updateROI();
+        }
 
         // -------------------------
         // Audio Player Logic
