@@ -424,6 +424,29 @@
 
             // Auto Play
             videoPlayer.play().catch(e => console.log("Auto-play prevented by browser policy, user needs to interact first."));
+            
+            // Set up auto-play next logic when current video ends
+            videoPlayer.onended = function() {
+                playNextVideo();
+            };
+        }
+        
+        // Function to find and play the next chapter
+        function playNextVideo() {
+             const cards = document.querySelectorAll('.chapter-card');
+             let activeIndex = -1;
+             
+             // Find current active index
+             cards.forEach((card, index) => {
+                 if (card.classList.contains('active-chapter')) {
+                     activeIndex = index;
+                 }
+             });
+             
+             // If active chapter found and it's not the last one, play next
+             if (activeIndex >= 0 && activeIndex < cards.length - 1) {
+                 cards[activeIndex + 1].click();
+             }
         }
     </script>
 </body>
