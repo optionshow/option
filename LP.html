@@ -66,6 +66,14 @@
             border-color: #fbbf24 !important;
             background-color: rgba(30, 41, 59, 0.8) !important;
         }
+        /* Progress Bar Visibility Logic */
+        .audio-item .progress-container {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .audio-item.playing .progress-container {
+            opacity: 1;
+        }
 
         /* Pain Card Auto-Active Styles - Enhanced Visibility */
         .pain-card {
@@ -469,8 +477,8 @@
                         </h4>
                         <div class="space-y-3">
                             <!-- Ch1 -->
-                            <div onclick="playAudio('001.MP3', this)" class="audio-item flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
-                                <div class="flex items-center gap-3">
+                            <div onclick="playAudio('001.MP3', this)" class="audio-item relative overflow-hidden flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
+                                <div class="flex items-center gap-3 relative z-10">
                                     <div class="play-icon w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-gold group-hover:bg-brand-accent group-hover:text-white transition">
                                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                                     </div>
@@ -479,7 +487,11 @@
                                         <p class="text-xs text-slate-500">交易是為了享受生活，不是為了爆肝。</p>
                                     </div>
                                 </div>
-                                <span class="text-xs text-slate-500 font-mono">01:38</span>
+                                <span class="text-xs text-slate-500 font-mono relative z-10">01:38</span>
+                                <!-- Progress Bar -->
+                                <div class="progress-container absolute bottom-0 left-0 w-full h-1 bg-slate-700/50">
+                                    <div class="progress-bar h-full bg-brand-gold w-0 transition-all duration-100 ease-linear"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -491,8 +503,8 @@
                         </h4>
                         <div class="space-y-3">
                              <!-- Ch6 -->
-                            <div onclick="playAudio('006.MP3', this)" class="audio-item flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
-                                <div class="flex items-center gap-3">
+                            <div onclick="playAudio('006.MP3', this)" class="audio-item relative overflow-hidden flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
+                                <div class="flex items-center gap-3 relative z-10">
                                     <div class="play-icon w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-gold group-hover:bg-brand-accent group-hover:text-white transition">
                                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                                     </div>
@@ -501,11 +513,15 @@
                                         <p class="text-xs text-slate-500">不用動腦研究參數，直接抄贏家的答案。</p>
                                     </div>
                                 </div>
-                                <span class="text-xs text-slate-500 font-mono">01:23</span>
+                                <span class="text-xs text-slate-500 font-mono relative z-10">01:23</span>
+                                <!-- Progress Bar -->
+                                <div class="progress-container absolute bottom-0 left-0 w-full h-1 bg-slate-700/50">
+                                    <div class="progress-bar h-full bg-brand-gold w-0 transition-all duration-100 ease-linear"></div>
+                                </div>
                             </div>
                              <!-- Ch7 -->
-                            <div onclick="playAudio('007.MP3', this)" class="audio-item flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
-                                <div class="flex items-center gap-3">
+                            <div onclick="playAudio('007.MP3', this)" class="audio-item relative overflow-hidden flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
+                                <div class="flex items-center gap-3 relative z-10">
                                     <div class="play-icon w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-gold group-hover:bg-brand-accent group-hover:text-white transition">
                                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                                     </div>
@@ -514,7 +530,11 @@
                                         <p class="text-xs text-slate-500">手機點一下就搞定，電腦在家自己跑。</p>
                                     </div>
                                 </div>
-                                <span class="text-xs text-slate-500 font-mono">01:12</span>
+                                <span class="text-xs text-slate-500 font-mono relative z-10">01:12</span>
+                                <!-- Progress Bar -->
+                                <div class="progress-container absolute bottom-0 left-0 w-full h-1 bg-slate-700/50">
+                                    <div class="progress-bar h-full bg-brand-gold w-0 transition-all duration-100 ease-linear"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -526,8 +546,8 @@
                         </h4>
                         <div class="space-y-3">
                              <!-- Ch8 -->
-                            <div onclick="playAudio('008.MP3', this)" class="audio-item flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
-                                <div class="flex items-center gap-3">
+                            <div onclick="playAudio('008.MP3', this)" class="audio-item relative overflow-hidden flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
+                                <div class="flex items-center gap-3 relative z-10">
                                     <div class="play-icon w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-gold group-hover:bg-brand-accent group-hover:text-white transition">
                                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                                     </div>
@@ -536,7 +556,11 @@
                                         <p class="text-xs text-slate-500">不講廢話，直接秀出真金白銀的對帳單。</p>
                                     </div>
                                 </div>
-                                <span class="text-xs text-slate-500 font-mono">01:24</span>
+                                <span class="text-xs text-slate-500 font-mono relative z-10">01:24</span>
+                                <!-- Progress Bar -->
+                                <div class="progress-container absolute bottom-0 left-0 w-full h-1 bg-slate-700/50">
+                                    <div class="progress-bar h-full bg-brand-gold w-0 transition-all duration-100 ease-linear"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -551,8 +575,8 @@
                         </h4>
                         <div class="space-y-3">
                              <!-- Ch2 -->
-                            <div onclick="playAudio('002.MP3', this)" class="audio-item flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
-                                <div class="flex items-center gap-3">
+                            <div onclick="playAudio('002.MP3', this)" class="audio-item relative overflow-hidden flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
+                                <div class="flex items-center gap-3 relative z-10">
                                     <div class="play-icon w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-gold group-hover:bg-brand-accent group-hover:text-white transition">
                                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                                     </div>
@@ -561,11 +585,15 @@
                                         <p class="text-xs text-slate-500">不用猜高低，AI 幫你算好何時賣最划算。</p>
                                     </div>
                                 </div>
-                                <span class="text-xs text-slate-500 font-mono">01:46</span>
+                                <span class="text-xs text-slate-500 font-mono relative z-10">01:46</span>
+                                <!-- Progress Bar -->
+                                <div class="progress-container absolute bottom-0 left-0 w-full h-1 bg-slate-700/50">
+                                    <div class="progress-bar h-full bg-brand-gold w-0 transition-all duration-100 ease-linear"></div>
+                                </div>
                             </div>
                              <!-- Ch3 -->
-                            <div onclick="playAudio('003.MP3', this)" class="audio-item flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
-                                <div class="flex items-center gap-3">
+                            <div onclick="playAudio('003.MP3', this)" class="audio-item relative overflow-hidden flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
+                                <div class="flex items-center gap-3 relative z-10">
                                     <div class="play-icon w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-gold group-hover:bg-brand-accent group-hover:text-white transition">
                                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                                     </div>
@@ -574,11 +602,15 @@
                                         <p class="text-xs text-slate-500">讓你大賺小賠的秘密，從此告別畢業文。</p>
                                     </div>
                                 </div>
-                                <span class="text-xs text-slate-500 font-mono">01:22</span>
+                                <span class="text-xs text-slate-500 font-mono relative z-10">01:22</span>
+                                <!-- Progress Bar -->
+                                <div class="progress-container absolute bottom-0 left-0 w-full h-1 bg-slate-700/50">
+                                    <div class="progress-bar h-full bg-brand-gold w-0 transition-all duration-100 ease-linear"></div>
+                                </div>
                             </div>
                              <!-- Ch4 -->
-                            <div onclick="playAudio('004.MP3', this)" class="audio-item flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
-                                <div class="flex items-center gap-3">
+                            <div onclick="playAudio('004.MP3', this)" class="audio-item relative overflow-hidden flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
+                                <div class="flex items-center gap-3 relative z-10">
                                     <div class="play-icon w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-gold group-hover:bg-brand-accent group-hover:text-white transition">
                                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                                     </div>
@@ -587,11 +619,15 @@
                                         <p class="text-xs text-slate-500">就像冷氣自動恆溫，行情太熱自動降溫保平安。</p>
                                     </div>
                                 </div>
-                                <span class="text-xs text-slate-500 font-mono">01:29</span>
+                                <span class="text-xs text-slate-500 font-mono relative z-10">01:29</span>
+                                <!-- Progress Bar -->
+                                <div class="progress-container absolute bottom-0 left-0 w-full h-1 bg-slate-700/50">
+                                    <div class="progress-bar h-full bg-brand-gold w-0 transition-all duration-100 ease-linear"></div>
+                                </div>
                             </div>
                              <!-- Ch5 -->
-                            <div onclick="playAudio('005.MP3', this)" class="audio-item flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
-                                <div class="flex items-center gap-3">
+                            <div onclick="playAudio('005.MP3', this)" class="audio-item relative overflow-hidden flex items-center justify-between p-3 bg-slate-900 rounded hover:bg-slate-800 transition cursor-pointer group border border-transparent">
+                                <div class="flex items-center gap-3 relative z-10">
                                     <div class="play-icon w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-gold group-hover:bg-brand-accent group-hover:text-white transition">
                                         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
                                     </div>
@@ -600,7 +636,11 @@
                                         <p class="text-xs text-slate-500">拒絕紙上富貴，系統幫你把賺到的錢鎖起來。</p>
                                     </div>
                                 </div>
-                                <span class="text-xs text-slate-500 font-mono">00:59</span>
+                                <span class="text-xs text-slate-500 font-mono relative z-10">00:59</span>
+                                <!-- Progress Bar -->
+                                <div class="progress-container absolute bottom-0 left-0 w-full h-1 bg-slate-700/50">
+                                    <div class="progress-bar h-full bg-brand-gold w-0 transition-all duration-100 ease-linear"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -769,10 +809,14 @@
         }
 
         // -------------------------
-        // Audio Player Logic
+        // Audio Player Logic (Enhanced with Preload)
         // -------------------------
         let currentAudio = null;
         let currentFilename = null;
+        
+        // 新增：預載變數，用來儲存下一首已經準備好的 Audio 物件
+        let nextAudio = null;
+        let nextAudioFilename = null;
 
         // 定義播放清單順序
         const playlist = [
@@ -780,23 +824,38 @@
             '005.MP3', '006.MP3', '007.MP3', '008.MP3'
         ];
 
-        function playNext(endedFilename) {
-            const currentIndex = playlist.indexOf(endedFilename);
+        // 預載下一首功能的函式
+        function preloadNext(currentFile) {
+            const currentIndex = playlist.indexOf(currentFile);
             // 如果當前檔案在清單中，且不是最後一首
             if (currentIndex !== -1 && currentIndex < playlist.length - 1) {
+                const nextFile = playlist[currentIndex + 1];
+                
+                // 如果已經預載了正確的檔案，就不重複動作
+                if (nextAudioFilename === nextFile && nextAudio) return;
+
+                // 開始預載
+                nextAudioFilename = nextFile;
+                nextAudio = new Audio('https://raw.githubusercontent.com/optionshow/option/main/Music/' + nextFile);
+                nextAudio.preload = 'auto'; // 告訴瀏覽器自動下載
+                nextAudio.load(); // 強制觸發載入
+                console.log(`系統背景預載中: ${nextFile}`);
+            } else {
+                nextAudio = null;
+                nextAudioFilename = null;
+            }
+        }
+
+        function playNext(endedFilename) {
+            const currentIndex = playlist.indexOf(endedFilename);
+            if (currentIndex !== -1 && currentIndex < playlist.length - 1) {
                 const nextFilename = playlist[currentIndex + 1];
-                // 尋找對應下一首檔案的 DOM 元素 (透過 onclick 屬性查找)
                 const nextElement = document.querySelector(`.audio-item[onclick*="${nextFilename}"]`);
                 
                 if (nextElement) {
-                    // 自動捲動到下一章的位置 (可選，若不需要自動捲動可註解掉)
-                    // nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // 播放下一首
                     playAudio(nextFilename, nextElement);
                 }
             } else {
-                // 全部播放完畢
                 currentFilename = null;
                 currentAudio = null;
             }
@@ -806,32 +865,53 @@
             // 1. 如果點擊的是當前正在播放（或暫停）的檔案
             if (currentAudio && currentFilename === filename) {
                 if (currentAudio.paused) {
-                    // 繼續播放
                     currentAudio.play();
                     element.classList.add('playing');
                 } else {
-                    // 暫停播放
                     currentAudio.pause();
                     element.classList.remove('playing');
                 }
-                return; // 直接結束，不建立新的音訊物件
+                return; 
             }
 
             // 2. 如果點擊的是不同檔案，先重置上一個
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
-                // 移除所有項目的播放狀態樣式
                 document.querySelectorAll('.audio-item').forEach(el => {
                     el.classList.remove('playing');
                 });
             }
 
-            // 3. 播放新的音訊 (使用 raw.githubusercontent.com 連結)
+            // 3. 播放新的音訊 (優先使用預載物件)
             currentFilename = filename;
-            // Updated to use the correct raw GitHub URL
-            currentAudio = new Audio('https://raw.githubusercontent.com/optionshow/option/main/Music/' + filename);
             
+            if (nextAudioFilename === filename && nextAudio) {
+                // 如果下一首已經預載好，直接使用，零延遲
+                currentAudio = nextAudio;
+                console.log(`使用預載音訊播放: ${filename}`);
+                // 清空預載變數，準備給下下首用
+                nextAudio = null;
+                nextAudioFilename = null;
+            } else {
+                // 如果沒有預載（例如跳著點選），則建立新的
+                currentAudio = new Audio('https://raw.githubusercontent.com/optionshow/option/main/Music/' + filename);
+            }
+            
+            // **關鍵步驟：播放當前這首時，立刻去預載下一首**
+            preloadNext(filename);
+
+            // 加入進度條更新監聽
+            currentAudio.addEventListener('timeupdate', () => {
+                if (currentAudio.duration) {
+                    const percent = (currentAudio.currentTime / currentAudio.duration) * 100;
+                    const progressBar = element.querySelector('.progress-bar');
+                    if (progressBar) {
+                        progressBar.style.width = percent + '%';
+                    }
+                }
+            });
+
             currentAudio.play().then(() => {
                 element.classList.add('playing');
             }).catch(error => {
@@ -842,7 +922,6 @@
             // 4. 播放結束時的處理
             currentAudio.onended = function() {
                 element.classList.remove('playing');
-                // 自動播放下一章
                 playNext(filename);
             };
         }
