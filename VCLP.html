@@ -32,6 +32,15 @@
                     },
                     fontFamily: {
                         sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    animation: {
+                        marquee: 'marquee 35s linear infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
                     }
                 }
             }
@@ -68,22 +77,35 @@
 </head>
 <body class="bg-course-bg text-slate-800 antialiased">
 
-    <!-- Header / Nav -->
-    <header class="bg-white/90 backdrop-blur-md fixed w-full z-50 border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <i data-lucide="bar-chart-2" class="h-6 w-6 text-course-primary"></i>
-                <span class="font-bold text-lg tracking-wide text-slate-900">選擇權智能交易</span>
+    <!-- Header / Nav + Marquee -->
+    <header class="fixed w-full z-50 shadow-md">
+        <!-- Main Navbar -->
+        <div class="bg-white/95 backdrop-blur-md border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="bar-chart-2" class="h-6 w-6 text-course-primary"></i>
+                    <span class="font-bold text-lg tracking-wide text-slate-900">選擇權智能交易</span>
+                </div>
+                <a href="https://lin.ee/n3bZgtk" target="_blank" class="hidden md:flex items-center gap-2 bg-course-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-lg shadow-blue-500/30">
+                    <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                    洽詢訂購
+                </a>
             </div>
-            <a href="https://lin.ee/n3bZgtk" target="_blank" class="hidden md:flex items-center gap-2 bg-course-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-lg shadow-blue-500/30">
-                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-                洽詢訂購
-            </a>
+        </div>
+
+        <!-- Black Marquee (Ticker) -->
+        <div class="bg-black text-white text-sm py-2 overflow-hidden flex items-center relative z-40">
+            <div class="whitespace-nowrap animate-marquee font-medium tracking-wide">
+                <span class="mx-4 text-course-accent font-bold">★ 百萬真倉示範帳戶 ★</span>
+                歷經 42 週 (約 10 個月) 的市場考驗。 最終獲利+$561,864，總報酬率 56.2%，勝率 83%。最大回落 (MDD) -19.7%。獲利時平均報酬 3.4%。最大連續獲利 11 週。獲利週數 35 次。虧損週數 7 次。
+                <!-- Repeat for better visual effect on wide screens if needed, but linear scroll works well -->
+            </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="pt-32 pb-20 overflow-hidden relative" id="player-section">
+    <!-- Increased padding-top (pt-32 -> pt-40) to accommodate the new marquee height -->
+    <section class="pt-40 pb-20 overflow-hidden relative" id="player-section">
         <!-- Background Decor -->
         <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
         <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
