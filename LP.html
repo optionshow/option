@@ -774,6 +774,34 @@
         let currentAudio = null;
         let currentFilename = null;
 
+        // 定義播放清單順序
+        const playlist = [
+            '001.MP3', '002.MP3', '003.MP3', '004.MP3',
+            '005.MP3', '006.MP3', '007.MP3', '008.MP3'
+        ];
+
+        function playNext(endedFilename) {
+            const currentIndex = playlist.indexOf(endedFilename);
+            // 如果當前檔案在清單中，且不是最後一首
+            if (currentIndex !== -1 && currentIndex < playlist.length - 1) {
+                const nextFilename = playlist[currentIndex + 1];
+                // 尋找對應下一首檔案的 DOM 元素 (透過 onclick 屬性查找)
+                const nextElement = document.querySelector(`.audio-item[onclick*="${nextFilename}"]`);
+                
+                if (nextElement) {
+                    // 自動捲動到下一章的位置 (可選，若不需要自動捲動可註解掉)
+                    // nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // 播放下一首
+                    playAudio(nextFilename, nextElement);
+                }
+            } else {
+                // 全部播放完畢
+                currentFilename = null;
+                currentAudio = null;
+            }
+        }
+
         function playAudio(filename, element) {
             // 1. 如果點擊的是當前正在播放（或暫停）的檔案
             if (currentAudio && currentFilename === filename) {
@@ -814,8 +842,8 @@
             // 4. 播放結束時的處理
             currentAudio.onended = function() {
                 element.classList.remove('playing');
-                currentFilename = null;
-                currentAudio = null;
+                // 自動播放下一章
+                playNext(filename);
             };
         }
 
