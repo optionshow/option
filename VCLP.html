@@ -103,7 +103,8 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="pt-40 pb-20 overflow-hidden relative" id="player-section">
+    <!-- 調整：pb-20 改為 pb-10，減少底部留白，拉近與下方列表距離 -->
+    <section class="pt-40 pb-10 overflow-hidden relative" id="player-section">
         <!-- Background Decor -->
         <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
         <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
@@ -147,11 +148,12 @@
 
             <!-- Real Video Player Container -->
             <!-- 
-                 修正：
-                 1. 新增 id="video-container" 以便 JS 精準定位
-                 2. 新增 class="scroll-mt-32" (Tailwind) 預留上方空間 (Header + Marquee 約 100px+)，確保不被遮擋
+                 調整記錄：
+                 1. 寬度控制：加入 w-[90%] 讓它縮小為父層的90%，保留 max-w-5xl 限制最大寬度。
+                 2. 間距控制：mt-12 改為 mt-6，減少上方間距。
+                 3. 定位與捲動：保留 id="video-container" 與 scroll-mt-32 邏輯不變。
             -->
-            <div id="video-container" class="mt-12 relative max-w-5xl mx-auto scroll-mt-32">
+            <div id="video-container" class="mt-6 relative w-[90%] max-w-5xl mx-auto scroll-mt-32">
                 <div class="absolute inset-0 bg-gradient-to-t from-course-bg via-transparent to-transparent z-0 h-20 bottom-0 pointer-events-none"></div>
                 <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black aspect-video relative z-10">
                     
@@ -172,7 +174,8 @@
         </section>
 
         <!-- Course Curriculum (Clickable) -->
-        <section class="py-20 bg-slate-50" id="curriculum">
+        <!-- 調整：py-20 改為 py-10，減少章節列表與上方的距離 -->
+        <section class="py-10 bg-slate-50" id="curriculum">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">課程章節選單</h2>
