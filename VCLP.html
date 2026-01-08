@@ -145,8 +145,13 @@
                 </p>
             </div>
 
-            <!-- Real Video Player -->
-            <div class="mt-12 relative max-w-5xl mx-auto">
+            <!-- Real Video Player Container -->
+            <!-- 
+                 修正：
+                 1. 新增 id="video-container" 以便 JS 精準定位
+                 2. 新增 class="scroll-mt-32" (Tailwind) 預留上方空間 (Header + Marquee 約 100px+)，確保不被遮擋
+            -->
+            <div id="video-container" class="mt-12 relative max-w-5xl mx-auto scroll-mt-32">
                 <div class="absolute inset-0 bg-gradient-to-t from-course-bg via-transparent to-transparent z-0 h-20 bottom-0 pointer-events-none"></div>
                 <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black aspect-video relative z-10">
                     
@@ -295,51 +300,6 @@
             </div>
         </section>
 
-        <!-- NEW: FAQ Section -->
-        <section class="py-20 bg-slate-50 border-t border-slate-200">
-            <div class="max-w-4xl mx-auto px-4">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-slate-900 mb-4">常見問題 FAQ</h2>
-                    <p class="text-slate-600">解決您對智能交易的所有疑問</p>
-                </div>
-                
-                <div class="space-y-4">
-                    <!-- Q1 -->
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
-                            <i data-lucide="help-circle" class="text-course-primary w-5 h-5"></i>
-                            我是完全新手，這套系統適合我嗎？
-                        </h3>
-                        <p class="text-slate-600 ml-7">非常適合。我們開發了「一鍵同步示範設定」功能，您不需要懂複雜的參數，只要跟隨系統內建的贏家策略，即可開始運作。影片第六章有詳細解說。</p>
-                    </div>
-                    <!-- Q2 -->
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
-                            <i data-lucide="help-circle" class="text-course-primary w-5 h-5"></i>
-                            需要多少資金才能開始？
-                        </h3>
-                        <p class="text-slate-600 ml-7">系統支援小資族操作。建議初始資金約新台幣 30-50 萬即可完整體驗「價差保護」與「資金控管」的優勢。當然，資金越大，風控操作空間越靈活。</p>
-                    </div>
-                    <!-- Q3 -->
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
-                            <i data-lucide="help-circle" class="text-course-primary w-5 h-5"></i>
-                            電腦需要整天開著嗎？
-                        </h3>
-                        <p class="text-slate-600 ml-7">是的，智能交易程式需要在 Windows 電腦上運作。建議使用家中閒置電腦或租用雲端主機 (VPS)，即可實現 24 小時不間斷監控，您只需透過手機遠端查看即可。</p>
-                    </div>
-                    <!-- Q4 -->
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
-                            <i data-lucide="help-circle" class="text-course-primary w-5 h-5"></i>
-                            訂購後有完整的售後服務窗口嗎？
-                        </h3>
-                        <p class="text-slate-600 ml-7">絕對有保障。我們提供「多窗口同步服務」，包含合法券商營業員諮詢、一對一 LINE@ 專人問答，以及專屬用戶交流群組。讓您隨時找得到人，絕對不會成為軟體孤兒！</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
     <!-- Footer -->
     <footer class="bg-course-dark text-slate-400 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -357,21 +317,6 @@
         </div>
     </footer>
 
-    <!-- NEW: Sticky Bottom CTA -->
-    <div id="sticky-cta" class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 transform translate-y-full transition-transform duration-300 z-50 flex justify-between items-center px-4 md:px-8">
-        <div class="hidden md:block">
-            <p class="font-bold text-slate-900 text-lg">掌握選擇權現金流，從今天開始。</p>
-            <p class="text-xs text-slate-500">限時優惠名額倒數中 🔥</p>
-        </div>
-        <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-            <span class="md:hidden font-bold text-slate-900 text-sm">限時優惠倒數 🔥</span>
-            <a href="https://lin.ee/n3bZgtk" target="_blank" class="bg-course-accent hover:bg-orange-600 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-orange-500/30 flex items-center gap-2 transition transform hover:scale-105">
-                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-                洽詢訂購
-            </a>
-        </div>
-    </div>
-
     <!-- Initialize Lucide Icons & Scripts -->
     <script>
         lucide.createIcons();
@@ -388,49 +333,12 @@
             }
         }, 30000); // 更改為 30000 毫秒 (30秒)
 
-        // Sticky CTA Logic
-        window.addEventListener('scroll', () => {
-            const stickyCTA = document.getElementById('sticky-cta');
-            if (window.scrollY > 600) { // Show after scrolling down a bit
-                stickyCTA.classList.remove('translate-y-full');
-            } else {
-                stickyCTA.classList.add('translate-y-full');
-            }
-        });
-
         // Video Player Logic
-        function playChapter(chapterNum, title, duration, element) {
-            const videoPlayer = document.getElementById('main-video');
-            const titleElement = document.getElementById('current-video-title');
-            const labelElement = document.getElementById('current-chapter-label');
-            const playerSection = document.getElementById('player-section');
-
-            // Update Video Source (Assuming filenames are 01.mp4, 02.mp4, etc.)
-            // Using GitHub Pages base URL structure based on request
-            videoPlayer.src = `https://optionshow.github.io/option/Video/${chapterNum}.mp4`;
-            
-            // Update UI Text
-            titleElement.innerText = title;
-            labelElement.innerText = `現正播放：第 ${chapterNum} 章`;
-
-            // Update Active Card Styling
-            document.querySelectorAll('.chapter-card').forEach(card => {
-                card.classList.remove('active-chapter');
-            });
-            element.classList.add('active-chapter');
-
-            // Scroll to player smoothly
-            playerSection.scrollIntoView({ behavior: 'smooth' });
-
-            // Auto Play
-            videoPlayer.play().catch(e => console.log("Auto-play prevented by browser policy, user needs to interact first."));
-            
-            // Set up auto-play next logic when current video ends
-            videoPlayer.onended = function() {
-                playNextVideo();
-            };
-        }
+        const mainVideoPlayer = document.getElementById('main-video');
         
+        // 自動切換標記 (邏輯更新：其實現在人工和自動都要捲動，這個標記主要用途變小，但保留結構)
+        let isAutoTransition = false;
+
         // Function to find and play the next chapter
         function playNextVideo() {
              const cards = document.querySelectorAll('.chapter-card');
@@ -445,8 +353,54 @@
              
              // If active chapter found and it's not the last one, play next
              if (activeIndex >= 0 && activeIndex < cards.length - 1) {
+                 isAutoTransition = true;
                  cards[activeIndex + 1].click();
              }
+        }
+
+        // Initialize onended listener globally for the default loaded video
+        if (mainVideoPlayer) {
+            mainVideoPlayer.onended = function() {
+                playNextVideo();
+            };
+        }
+
+        function playChapter(chapterNum, title, duration, element) {
+            const videoPlayer = document.getElementById('main-video');
+            const titleElement = document.getElementById('current-video-title');
+            const labelElement = document.getElementById('current-chapter-label');
+            
+            // 修正：將捲動目標從 player-section (整個區塊) 改為 video-container (播放器本體)
+            const videoContainer = document.getElementById('video-container');
+
+            // Update Video Source
+            videoPlayer.src = `https://optionshow.github.io/option/Video/${chapterNum}.mp4`;
+            
+            // Update UI Text
+            titleElement.innerText = title;
+            labelElement.innerText = `現正播放：第 ${chapterNum} 章`;
+
+            // Update Active Card Styling
+            document.querySelectorAll('.chapter-card').forEach(card => {
+                card.classList.remove('active-chapter');
+            });
+            element.classList.add('active-chapter');
+
+            // 修正捲動邏輯：
+            // 1. 無論是 isAutoTransition (自動) 還是人工點擊，現在都要捲動。
+            // 2. 目標改為 videoContainer
+            videoContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // 重置標記
+            isAutoTransition = false;
+
+            // Auto Play
+            videoPlayer.play().catch(e => console.log("Auto-play prevented by browser policy, user needs to interact first."));
+            
+            // Re-attach onended listener
+            videoPlayer.onended = function() {
+                playNextVideo();
+            };
         }
     </script>
 </body>
