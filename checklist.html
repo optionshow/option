@@ -1,1065 +1,771 @@
-<html lang="zh-TW"><head>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能交易2～2.5％清單檢查</title>
+    <title>智能交易全方位整合清單</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
         
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f0f4f8;
-            font-size: 1.1rem; /* 增加基本字體大小 */
+            background-color: #f3f4f6;
+            scroll-behavior: smooth;
         }
-        
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .checklist-item {
+            transition: all 0.2s ease;
+        }
         .checklist-item:hover {
-            background-color: #f8fafc;
+            transform: translateX(4px);
+        }
+        /* Completed State */
+        .checklist-item.completed {
+            background-color: #f0fdf4; /* green-50 */
+            border-left: 4px solid #22c55e; /* green-500 */
+            opacity: 0.8;
+        }
+        .checklist-item.completed h3, 
+        .checklist-item.completed p, 
+        .checklist-item.completed li,
+        .checklist-item.completed span {
+            text-decoration: line-through;
+            color: #9ca3af; /* gray-400 */
         }
         
-        .completed {
-            background-color: #d1fae5;
+        /* Arrow Rotation */
+        .rotate-180 {
+            transform: rotate(180deg);
         }
-        
-        .completed:hover {
-            background-color: #a7f3d0;
-        }
-        
-        .day-header {
-            transition: all 0.3s ease;
-        }
-        
-        .day-header:hover {
-            transform: translateY(-2px);
-        }
-        
-        .video-link {
-            transition: all 0.2s ease;
-        }
-        
-        .video-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        
-        .dev-credit {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            opacity: 0.1;
-            cursor: pointer;
-            z-index: 100;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-        
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 700px;
-            border-radius: 8px;
-        }
-        
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
+
+        /* Value Highlight Badge */
+        .val-badge {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
             font-weight: bold;
-        }
-        
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        /* 增加字體大小 */
-        h1 {
-            font-size: 2.2rem !important;
-        }
-        
-        h2 {
-            font-size: 1.6rem !important;
-        }
-        
-        h3 {
-            font-size: 1.3rem !important;
-        }
-        
-        .text-sm {
-            font-size: 1rem !important;
-        }
-        
-        li, p {
-            font-size: 1.1rem;
-        }
-        
-        code {
-            font-size: 1.05rem !important;
-        }
-        
-        .reset-btn {
-            transition: all 0.2s ease;
-        }
-        
-        .reset-btn:hover {
-            transform: rotate(90deg);
-            color: #ef4444;
-        }
-        
-        .tooltip {
-            position: relative;
+            border: 1px solid #bfdbfe;
             display: inline-block;
         }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 80px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -40px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.75rem;
+        .checklist-item.completed .val-badge {
+            background-color: #f3f4f6;
+            color: #9ca3af;
+            border-color: #e5e7eb;
         }
 
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
+        /* Category Header Badge */
+        .cat-header {
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 6px;
+            margin-top: 12px;
+            letter-spacing: 0.05em;
+        }
+        /* Category Colors */
+        .cat-basic { background-color: #e5e7eb; color: #374151; } /* Gray */
+        .cat-dir { background-color: #e0e7ff; color: #4338ca; } /* Indigo */
+        .cat-temp { background-color: #ffedd5; color: #c2410c; } /* Orange */
+        .cat-cond { background-color: #d1fae5; color: #047857; } /* Emerald */
+        .cat-stop { background-color: #fee2e2; color: #b91c1c; } /* Red */
+        .cat-real { background-color: #f3e8ff; color: #7e22ce; } /* Purple */
+
+        /* Sticky Header Glassmorphism */
+        .sticky-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mode Switcher */
+        .mode-btn {
+            transition: all 0.3s ease;
+        }
+        .mode-btn.active {
+            background-color: #ffffff;
+            color: #2563eb;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
     </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-8{margin-bottom:2rem}.ml-2{margin-left:0.5rem}.ml-3{margin-left:0.75rem}.mr-2{margin-right:0.5rem}.mr-3{margin-right:0.75rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-7{height:1.75rem}.max-h-96{max-height:24rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.max-w-5xl{max-width:64rem}.flex-shrink-0{flex-shrink:0}.rotate-180{--tw-rotate:180deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-4{gap:1rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-auto{overflow:auto}.rounded{border-radius:0.25rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-b-lg{border-bottom-right-radius:0.5rem;border-bottom-left-radius:0.5rem}.rounded-t-lg{border-top-left-radius:0.5rem;border-top-right-radius:0.5rem}.border{border-width:1px}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.bg-blue-700{--tw-bg-opacity:1;background-color:rgb(29 78 216 / var(--tw-bg-opacity, 1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.bg-green-100{--tw-bg-opacity:1;background-color:rgb(220 252 231 / var(--tw-bg-opacity, 1))}.bg-green-600{--tw-bg-opacity:1;background-color:rgb(22 163 74 / var(--tw-bg-opacity, 1))}.bg-indigo-100{--tw-bg-opacity:1;background-color:rgb(224 231 255 / var(--tw-bg-opacity, 1))}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity, 1))}.bg-pink-100{--tw-bg-opacity:1;background-color:rgb(252 231 243 / var(--tw-bg-opacity, 1))}.bg-pink-600{--tw-bg-opacity:1;background-color:rgb(219 39 119 / var(--tw-bg-opacity, 1))}.bg-purple-100{--tw-bg-opacity:1;background-color:rgb(243 232 255 / var(--tw-bg-opacity, 1))}.bg-purple-600{--tw-bg-opacity:1;background-color:rgb(147 51 234 / var(--tw-bg-opacity, 1))}.bg-red-100{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242 / var(--tw-bg-opacity, 1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-100{--tw-bg-opacity:1;background-color:rgb(254 249 195 / var(--tw-bg-opacity, 1))}.bg-yellow-600{--tw-bg-opacity:1;background-color:rgb(202 138 4 / var(--tw-bg-opacity, 1))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-blue-600{--tw-gradient-from:#2563eb var(--tw-gradient-from-position);--tw-gradient-to:rgb(37 99 235 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-indigo-700{--tw-gradient-to:#4338ca var(--tw-gradient-to-position)}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-4{padding-left:1rem;padding-right:1rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pl-5{padding-left:1.25rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.text-amber-800{--tw-text-opacity:1;color:rgb(146 64 14 / var(--tw-text-opacity, 1))}.text-blue-100{--tw-text-opacity:1;color:rgb(219 234 254 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-green-600{--tw-text-opacity:1;color:rgb(22 163 74 / var(--tw-text-opacity, 1))}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-600{--tw-text-opacity:1;color:rgb(202 138 4 / var(--tw-text-opacity, 1))}.shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.hover\:bg-blue-50:hover{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.hover\:bg-red-100:hover{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
-<body>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg shadow-lg p-6 mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">智能交易2～2.5％清單檢查</h1>
-            <p class="text-blue-100">追蹤每日設定步驟，確保交易系統正確運行（設定前，請重整網頁，確保數據更新）</p>
-        </div>
+</head>
+<body class="pb-12">
 
-        <!-- 首次設定 -->
-        <div id="day-0" class="mb-8">
-            <div class="day-header bg-blue-700 text-white p-4 rounded-t-lg shadow cursor-pointer flex justify-between items-center">
-                <h2 class="text-xl font-bold">首次設定（開始交易）</h2>
-                <div class="flex items-center">
-                    <span id="day-0-count" class="mr-2 bg-white text-blue-700 rounded-full h-7 w-7 flex items-center justify-center font-bold">0</span>
-                    <div class="tooltip ml-2">
-                        <button class="reset-btn" data-day="0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                        <span class="tooltiptext">清空勾選</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 transform transition-transform ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
+    <!-- Sticky Progress Header -->
+    <div class="sticky-header fixed top-0 left-0 right-0 z-50 px-4 py-3 border-b border-gray-200">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-bold text-gray-800 hidden sm:block">智能交易清單系統</h1>
+                <h1 class="text-lg font-bold text-gray-800 sm:hidden">智能交易</h1>
+                <p id="current-status-text" class="text-xs text-blue-600 mt-0.5 font-medium"></p>
             </div>
-            <div class="day-content bg-white rounded-b-lg shadow p-4 hidden">
-                <div class="space-y-4">
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="0" data-item="1">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">首次設定</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>在「投入資金本金」輸入您的資金金額（例如：<code class="bg-gray-100 px-1 rounded">400000</code>）</li>
-                                <li class="font-medium text-red-600">重要：在「保留可用餘額」輸入 <code class="bg-gray-100 px-1 rounded">1000</code>（百分比），確保程式不會意外下單</li>
-                                <li>比照樣本輸入其他基本欄位數值（例如：<code class="bg-gray-100 px-1 rounded">15</code>, <code class="bg-gray-100 px-1 rounded">3</code>, <code class="bg-gray-100 px-1 rounded">110</code>, <code class="bg-gray-100 px-1 rounded">0.5</code>, <code class="bg-gray-100 px-1 rounded">16</code>）</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="0" data-item="2">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">方向判斷  （可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-red-600">重要：勾選「合計方向」</li>
-                                <li>設定溫度數值（例如：<code class="bg-gray-100 px-1 rounded">60</code>, <code class="bg-gray-100 px-1 rounded">42</code>）</li>
-                                <li>設定點數數值（例如：<code class="bg-gray-100 px-1 rounded">3000</code>, <code class="bg-gray-100 px-1 rounded">-3000</code>）</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="0" data-item="3">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">多空溫度調整</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>設定多空溫度數值（例如：<code class="bg-gray-100 px-1 rounded">60</code>, <code class="bg-gray-100 px-1 rounded">42</code>）</li>
-                                <li class="font-medium text-red-600">重要：首次佈局時，不要勾選「多空溫度調整」</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="0" data-item="4">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">交易條件</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>輸入交易條件數值（例如：<code class="bg-gray-100 px-1 rounded">0.2</code>）</li>
-                                <li class="font-medium text-red-600">重要：複式單 BP 價外 <code class="bg-gray-100 px-1 rounded">100</code> 點</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="0" data-item="5">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">停損停利設定</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>輸入所有停損停利相關數值（例如：<code class="bg-gray-100 px-1 rounded">-200</code>, <code class="bg-gray-100 px-1 rounded">-200</code>, <code class="bg-gray-100 px-1 rounded">85</code>, <code class="bg-gray-100 px-1 rounded">78</code>, <code class="bg-gray-100 px-1 rounded">114</code>, <code class="bg-gray-100 px-1 rounded">11</code>, <code class="bg-gray-100 px-1 rounded">196</code>）</li>
-                                <li>勾選「即時總點停損」</li>
-                                <li>輸入對應資金的停損點數（例如：40 萬輸入 <code class="bg-gray-100 px-1 rounded">1200</code>；若資金不同，使用【即時總點換算小工具】）</li>
-                                <li>勾選「保利降部位」與輸入設定</li>
-                                <li>點擊「儲存」</li>
-                                <li></li>
-                                <li class="font-medium text-red-600">重要：全部完成→左上按「開始交易」</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 週三夜（第一天） -->
-        <div id="day-1" class="mb-8">
-            <div class="day-header bg-indigo-600 text-white p-4 rounded-t-lg shadow cursor-pointer flex justify-between items-center">
-                <h2 class="text-xl font-bold">週三夜（第一天）</h2>
-                <div class="flex items-center">
-                    <span id="day-1-count" class="mr-2 bg-white text-indigo-600 rounded-full h-7 w-7 flex items-center justify-center font-bold">0</span>
-                    <div class="tooltip ml-2">
-                        <button class="reset-btn" data-day="1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                        <span class="tooltiptext">清空勾選</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 transform transition-transform ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
-            </div>
-            <div class="day-content bg-white rounded-b-lg shadow p-4 hidden">
-                <div class="space-y-4">
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="1" data-item="1">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">基本設定：投入資金成本</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-blue-600">更改【投入資金成本】，可輸入目前庫存沒有部位的【權益總值】金額</li>
-                                <li class="font-medium text-blue-600">下單開始後，不建議變更【投入資金成本】或 出金 或 入金</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="1" data-item="2">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">即時總點管控</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>使用【即時總點換算小工具】：根據目前的資金（以萬為單位輸入），計算出應設定的 即時總點管控，並打勾儲存！</li>
-                                <li class="font-medium text-blue-600">
-  <a href="https://optionshow.github.io/option/%E5%81%9C%E6%90%8D%E5%81%9C%E5%88%A9%E8%A8%AD%E5%AE%9A.html" target="_blank">
-    【即時總點換算小工具】連結
-  </a>
-</li>
-
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="1" data-item="5">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">方向判斷：打勾啟用（可同步示範）+ 多空溫度調整：取消打勾</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>依照智能報價趨勢判斷優先：合計方向 ； 多空溫度 ； 當盤數值</li>
-                                <li>確認方向判斷  （可同步示範）設定符合當前市場趨勢</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="1" data-item="3">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">交易條件：動態Sell價/複式單BP價外100點  （可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>使用智能報價確認動態Sell價：</li>
-                                <li>在智能報價頁面尋找 100價差接近<code class="bg-gray-100 px-1 rounded">11.9</code>的Call和Put</li>
-                                <li>記下對應的Call和Put成交價（例如：Call <code class="bg-gray-100 px-1 rounded">50</code>，Put <code class="bg-gray-100 px-1 rounded">71</code>）</li>
-                                <li>輸入設定，讓動態Sell價結果是剛剛的成交價</li>
-                                <li>複式單 BP 價外 <code class="bg-gray-100 px-1 rounded">100</code> 點</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="1" data-item="4">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">基本設定：保留可用餘額</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-blue-600">將「保留可用餘額」從 <code class="bg-gray-100 px-1 rounded">1000％</code> 改為 <code class="bg-gray-100 px-1 rounded">85~90％</code>。這表示只使用 10~15% 的資金進行佈局</li>
-                                <li>點擊「儲存」</li>
-                                <li class="font-medium text-blue-600">下單機：觀察回傳「使用者交易設定完成」訊息，確認設定已同步</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 週四（第二天） -->
-        <div id="day-2" class="mb-8">
-            <div class="day-header bg-purple-600 text-white p-4 rounded-t-lg shadow cursor-pointer flex justify-between items-center">
-                <h2 class="text-xl font-bold">週四（第二天）</h2>
-                <div class="flex items-center">
-                    <span id="day-2-count" class="mr-2 bg-white text-purple-600 rounded-full h-7 w-7 flex items-center justify-center font-bold">0</span>
-                    <div class="tooltip ml-2">
-                        <button class="reset-btn" data-day="2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                        <span class="tooltiptext">清空勾選</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 transform transition-transform ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
-            </div>
-            <div class="day-content bg-white rounded-b-lg shadow p-4 hidden">
-                <div class="space-y-4">
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="2" data-item="1">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">方向判斷  （可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>依照智能報價趨勢判斷優先：合計方向 ； 多空溫度 ； 當盤數值</li>
-                                <li>確認方向判斷  （可同步示範）設定符合當前市場趨勢</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="2" data-item="2">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">交易條件：動態Sell價  （可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>打開智能報價，查詢 100價差<code class="bg-gray-100 px-1 rounded">11.9</code>對應的Call及Put成交價</li>
-                                <li>輸入設定，讓動態Sell價結果是剛剛的成交價</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="2" data-item="3">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">基本設定：保留可用餘額</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-blue-600">將保留可用餘額比例調整為<code class="bg-gray-100 px-1 rounded">60~70%</code>，增加資金投入</li>
-                                <li>點擊「儲存」</li>
-                                <li class="font-medium text-blue-600">下單機：觀察回傳「使用者交易設定完成」訊息，確認設定已同步</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 週五（第三天） -->
-        <div id="day-3" class="mb-8">
-            <div class="day-header bg-pink-600 text-white p-4 rounded-t-lg shadow cursor-pointer flex justify-between items-center">
-                <h2 class="text-xl font-bold">週五（第三天）</h2>
-                <div class="flex items-center">
-                    <span id="day-3-count" class="mr-2 bg-white text-pink-600 rounded-full h-7 w-7 flex items-center justify-center font-bold">0</span>
-                    <div class="tooltip ml-2">
-                        <button class="reset-btn" data-day="3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                        <span class="tooltiptext">清空勾選</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 transform transition-transform ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
-            </div>
-            <div class="day-content bg-white rounded-b-lg shadow p-4 hidden">
-                <div class="space-y-4">
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="3" data-item="1">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">方向判斷 （可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>依照智能報價趨勢判斷優先：合計方向 ； 多空溫度 ； 當盤數值</li>
-                                <li>確認方向判斷  （可同步示範）設定符合當前市場趨勢</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="3" data-item="2">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">交易條件：動態Sell價（可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>打開智能報價，查詢 100價差<code class="bg-gray-100 px-1 rounded">11.9</code>對應的Call及Put成交價</li>
-                                <li>輸入設定，讓動態Sell價結果是剛剛的成交價</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="3" data-item="3">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">基本設定：保留可用餘額（資金佈局完，1.取消方向判斷2.開啟多空溫度調整3.保留可用餘額降低10～2％）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-blue-600">將保留可用餘額比例從70%調整為<code class="bg-gray-100 px-1 rounded">50～45%</code>，增加資金投入</li>
-                                <li class="text-amber-600">（當虧損大於2％，可用餘額從 70% 調整為 40～35%）</li>
-                                <li>點擊「儲存」</li>
-                                <li class="font-medium text-blue-600">資金佈局完，1.取消方向判斷2.開啟多空溫度調整3.保留可用餘額降低1～20％</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 週一（第四天） -->
-        <div id="day-4" class="mb-8">
-            <div class="day-header bg-green-600 text-white p-4 rounded-t-lg shadow cursor-pointer flex justify-between items-center">
-                <h2 class="text-xl font-bold">週一（第四天）</h2>
-                <div class="flex items-center">
-                    <span id="day-4-count" class="mr-2 bg-white text-green-600 rounded-full h-7 w-7 flex items-center justify-center font-bold">0</span>
-                    <div class="tooltip ml-2">
-                        <button class="reset-btn" data-day="4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                        <span class="tooltiptext">清空勾選</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 transform transition-transform ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
-            </div>
-            <div class="day-content bg-white rounded-b-lg shadow p-4 hidden">
-                <div class="space-y-4">
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="4" data-item="1">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">方向判斷：全部取消打勾（可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>減少建倉，取消方向判斷</li>
-                                <li>若損益不佳（-2％）才勾選√多空溫度建倉，補救虧損</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="4" data-item="2">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">交易條件：動態Sell價（可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>打開智能報價，查詢 100價差接近<code class="bg-gray-100 px-1 rounded">9</code>對應的Call及Put成交價（若虧損， 100價差改接近<code class="bg-gray-100 px-1 rounded">14</code>）</li>
-                                <li>輸入設定，讓動態Sell價結果是剛剛的成交價</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="4" data-item="3">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">多空溫度調整：打勾啟用（可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-blue-600">打勾啟用多空溫度調整</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="4" data-item="4">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">基本設定：保留可用餘額1％~20%</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-blue-600">將【保留可用餘額】比例調整為<code class="bg-gray-100 px-1 rounded">1%~20%</code>，增加資金投入</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="4" data-item="5">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">停損停利設定（僅限於獲利不理想）+ 方向判斷：打勾啟用-多空溫度</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>若損益不佳（-2％），開啟停利功能：針對SC+BC和SP+BP 啟用「停利」功能，以釋放資金（僅限於獲利不理想）</li>
-                                <li class="text-amber-600">方向判斷：打勾啟用-選多空溫度</li>
-                                <li class="text-amber-600">將【保留可用餘額】比例調整為<code class="bg-gray-100 px-1 rounded">1%</code>，增加資金投入</li>
-                                <li>點擊「儲存」</li>
-                                <li class="font-medium text-blue-600">下單機：觀察回傳「使用者交易設定完成」訊息，確認設定已同步</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 週二（第五天） -->
-        <div id="day-5" class="mb-8">
-            <div class="day-header bg-yellow-600 text-white p-4 rounded-t-lg shadow cursor-pointer flex justify-between items-center">
-                <h2 class="text-xl font-bold">週二（第五天）</h2>
-                <div class="flex items-center">
-                    <span id="day-5-count" class="mr-2 bg-white text-yellow-600 rounded-full h-7 w-7 flex items-center justify-center font-bold">0</span>
-                    <div class="tooltip ml-2">
-                        <button class="reset-btn" data-day="5">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                        <span class="tooltiptext">清空勾選</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 transform transition-transform ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
-            </div>
-            <div class="day-content bg-white rounded-b-lg shadow p-4 hidden">
-                <div class="space-y-4">
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="5" data-item="1">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">方向判斷：全部取消打勾（可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>減少建倉，取消方向判斷</li>
-                                <li>若損益不佳（-2％）才勾選√多空溫度建倉，補救虧損</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="5" data-item="2">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">交易條件：動態Sell價（日/夜盤，最少2次）/複式單B價外50點（可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>打開智能報價，查詢 100價差<code class="bg-gray-100 px-1 rounded">8</code>對應的Call及Put成交價（若虧損， 100價差改接近<code class="bg-gray-100 px-1 rounded">16</code>）</li>
-                                <li>輸入設定，讓動態Sell價結果是剛剛的成交價</li>
-                                <li class="font-medium">複式單 B 價外，改50點</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="5" data-item="3">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">停損停利設定（僅限於獲利不理想）+ 方向判斷：打勾啟用-多空溫度</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>若損益不佳，開啟停利功能：針對SC+BC和SP+BP 啟用「停利」功能，以釋放資金（僅限於獲利不理想）</li>
-                                <li class="text-amber-600">方向判斷：打勾啟用-選多空溫度</li>
-                                <li class="text-amber-600">將【保留可用餘額】比例調整為<code class="bg-gray-100 px-1 rounded">1%</code>，增加資金投入</li>
-                                <li>點擊「儲存」</li>
-                                <li class="font-medium text-blue-600">下單機：觀察回傳「使用者交易設定完成」訊息，確認設定已同步</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 結算日（第六天） -->
-        <div id="day-6" class="mb-8">
-            <div class="day-header bg-red-600 text-white p-4 rounded-t-lg shadow cursor-pointer flex justify-between items-center">
-                <h2 class="text-xl font-bold">結算日（第六天）</h2>
-                <div class="flex items-center">
-                    <span id="day-6-count" class="mr-2 bg-white text-red-600 rounded-full h-7 w-7 flex items-center justify-center font-bold">0</span>
-                    <div class="tooltip ml-2">
-                        <button class="reset-btn" data-day="6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                        <span class="tooltiptext">清空勾選</span>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 transform transition-transform ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
-            </div>
-            <div class="day-content bg-white rounded-b-lg shadow p-4 hidden">
-                <div class="space-y-4">
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="6" data-item="1">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">方向判斷：全部取消打勾（可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>減少建倉，取消方向判斷</li>
-                                <li>若損益不佳（-2％）才勾選√多空溫度建倉，補救虧損</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="6" data-item="2">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">交易條件：動態Sell價設定20～44 （可同步示範）</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-blue-600">結算日（週三）的<code class="bg-gray-100 px-1 rounded">動態Sell價</code>固定設定為40（20~44都可），不需參考智能報價的動態數值</li>
-                                <li class="font-medium text-blue-600">若虧損超過-2％<code class="bg-gray-100 px-1 rounded">動態Sell價</code>固定設定為20（8~20都可）！</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="6" data-item="3">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">即時總點管控：日盤定時平倉最高價：持倉數量SC+SP總和 x1~1.5倍</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li>啟用並設定<code class="bg-gray-100 px-1 rounded">日盤定時平倉最高價</code>功能</li>
-                                <li>設定平倉時間為12點45分</li>
-                                <li>平倉的<code class="bg-gray-100 px-1 rounded">即時總點</code>設定值需根據當前Sell（SC/SP）的持倉數量總和計算並填入（例如：如果SC+SP持倉總和為164，則設定為164~246點）</li>
-                                <li>點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start">
-                        <input type="checkbox" class="mt-1 h-6 w-6 text-blue-600 rounded" data-day="6" data-item="4">
-                        <div class="ml-3">
-                            <h3 class="font-medium text-gray-800">停損停利設定（僅限於獲利不理想）+ 方向判斷：打勾啟用-多空溫度</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-gray-600 list-disc pl-5">
-                                <li class="font-medium text-blue-600">若損益不佳，開啟【停損停利設定】：針對SC+BC和SP+BP 啟用「停利」/「停損」功能，以釋放資金</li>
-                                <li class="font-medium text-blue-600">方向判斷：打勾啟用-選多空溫度</li>
-                                <li class="font-medium text-blue-600">將【保留可用餘額】比例調整為<code class="bg-gray-100 px-1 rounded">1%</code>，增加資金投入</li>
-                                <li class="font-medium text-blue-600">點擊「儲存」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                                        
-                    <div class="checklist-item p-3 border border-gray-200 rounded-lg flex items-start bg-amber-50 border-amber-300">
-                        <div class="flex-shrink-0 mt-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="font-medium text-amber-800">結算收盤後重要提醒</h3>
-                            <ul class="mt-2 space-y-2 text-sm text-amber-700 list-disc pl-5">
-                                <li class="font-medium">結算日下午1～3點記得保留可用餘額改為1000％（以免下單到日盤設定保留1％）</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 清空所有勾選按鈕 -->
-        <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-gray-800">使用說明</h2>
-                <button id="reset-all" class="bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-4 rounded-lg flex items-center transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                    清空所有勾選
+            <div class="flex items-center gap-3">
+                <button id="btn-reset-all" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded border border-red-200 transition-colors">
+                    重置
                 </button>
             </div>
-            <ul class="space-y-2 text-gray-700 mt-4">
-                <li class="flex items-start">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                    點擊每天的標題可展開或收起該天的檢查項目
-                </li>
-                <li class="flex items-start">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                    完成每個項目後勾選對應的方框，系統會自動記錄您的進度
-                </li>
-                <li class="flex items-start">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                    點擊每天標題旁的垃圾桶圖示可清空該天的所有勾選
-                </li>
-            </ul>
-        </div>
-
-        <!-- 影片說明區塊 -->
-        <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">影片說明</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="https://youtu.be/o5KV_8jDLw4" target="_blank" class="video-link flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition">
-                    <div class="bg-blue-100 p-2 rounded-full mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-800">首次設定（完成才按開始交易）</h4>
-                        <p class="text-sm text-gray-600">了解如何進行系統的初始設定</p>
-                    </div>
-                </a>
-                
-                <a href="https://youtu.be/aBhibtqOaGo" target="_blank" class="video-link flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition">
-                    <div class="bg-indigo-100 p-2 rounded-full mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-800">週三夜（第一天）</h4>
-                        <p class="text-sm text-gray-600">第一天交易設定指南</p>
-                    </div>
-                </a>
-                
-                <a href="https://youtu.be/5fHULfAsRzc" target="_blank" class="video-link flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition">
-                    <div class="bg-purple-100 p-2 rounded-full mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-800">週四（第二天）</h4>
-                        <p class="text-sm text-gray-600">第二天交易設定指南</p>
-                    </div>
-                </a>
-                
-                <a href="https://youtu.be/MDZkuhcxXqc" target="_blank" class="video-link flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition">
-                    <div class="bg-pink-100 p-2 rounded-full mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-800">週五（第三天）</h4>
-                        <p class="text-sm text-gray-600">第三天交易設定指南</p>
-                    </div>
-                </a>
-                
-                <a href="https://youtu.be/KERu0ZofjOw" target="_blank" class="video-link flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition">
-                    <div class="bg-green-100 p-2 rounded-full mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-800">週一（第四天）</h4>
-                        <p class="text-sm text-gray-600">第四天交易設定指南</p>
-                    </div>
-                </a>
-                
-                <a href="https://youtu.be/ksXomVSZrv0" target="_blank" class="video-link flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition">
-                    <div class="bg-yellow-100 p-2 rounded-full mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-800">週二（第五天）</h4>
-                        <p class="text-sm text-gray-600">第五天交易設定指南</p>
-                    </div>
-                </a>
-                
-                <a href="https://youtu.be/ZRsFse_Ldx8" target="_blank" class="video-link flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition">
-                    <div class="bg-red-100 p-2 rounded-full mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-gray-800">結算日（第六天）</h4>
-                        <p class="text-sm text-gray-600">結算日交易設定指南</p>
-                    </div>
-                </a>
-            </div>
         </div>
     </div>
 
-    <!-- 開發者標記 -->
-    <div class="dev-credit text-gray-400 text-sm" id="dev-credit"></div>
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 pt-20 max-w-5xl">
+        
+        <!-- Welcome / Mode Switch Card -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 mb-8 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full blur-xl"></div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                <div>
+                    <h2 class="text-2xl font-bold mb-1">交易策略清單檢查</h2>
+                    <p class="text-blue-100 text-sm">設定前請務必重整網頁，確保數據更新。</p>
+                </div>
+                
+                <!-- Mode Switcher -->
+                <div class="bg-blue-800/50 p-1 rounded-lg flex text-sm">
+                    <button onclick="switchMode('wed')" id="btn-mode-wed" class="mode-btn px-4 py-2 rounded-md text-blue-100 hover:text-white">
+                        週三結算
+                    </button>
+                    <button onclick="switchMode('wedFri')" id="btn-mode-wedFri" class="mode-btn px-4 py-2 rounded-md text-blue-100 hover:text-white">
+                        週三/五結算
+                    </button>
+                </div>
+            </div>
 
-    <!-- 程式碼顯示模態框 -->
-    <div id="code-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">×</span>
-            <h2 class="text-xl font-bold mb-4">程式碼</h2>
-            <div class="bg-gray-100 p-4 rounded-lg overflow-auto max-h-96">
-                <pre id="code-content" class="text-sm"></pre>
+            <div class="flex flex-wrap gap-2 text-sm mt-2">
+                <a href="#video-section" class="bg-white/20 hover:bg-white/30 transition px-3 py-1 rounded-full flex items-center">
+                    🎬 觀看教學影片
+                </a>
             </div>
         </div>
+
+        <!-- Checklist Container -->
+        <div id="checklist-container" class="space-y-6">
+            <!-- Dynamic Content will be injected here by JS -->
+        </div>
+
+        <!-- Video Section -->
+        <div id="video-section" class="mt-12 mb-12 bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                教學影片資源
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="https://youtu.be/o5KV_8jDLw4" target="_blank" class="group block p-4 border rounded-lg hover:border-blue-400 hover:shadow-md transition">
+                    <div class="font-bold text-gray-800 group-hover:text-blue-600">首次設定</div>
+                    <div class="text-xs text-gray-500 mt-1">開始交易前的必要步驟</div>
+                </a>
+                <a href="https://youtu.be/aBhibtqOaGo" target="_blank" class="group block p-4 border rounded-lg hover:border-indigo-400 hover:shadow-md transition">
+                    <div class="font-bold text-gray-800 group-hover:text-indigo-600">週三夜（第一天）</div>
+                    <div class="text-xs text-gray-500 mt-1">建立每週初始部位</div>
+                </a>
+                <a href="https://youtu.be/5fHULfAsRzc" target="_blank" class="group block p-4 border rounded-lg hover:border-purple-400 hover:shadow-md transition">
+                    <div class="font-bold text-gray-800 group-hover:text-purple-600">週四（第二天）</div>
+                    <div class="text-xs text-gray-500 mt-1">調整倉位</div>
+                </a>
+                <a href="https://youtu.be/MDZkuhcxXqc" target="_blank" class="group block p-4 border rounded-lg hover:border-pink-400 hover:shadow-md transition">
+                    <div class="font-bold text-gray-800 group-hover:text-pink-600">週五（第三天）</div>
+                    <div class="text-xs text-gray-500 mt-1">週五操作</div>
+                </a>
+                <a href="https://youtu.be/KERu0ZofjOw" target="_blank" class="group block p-4 border rounded-lg hover:border-green-400 hover:shadow-md transition">
+                    <div class="font-bold text-gray-800 group-hover:text-green-600">週一（第四天）</div>
+                    <div class="text-xs text-gray-500 mt-1">新週調整</div>
+                </a>
+                <a href="https://youtu.be/ksXomVSZrv0" target="_blank" class="group block p-4 border rounded-lg hover:border-yellow-400 hover:shadow-md transition">
+                    <div class="font-bold text-gray-800 group-hover:text-yellow-600">週二（第五天）</div>
+                    <div class="text-xs text-gray-500 mt-1">最後調整</div>
+                </a>
+                <a href="https://youtu.be/ZRsFse_Ldx8" target="_blank" class="group block p-4 border rounded-lg hover:border-red-400 hover:shadow-md transition">
+                    <div class="font-bold text-gray-800 group-hover:text-red-600">結算日操作</div>
+                    <div class="text-xs text-gray-500 mt-1">平倉與風險控制</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center text-gray-400 text-xs mb-8">
+            Smart Trading System Checklist v2.7
+        </div>
+
     </div>
 
+    <!-- JavaScript Logic -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 初始化進度
-            loadProgress();
-            updateProgressCounts();
-            
-            // 日期標題點擊展開/收起
-            const dayHeaders = document.querySelectorAll('.day-header');
-            dayHeaders.forEach(header => {
-                header.addEventListener('click', function(e) {
-                    // 如果點擊的是重置按鈕，不要展開/收起
-                    if (e.target.closest('.reset-btn') || e.target.closest('.tooltip')) {
-                        return;
-                    }
-                    
-                    const content = this.nextElementSibling;
-                    const arrow = this.querySelector('svg:last-child');
-                    
-                    content.classList.toggle('hidden');
-                    arrow.classList.toggle('rotate-180');
-                });
-            });
-            
-            // 所有日期默認收起
-            // (已在HTML中設置所有 .day-content 為 hidden)
-            
-            // 勾選項目事件
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const day = this.dataset.day;
-                    const item = this.dataset.item;
-                    const isChecked = this.checked;
-                    
-                    // 更新項目樣式
-                    const listItem = this.closest('.checklist-item');
-                    if (isChecked) {
-                        listItem.classList.add('completed');
-                        // 播放小碎花動畫
-                        playConfetti(this);
-                    } else {
-                        listItem.classList.remove('completed');
-                    }
-                    
-                    // 保存進度
-                    saveProgress(day, item, isChecked);
-                    updateProgressCounts();
-                });
-            });
-            
-            // 重置按鈕事件
-            const resetBtns = document.querySelectorAll('.reset-btn');
-            resetBtns.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation(); // 防止觸發父元素的點擊事件
-                    const day = this.dataset.day;
-                    resetDay(day);
-                });
-            });
-            
-            // 重置所有按鈕事件
-            const resetAllBtn = document.getElementById('reset-all');
-            resetAllBtn.addEventListener('click', function() {
-                if (confirm('確定要清空所有勾選嗎？')) {
-                    resetAllDays();
-                }
-            });
-            
-            // 開發者標記點擊事件
-            const devCredit = document.getElementById('dev-credit');
-            const codeModal = document.getElementById('code-modal');
-            const closeBtn = document.querySelector('.close');
-            const codeContent = document.getElementById('code-content');
-            
-            devCredit.addEventListener('click', function() {
-                codeContent.textContent = document.documentElement.outerHTML;
-                codeModal.style.display = 'block';
-            });
-            
-            closeBtn.addEventListener('click', function() {
-                codeModal.style.display = 'none';
-            });
-            
-            window.addEventListener('click', function(event) {
-                if (event.target == codeModal) {
-                    codeModal.style.display = 'none';
-                }
-            });
+        // --- Data Definitions ---
+
+        // Helper to get class by category name
+        function getCatClass(cat) {
+            switch(cat) {
+                case '基本設定': return 'cat-basic';
+                case '方向判斷': return 'cat-dir';
+                case '多空溫度調整': return 'cat-temp';
+                case '交易條件': return 'cat-cond';
+                case '停損停利': return 'cat-stop';
+                case '即時總點管控': return 'cat-real';
+                case '若虧損2%以上': return 'cat-stop'; 
+                default: return 'cat-basic';
+            }
+        }
+
+        // Mode 1: Wednesday Settlement (Updated Structure)
+        const dataWed = [
+            {
+                id: 'w-day-0',
+                title: '首次設定（開始交易）',
+                color: 'blue',
+                description: '結算自動換契約：固定近周三',
+                items: [
+                    { isHeader: true, text: '基本設定' },
+                    { text: '結算自動換契約，選 <span class="val-badge">固定近周三</span>' },
+                    { text: '在「投入資金本金」輸入您的資金金額（例如：<span class="val-badge">400000</span>）' },
+                    { text: '重要：在「保留可用餘額」輸入 <span class="val-badge">1000%</span>，確保程式不會意外下單', important: true },
+                    { text: '比照示範40萬的設定，輸入所有欄位的數值與選項與勾選' },
+                    { text: '確認全部完成後，左上角按「開始交易」', important: true }
+                ]
+            },
+            {
+                id: 'w-day-1',
+                title: '週三夜（第一天）',
+                color: 'indigo',
+                description: '建立部位',
+                items: [
+                    { isHeader: true, text: '基本設定' },
+                    { text: '【投入資金成本】可更新為目前庫存沒有部位的【權益總值】' },
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '依照智能報價趨勢判斷：合計方向/多空溫度 ； 或自性判斷:逆勢多空溫度/期貨價格' },
+                    { text: '確認方向判斷 （可同步示範）設定符合當前市場趨勢' },
+                    { isHeader: true, text: '多空溫度調整' },
+                    { text: '<strong>取消打勾</strong>' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價：查詢智能報價 100價差接近 <span class="val-badge">8~11</span> 的成交價並輸入設定' },
+                    { text: '複式單 BP 價外 <span class="val-badge">100</span> 點' },
+                    { isHeader: true, text: '基本設定' },
+                    { text: '將保留可用餘額改為 <span class="val-badge">85~90%</span> (只使用15~10%資金)' }
+                ]
+            },
+            {
+                id: 'w-day-2',
+                title: '週四（第二天）',
+                color: 'purple',
+                description: '調整倉位',
+                items: [
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '確認設定符合當前市場趨勢' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價：查詢 100價差 <span class="val-badge">8~11</span> 的成交價並輸入設定' },
+                    { isHeader: true, text: '基本設定' },
+                    { text: '保留可用餘額調整為 <span class="val-badge">60~70%</span>' }
+                ]
+            },
+            {
+                id: 'w-day-3',
+                title: '週五（第三天）',
+                color: 'pink',
+                description: '週五操作',
+                items: [
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '確認設定符合市場' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價：查詢 100價差 <span class="val-badge">8~11</span> 的成交價並輸入設定' },
+                    { isHeader: true, text: '基本設定' },
+                    { text: '保留可用餘額調整為 <span class="val-badge">50~45%</span>' },
+                    { text: '資金佈局完後：1.取消方向判斷 2.開啟多空溫度調整 3.保留可用餘額降低1~20%' }
+                ]
+            },
+            {
+                id: 'w-day-4',
+                title: '週一（第四天）',
+                color: 'green',
+                description: '新週調整',
+                items: [
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '<strong>全部取消打勾</strong> (減少建倉)' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價：查詢 100價差接近 <span class="val-badge">8~9</span> (若虧損找接近14) 的成交價並設定' },
+                    { isHeader: true, text: '多空溫度調整' },
+                    { text: '<strong>打勾啟用</strong>' },
+                    { isHeader: true, text: '基本設定' },
+                    { text: '保留可用餘額調整為 <span class="val-badge">1%~20%</span>' },
+                    { isHeader: true, text: '停損停利' },
+                    { text: '開啟保利降部位1與2' },
+                    { text: '若損益不佳（-2%），啟用停利功能 (釋放資金)' }
+                ]
+            },
+            {
+                id: 'w-day-5',
+                title: '週二（第五天）',
+                color: 'yellow',
+                description: '最後調整',
+                items: [
+                    { isHeader: true, text: '基本設定' },
+                    { text: '保留餘額調為 <span class="val-badge">1%</span>' },
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '<strong>全部取消打勾</strong>' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價：查詢 100價差 <span class="val-badge">8</span> (若虧損找接近14) 的成交價' },
+                    { text: '複式單 B 價外，改 <span class="val-badge">50</span> 點' },
+                    { isHeader: true, text: '停損停利' },
+                    { text: '若損益不佳(-2%)，開啟停損停利' }
+                ]
+            },
+            {
+                id: 'w-day-6',
+                title: '週三（結算日）',
+                color: 'red',
+                description: '結算日',
+                items: [
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '<strong>全部取消打勾</strong>' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價：固定設定為 <span class="val-badge">40</span> (20~44皆可)' },
+                    { isHeader: true, text: '即時總點管控' },
+                    { text: '啟用「日盤定時平倉」，時間 <span class="val-badge">12:45</span>' },
+                    { text: '平倉總點設定：持倉數量(SC+SP) x 0.5~1倍' },
+                    { isHeader: true, text: '基本設定' },
+                    { text: '<strong>⚠️ 結算後提醒：</strong>下午2點後確認可用保留餘額是否是 <span class="val-badge">1000%</span> (程式會自動設定1000%)', important: true }
+                ]
+            },
+            {
+                id: 'w-day-emergency',
+                title: '緊急調整（若虧損2%以上）',
+                color: 'darkRed', // Changed to darkRed
+                description: '僅在損益不佳時執行此區塊設定',
+                items: [
+                    { isHeader: true, text: '基本設定' },
+                    { text: '保留可用餘額設定為 <span class="val-badge">2%</span>' },
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '勾選多空溫度' },
+                    { isHeader: true, text: '停損停利' },
+                    { text: '勾選停利(資金滾動再布局),是否勾選停損需自行決定' },
+                    { text: '勾選 保利降部位1 設定  獲利 % >=  <span class="val-badge">0%</span>, <span class="val-badge">15</span>點以下不平倉' }
+                ]
+            }
+        ];
+
+        // Mode 2: Wed/Fri Settlement (Aggregated Strategy)
+        const dataWedFri = [
+            {
+                id: 'wf-setup',
+                title: '首次設定（開始交易）',
+                color: 'blue',
+                description: '適用於週三與週五雙結算策略',
+                items: [
+                    { isHeader: true, text: '基本設定' },
+                    { text: '結算自動換契約，選 <span class="val-badge">本週三<=>本週五</span>' },
+                    { text: '在「投入資金本金」輸入您的資金金額（例如：<span class="val-badge">400000</span>）' },
+                    { text: '重要：在「保留可用餘額」輸入 <span class="val-badge">1000%</span>，確保程式不會意外下單', important: true },
+                    { text: '比照示範40萬的設定，輸入所有欄位的數值與選項與勾選' },
+                    { text: '確認全部完成後，左上角按「開始交易」', important: true }
+                ]
+            },
+            {
+                id: 'wf-day-1',
+                title: '📅 週一日或週三夜（第一天）',
+                color: 'indigo',
+                description: '建立部位',
+                items: [
+                    { isHeader: true, text: '基本設定' },
+                    { text: '【投入資金成本】可更新為權益總值' },
+                    { isHeader: true, text: '即時總點管控' },
+                    { text: '設定：使用小工具，100價差改為 <span class="val-badge">8</span>' },
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '設定：勾選啟用「合計方向/多空溫度」' },
+                    { isHeader: true, text: '多空溫度調整' },
+                    { text: '設定：<strong>取消打勾</strong>' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價設定：尋找 100價差接近 <span class="val-badge">8~9</span> 的成交價' },
+                    { text: '複式單 BP 價外 <span class="val-badge">100</span> 點' },
+                    { isHeader: true, text: '基本設定' },
+                    { text: '保留可用餘額改為 <span class="val-badge">75~65%</span> (只使用25~35%資金)' }
+                ]
+            },
+            {
+                id: 'wf-day-2',
+                title: '📅 週二或週四（第二天）',
+                color: 'purple',
+                description: '調整與加碼',
+                items: [
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '<strong>打勾啟用</strong>，符合智能報價趨勢。(夜盤取消方向判斷!)' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價設定：(日/夜盤最少2次) 尋找 100價差接近 <span class="val-badge">8</span> (虧損改14)' },
+                    { text: '日盤複式單BP/BC價外 <span class="val-badge">100</span> 點，夜盤改 <span class="val-badge">50</span> 點' },
+                    { isHeader: true, text: '多空溫度調整' },
+                    { text: '<strong>打勾啟用</strong>' },
+                    { isHeader: true, text: '基本設定' },
+                    { text: '保留可用餘額 日盤 <span class="val-badge">50%</span> / 夜盤 <span class="val-badge">20%</span>' },
+                    { isHeader: true, text: '停損停利' },
+                    { text: '若損益不佳(-2%)：啟用停損停利，保留餘額調為 <span class="val-badge">2%</span>' }
+                ]
+            },
+            {
+                id: 'wf-day-3',
+                title: '📅 週三或週五（結算日）',
+                color: 'red',
+                description: '結算日操作',
+                items: [
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '<strong>全部取消打勾</strong>' },
+                    { isHeader: true, text: '交易條件' },
+                    { text: '動態Sell價：固定設定為 <span class="val-badge">40</span> (20~44皆可)' },
+                    { isHeader: true, text: '即時總點管控' },
+                    { text: '啟用「日盤定時平倉」，時間 <span class="val-badge">12:45</span>' },
+                    { text: '平倉總點設定：持倉數量(SC+SP) x 0.5~1倍' },
+                    { isHeader: true, text: '基本設定' },
+                    { text: '<strong>⚠️ 結算後提醒：</strong>下午2點後確認可用保留餘額是否是 <span class="val-badge">1000%</span> (程式會自動設定1000%)', important: true }
+                ]
+            },
+            {
+                id: 'wf-day-emergency',
+                title: '緊急調整（若虧損2%以上）',
+                color: 'darkRed', // Changed to darkRed
+                description: '僅在損益不佳時執行此區塊設定',
+                items: [
+                    { isHeader: true, text: '基本設定' },
+                    { text: '保留可用餘額設定為 <span class="val-badge">2%</span>' },
+                    { isHeader: true, text: '方向判斷' },
+                    { text: '勾選多空溫度' },
+                    { isHeader: true, text: '停損停利' },
+                    { text: '勾選停利(資金滾動再布局),是否勾選停損需自行決定' },
+                    { text: '勾選 保利降部位1 設定  獲利 % >=  <span class="val-badge">0%</span>, <span class="val-badge">15</span>點以下不平倉' }
+                ]
+            }
+        ];
+
+        // --- App Logic ---
+
+        let currentMode = 'wed'; // 'wed' or 'wedFri'
+        let checklistData = dataWed; // Default
+
+        // Color Mapping for Tailwind classes
+        const colorClasses = {
+            blue: { header: 'from-blue-600 to-blue-500', icon: 'text-blue-600' },
+            indigo: { header: 'from-indigo-600 to-indigo-500', icon: 'text-indigo-600' },
+            purple: { header: 'from-purple-600 to-purple-500', icon: 'text-purple-600' },
+            pink: { header: 'from-pink-600 to-pink-500', icon: 'text-pink-600' },
+            green: { header: 'from-green-600 to-green-500', icon: 'text-green-600' },
+            yellow: { header: 'from-yellow-500 to-yellow-400', icon: 'text-yellow-600' },
+            red: { header: 'from-red-600 to-red-500', icon: 'text-red-600' },
+            darkRed: { header: 'from-red-900 to-red-800', icon: 'text-red-900' },
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved mode or default to 'wed'
+            const savedMode = localStorage.getItem('smart-trading-mode');
+            if (savedMode) {
+                switchMode(savedMode);
+            } else {
+                switchMode('wed'); // This ensures the 'wed' button gets the .active class on first load
+            }
         });
-        
-        // 播放小碎花動畫
-        function playConfetti(element) {
-            const rect = element.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
+
+        function switchMode(mode) {
+            currentMode = mode;
+            localStorage.setItem('smart-trading-mode', mode);
+
+            // Update UI Buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-mode-${mode}`).classList.add('active');
+
+            // Switch Data
+            checklistData = (mode === 'wed') ? dataWed : dataWedFri;
+
+            // Re-render
+            renderChecklists();
+            loadProgress();
             
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { 
-                    x: x / window.innerWidth, 
-                    y: y / window.innerHeight 
-                },
-                colors: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6'],
-                shapes: ['circle', 'square'],
-                scalar: 0.8,
-                disableForReducedMotion: true
-            });
+            // Auto expand today
+            autoExpandToday();
         }
-        
-        // 保存進度到localStorage
-        function saveProgress(day, item, isChecked) {
-            const progressKey = `trading-checklist-progress`;
-            let progress = JSON.parse(localStorage.getItem(progressKey)) || {};
-            
-            if (!progress[day]) {
-                progress[day] = {};
+
+        // Logic to auto-expand today's card
+        function autoExpandToday() {
+            const now = new Date();
+            const day = now.getDay(); // 0-6 Sun-Sat
+            const hour = now.getHours();
+
+            // Night session definition: 14:00 to 05:00 (next day)
+            // Adjust day for hours 00:00 - 05:00 to belong to previous "trading day"
+            let tradingDay = day;
+            let isNight = false;
+
+            if (hour < 5) {
+                tradingDay = (day + 6) % 7; // Previous day
+                isNight = true; // Late night part of night session
+            } else if (hour >= 14) {
+                isNight = true;
+            }
+
+            let targetId = null;
+            let statusText = `今天是: 週${['日','一','二','三','四','五','六'][day]} ${hour}點 (${isNight ? '夜盤' : '日盤'})`;
+
+            if (currentMode === 'wed') {
+                // Mode 1: Wed Settlement
+                if (tradingDay === 3) { // Wed
+                    targetId = isNight ? 'w-day-1' : 'w-day-6';
+                } else if (tradingDay === 4) { // Thu
+                    targetId = 'w-day-2';
+                } else if (tradingDay === 5) { // Fri
+                    targetId = 'w-day-3';
+                } else if (tradingDay === 1) { // Mon
+                    targetId = 'w-day-4';
+                } else if (tradingDay === 2) { // Tue
+                    targetId = 'w-day-5';
+                }
+            } else {
+                // Mode 2: Wed/Fri Settlement
+                if (tradingDay === 1) { // Mon
+                    targetId = 'wf-day-1';
+                } else if (tradingDay === 2) { // Tue
+                    targetId = 'wf-day-2';
+                } else if (tradingDay === 3) { // Wed
+                    targetId = isNight ? 'wf-day-1' : 'wf-day-3';
+                } else if (tradingDay === 4) { // Thu
+                    targetId = 'wf-day-2';
+                } else if (tradingDay === 5) { // Fri
+                    targetId = isNight ? null : 'wf-day-3'; // Fri Night is rest
+                }
             }
             
-            progress[day][item] = isChecked;
-            localStorage.setItem(progressKey, JSON.stringify(progress));
+            // Update Status Text
+            const statusEl = document.getElementById('current-status-text');
+            if(statusEl) statusEl.innerText = statusText;
+
+            // Expand target
+            if (targetId) {
+                const content = document.getElementById(`content-${targetId}`);
+                const arrow = document.getElementById(`arrow-${targetId}`);
+                if (content && arrow) {
+                    content.classList.remove('hidden');
+                    arrow.classList.add('rotate-180');
+                    // Scroll to view
+                    setTimeout(() => {
+                        const card = document.getElementById(`card-${targetId}`);
+                        if(card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 200);
+                }
+            }
         }
-        
-        // 從localStorage加載進度
-        function loadProgress() {
-            const progressKey = `trading-checklist-progress`;
-            const progress = JSON.parse(localStorage.getItem(progressKey)) || {};
+
+        // Render Functions
+        function renderChecklists() {
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = '';
+
+            checklistData.forEach(day => {
+                const styles = colorClasses[day.color];
+                
+                const dayCard = document.createElement('div');
+                dayCard.className = 'bg-white rounded-xl shadow-md overflow-hidden transition hover:shadow-lg';
+                dayCard.id = `card-${day.id}`;
+
+                // Header
+                const header = document.createElement('div');
+                header.className = `bg-gradient-to-r ${styles.header} p-4 cursor-pointer flex justify-between items-center text-white`;
+                header.onclick = () => toggleCard(day.id);
+                
+                // Calculate countable items (exclude headers)
+                const countableItems = day.items.filter(i => !i.isHeader).length;
+
+                header.innerHTML = `
+                    <div>
+                        <h2 class="text-lg font-bold flex items-center gap-2">
+                            ${day.title}
+                        </h2>
+                        <p class="text-xs opacity-90 font-light mt-1">${day.description}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span id="count-${day.id}" class="bg-white/20 px-2 py-1 rounded text-xs font-mono">0/${countableItems}</span>
+                        <button onclick="event.stopPropagation(); resetDay('${day.id}')" title="重置這一天" class="p-1 hover:bg-white/20 rounded-full transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
+                        <svg id="arrow-${day.id}" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                `;
+
+                // Content
+                const content = document.createElement('div');
+                content.id = `content-${day.id}`;
+                content.className = 'hidden bg-gray-50'; // Default hidden
+
+                const list = document.createElement('div');
+                list.className = 'p-4 space-y-3';
+
+                day.items.forEach((item, index) => {
+                    const itemId = `${day.id}-item-${index}`;
+                    
+                    if (item.isHeader) {
+                        const headerDiv = document.createElement('div');
+                        const catClass = getCatClass(item.text);
+                        headerDiv.className = `cat-header ${catClass}`;
+                        headerDiv.innerText = item.text;
+                        list.appendChild(headerDiv);
+                    } else {
+                        const div = document.createElement('div');
+                        div.className = 'checklist-item bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-start cursor-pointer select-none';
+                        if (item.important) div.classList.add('border-l-4', 'border-l-red-400'); // Warning visual
+
+                        div.onclick = (e) => {
+                            // Prevent triggering if clicking a link inside text
+                            if (e.target.tagName === 'A') return;
+                            toggleItem(itemId, div);
+                        };
+
+                        div.innerHTML = `
+                            <div class="flex-shrink-0 mt-1">
+                                <input type="checkbox" id="${itemId}" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 pointer-events-none">
+                            </div>
+                            <div class="ml-3 text-gray-700 text-sm leading-relaxed ${item.important ? 'font-medium text-red-700' : ''}">
+                                ${item.text}
+                            </div>
+                        `;
+                        list.appendChild(div);
+                    }
+                });
+
+                content.appendChild(list);
+                dayCard.appendChild(header);
+                dayCard.appendChild(content);
+                container.appendChild(dayCard);
+            });
+        }
+
+        // Logic Functions
+        function toggleCard(dayId) {
+            const content = document.getElementById(`content-${dayId}`);
+            const arrow = document.getElementById(`arrow-${dayId}`);
             
-            for (const day in progress) {
-                for (const item in progress[day]) {
-                    if (progress[day][item]) {
-                        const checkbox = document.querySelector(`input[data-day="${day}"][data-item="${item}"]`);
-                        if (checkbox) {
-                            checkbox.checked = true;
-                            const listItem = checkbox.closest('.checklist-item');
-                            listItem.classList.add('completed');
-                        }
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
+
+        function toggleItem(itemId, itemDiv) {
+            const checkbox = document.getElementById(itemId);
+            const isChecking = !checkbox.checked;
+            
+            checkbox.checked = isChecking;
+            
+            if (isChecking) {
+                itemDiv.classList.add('completed');
+            } else {
+                itemDiv.classList.remove('completed');
+            }
+
+            saveProgress();
+            updateGlobalProgress();
+        }
+
+        function updateGlobalProgress() {
+            let totalItems = 0;
+            let checkedItems = 0;
+
+            checklistData.forEach(day => {
+                const dayChecked = document.querySelectorAll(`#content-${day.id} input:checked`).length;
+                const countableItems = day.items.filter(i => !i.isHeader).length;
+                
+                // Update Individual Card Counter
+                const counter = document.getElementById(`count-${day.id}`);
+                if(counter) counter.innerText = `${dayChecked}/${countableItems}`;
+
+                totalItems += countableItems;
+                checkedItems += dayChecked;
+            });
+        }
+
+        // Modified save/load to use unique keys for different modes
+        function saveProgress() {
+            const savedData = {};
+            checklistData.forEach(day => {
+                day.items.forEach((item, index) => {
+                    if (item.isHeader) return;
+                    const itemId = `${day.id}-item-${index}`;
+                    const checkbox = document.getElementById(itemId);
+                    if (checkbox && checkbox.checked) {
+                        savedData[itemId] = true;
+                    }
+                });
+            });
+            // Use currentMode in the key
+            localStorage.setItem(`smart-trading-progress-${currentMode}`, JSON.stringify(savedData));
+        }
+
+        function loadProgress() {
+            // Load based on currentMode
+            const saved = localStorage.getItem(`smart-trading-progress-${currentMode}`);
+            if (saved) {
+                const savedData = JSON.parse(saved);
+                for (const itemId in savedData) {
+                    const checkbox = document.getElementById(itemId);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        checkbox.closest('.checklist-item').classList.add('completed');
                     }
                 }
             }
         }
-        
-        // 更新每天的進度計數
-        function updateProgressCounts() {
-            const days = [
-                { id: 0, total: 5 },
-                { id: 1, total: 5 }, // 更新為5項，因為增加了方向判斷  （可同步示範）項目
-                { id: 2, total: 3 },
-                { id: 3, total: 3 },
-                { id: 4, total: 5 },
-                { id: 5, total: 3 },
-                { id: 6, total: 4 }
-            ];
+
+        function resetDay(dayId) {
+            if (!confirm('確定要清空這一天的勾選嗎？')) return;
             
-            days.forEach(day => {
-                const completed = document.querySelectorAll(`input[data-day="${day.id}"]:checked`).length;
-                document.getElementById(`day-${day.id}-count`).textContent = completed;
+            const inputs = document.querySelectorAll(`#content-${dayId} input`);
+            inputs.forEach(input => {
+                input.checked = false;
+                input.closest('.checklist-item').classList.remove('completed');
             });
+            
+            saveProgress();
+            updateGlobalProgress();
         }
-        
-        // 重置某一天的所有勾選
-        function resetDay(day) {
-            const checkboxes = document.querySelectorAll(`input[data-day="${day}"]`);
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-                const listItem = checkbox.closest('.checklist-item');
-                listItem.classList.remove('completed');
-                
-                // 更新localStorage
-                saveProgress(day, checkbox.dataset.item, false);
+
+        document.getElementById('btn-reset-all').onclick = () => {
+            if (!confirm('確定要全部重置目前模式嗎？')) return;
+            // Clear only current mode data
+            localStorage.removeItem(`smart-trading-progress-${currentMode}`);
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(input => {
+                input.checked = false;
+                input.closest('.checklist-item').classList.remove('completed');
             });
             
-            // 更新計數
-            updateProgressCounts();
-            
-            // 播放重置動畫
-            const dayHeader = document.querySelector(`#day-${day} .day-header`);
-            if (dayHeader) {
-                const rect = dayHeader.getBoundingClientRect();
-                const x = (rect.left + rect.width / 2) / window.innerWidth;
-                const y = (rect.top + rect.height / 2) / window.innerHeight;
-                
-                confetti({
-                    particleCount: 30,
-                    spread: 50,
-                    origin: { x, y },
-                    colors: ['#EF4444'],
-                    shapes: ['circle'],
-                    scalar: 0.7,
-                    gravity: 1.2,
-                    disableForReducedMotion: true
-                });
-            }
-        }
-        
-        // 重置所有天的勾選
-        function resetAllDays() {
-            const progressKey = `trading-checklist-progress`;
-            localStorage.removeItem(progressKey);
-            
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-                const listItem = checkbox.closest('.checklist-item');
-                listItem.classList.remove('completed');
+            updateGlobalProgress();
+            // Close all cards
+            checklistData.forEach(day => {
+                const content = document.getElementById(`content-${day.id}`);
+                const arrow = document.getElementById(`arrow-${day.id}`);
+                if(content) content.classList.add('hidden');
+                if(arrow) arrow.classList.remove('rotate-180');
             });
-            
-            updateProgressCounts();
-            
-            // 播放重置動畫
-            confetti({
-                particleCount: 100,
-                spread: 100,
-                origin: { x: 0.5, y: 0.5 },
-                colors: ['#EF4444'],
-                shapes: ['circle'],
-                scalar: 1,
-                gravity: 1.2,
-                disableForReducedMotion: true
-            });
-        }
+        };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ff85fae722f228',t:'MTc0NzI3OTQ3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
-
 </body>
-
-<script>
-(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="m7-DV_6E7SMU4WXWF78MF";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
-</script>
-
 </html>
