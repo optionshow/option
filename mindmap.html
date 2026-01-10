@@ -32,20 +32,23 @@
             cursor: grabbing;
         }
 
-        .controls {
+        /* Combined Bottom Toolbar */
+        .bottom-toolbar {
             position: absolute;
             bottom: 20px;
-            right: 20px;
+            left: 20px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             z-index: 100;
+            align-items: center;
+            flex-wrap: wrap; /* Prevent overflow on very small screens */
         }
 
         .control-btn {
             background-color: white;
             color: #4b5563;
             border: 1px solid #e5e7eb;
-            padding: 8px 12px;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -57,6 +60,8 @@
         .control-btn:hover {
             background-color: #f3f4f6;
             color: #1f2937;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
         .header-title {
@@ -69,6 +74,46 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 100;
             border-left: 5px solid #2563eb;
+        }
+
+        .nav-btn {
+            background-color: white;
+            color: #4b5563;
+            text-decoration: none;
+            border: 1px solid #e5e7eb;
+            padding: 8px 16px;
+            border-radius: 99px; /* Rounded pill shape */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .line-btn:hover {
+            background-color: #00B900;
+            color: white;
+            border-color: #00B900;
+        }
+
+        .home-btn:hover {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        /* Divider line style */
+        .divider {
+            width: 1px;
+            height: 24px;
+            background-color: #cbd5e1;
+            margin: 0 4px;
         }
     </style>
 </head>
@@ -83,11 +128,22 @@
     <!-- Chart Container -->
     <div id="mindmap-container"></div>
 
-    <!-- Controls -->
-    <div class="controls">
-        <button class="control-btn" onclick="initialView()">還原視角</button>
+    <!-- Bottom Left Toolbar (Combined) -->
+    <div class="bottom-toolbar">
+        <!-- Navigation Links -->
+        <a href="https://lin.ee/n3bZgtk" target="_blank" class="nav-btn line-btn">
+            💬 聯繫官方
+        </a>
+        <a href="index.html" class="nav-btn home-btn">
+            🏠 回到首頁
+        </a>
+
+        <!-- Visual Divider -->
+        <div class="divider"></div>
+
+        <!-- Controls -->
+        <button class="control-btn" onclick="initialView()">還原收合</button>
         <button class="control-btn" onclick="expandAll()">全部展開</button>
-        <button class="control-btn" onclick="collapseAll()">全部收合</button>
     </div>
 
     <script>
@@ -109,9 +165,9 @@
                         {
                             name: "動態Sell價上限/下限",
                             children: [
-                                { name: "設定時換算出的賣出Sell價,不是價差的成交價" },
-                                { name: "動態Sell價結果低於設定價下限,不下單" },
-                                { name: "動態Sell價結果高於設定價上限,自動降低為設定值" }
+                                { name: "設定時換算出的賣出Sell價,\n不是價差的成交價" },
+                                { name: "動態Sell價結果低於設定價下限,\n不下單" },
+                                { name: "動態Sell價結果高於設定價上限,\n自動降低為設定值" }
                             ]
                         },
                         {
@@ -143,14 +199,15 @@
                             name: "即時總點",
                             children: [
                                 { name: "所有部位目前的總價值點數" },
-                                { name: "獲利時點數減少，虧損時點數增加" },
-                                { name: "Sell Call + Sell Put 價差的最後點數總和" }
+                                { name: "獲利時點數減少，\n虧損時點數增加" },
+                                { name: "Sell Call + Sell Put\n價差的最後點數總和" }
                             ]
                         },
                         {
                             name: "持倉溫度 (0-100)",
                             children: [
-                                { name: "顯示目前部位的多空偏向\n(0=偏空(全Sell Call), 100=偏多(全Sell Put), 50=中立)" },
+                                { name: "顯示目前部位的多空偏向" },
+                                { name: "0=偏空(全Sell Call)\n100=偏多(全Sell Put)\n50=中立" },
                                 { name: "C/P比例計算" }
                             ]
                         },
@@ -158,7 +215,7 @@
                             name: "歸零預期總報酬(%)",
                             children: [
                                 { name: "持倉部位全部歸零的預估" },
-                                { name: "若持倉部位無法歸零則%不準確(重要!)" }
+                                { name: "若持倉部位無法歸零\n則%不準確(重要!)" }
                             ]
                         }
                     ]
@@ -171,7 +228,7 @@
                             name: "各周選項",
                             children: [
                                 { name: "MX1, MX2, MX4, MX5\nMXO=月選/第三週" },
-                                { name: "期交所規定，通常只開放近兩週+月選" }
+                                { name: "期交所規定，\n通常只開放近兩週+月選" }
                             ]
                         },
                         {
@@ -184,7 +241,7 @@
                         {
                             name: "當盤數值",
                             children: [
-                                { name: "綜合市場所有部位計算出的單一數值" },
+                                { name: "綜合市場所有部位\n計算出的單一數值" },
                                 { name: "正數偏多，負數偏空" },
                                 { name: "單筆增減±3000\n(有大單，訂閱智能報價會提醒)" }
                             ]
@@ -300,7 +357,7 @@
                             name: "保利降部位1/2",
                             children: [
                                 { name: "權益總值獲利%達到設定值時觸發" },
-                                { name: "平倉直到剩餘點數低於「保留點數」" },
+                                { name: "平倉直到剩餘點數\n低於「保留點數」" },
                                 { name: "保利狀態下不建立新部位" }
                             ]
                         }
@@ -350,7 +407,10 @@
                         align: 'right',
                         fontSize: 14,
                         fontFamily: 'Noto Sans TC',
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
+                        backgroundColor: '#f9fafb',
+                        padding: [4, 8],
+                        borderRadius: 4
                     },
 
                     leaves: {
@@ -359,14 +419,16 @@
                             verticalAlign: 'middle',
                             align: 'left',
                             backgroundColor: '#fff',
-                            borderColor: '#ccc',
+                            borderColor: '#cbd5e1',
                             borderWidth: 1,
-                            borderRadius: 5,
+                            borderRadius: 6,
                             padding: [6, 10],
                             fontSize: 13,
                             color: '#333',
                             shadowBlur: 2,
-                            shadowColor: '#ddd'
+                            shadowColor: 'rgba(0,0,0,0.1)',
+                            lineHeight: 18
+                            // Removed fixed width and overflow to auto-fit text
                         }
                     },
 
@@ -384,9 +446,9 @@
                         borderWidth: 1
                     },
                     lineStyle: {
-                        color: '#ccc',
+                        color: '#94a3b8',
                         curveness: 0.5,
-                        width: 1.5
+                        width: 2
                     },
                     
                     // Initial expansion level (Root + Level 1)
