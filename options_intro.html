@@ -1,206 +1,216 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <title>選擇權入門說明</title>
-  <style>
-    body {
-      font-family: "Microsoft JhengHei", sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0 20px 40px;
-    }
-    header {
-      background-color: #ffffff;
-      padding: 20px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
-      border-bottom: 1px solid #ddd;
-    }
-    .content {
-      max-width: 900px;
-      margin: 30px auto;
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    h2 {
-      color: #d9534f;
-      font-size: 18px;
-      margin-top: 30px;
-    }
-    p {
-      font-size: 15px;
-      color: #333;
-      line-height: 1.6;
-    }
-    .table-block {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0;
-      justify-content: center;
-      margin-top: 12px;
-      margin-bottom: 10px;
-    }
-    .table-row {
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
-      justify-content: center;
-      gap: 16px;
-    }
-    .table-cell {
-      flex: 1;
-      padding: 12px 14px;
-      font-weight: bold;
-      border-radius: 6px;
-      text-align: center;
-      min-width: 200px;
-    }
-    .red-cell {
-      background-color: #d9534f;
-      color: #fff;
-    }
-    .green-cell {
-      background-color: #5cb85c;
-      color: #fff;
-    }
-    .gray-cell {
-      background-color: #e0e0e0;
-      color: #000;
-    }
-    .white-cell {
-      background-color: #fff;
-      color: #000;
-      border: 1px solid #ccc;
-    }
-    footer {
-      margin-top: 50px;
-      text-align: center;
-      font-size: 14px;
-      color: #555;
-    }
-    footer a {
-      color: #0066cc;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .back-home {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #d9534f;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-    .back-home:hover {
-      background-color: #c9302c;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇權入門說明</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+        }
+        .intro-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .intro-h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3b82f6;
+            padding-left: 0.75rem;
+        }
+        .intro-p {
+            color: #4b5563;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        /* Highlight Box Style */
+        .highlight-box {
+            background-color: #fefce8; /* yellow-50 */
+            border-left: 4px solid #facc15; /* yellow-400 */
+            padding: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen pb-12">
 
-  <header>選擇權入門說明</header>
+    <div class="container mx-auto px-4 pt-12 max-w-4xl">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 text-center">
+            <h1 class="text-2xl font-bold text-gray-800">選擇權入門說明</h1>
+            <p class="text-gray-500 text-sm mt-2">用白話文帶你認識交易的世界</p>
+        </div>
 
-  <div class="content">
-    <h2>一、什麼是選擇權？</h2>
-    <p>
-      選擇權option是一種買賣權利的合約，買方支付權利金後擁有「選擇」是否履約的權利。
-      <br>• <strong>買權（Call）</strong>：預期標的價格上漲，看漲權利。
-      <br>• <strong>賣權（Put）</strong>：預期標的價格下跌，看跌權利。
-    </p>
+        <!-- Content Cards -->
+        <div class="intro-card">
+            <h2 class="intro-h2">一、什麼是選擇權？</h2>
+            
+            <!-- Plain Language Explanation -->
+            <div class="highlight-box">
+                <h3 class="font-bold text-yellow-800 mb-3 flex items-center text-lg">
+                    💡 白話文翻譯蒟蒻：生活實例
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <span class="font-bold text-red-600 text-lg block mb-1">買權 (Call) ＝ 付訂金買房</span>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            就像你看中一間房子，怕之後漲價，先付 10 萬<strong>訂金 (權利金)</strong> 鎖住價格。
+                            <br>🏠 <strong>房價大漲</strong>：你還是可以用原價買，賺到了！
+                            <br>📉 <strong>房價大跌</strong>：你選擇「不買了」，頂多損失那 10 萬訂金，不會賠房子差價。
+                        </p>
+                    </div>
+                    <div class="border-t md:border-t-0 md:border-l border-yellow-200 pt-4 md:pt-0 md:pl-6">
+                        <span class="font-bold text-green-600 text-lg block mb-1">賣權 (Put) ＝ 買意外保險</span>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            就像幫車子買保險，付一點點<strong>保費 (權利金)</strong>。
+                            <br>🚗 <strong>平安無事</strong>：保費給保險公司賺走 (沒賺沒賠)。
+                            <br>💥 <strong>發生事故</strong>：車子爛了 (行情大跌)，保險公司賠你一大筆錢，彌補你的虧損。
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-    <div class="table-block">
-      <div class="table-row">
-        <div class="table-cell red-cell">買權（Call）</div>
-        <div class="table-cell green-cell">賣權（Put）</div>
-      </div>
-      <div class="table-row">
-        <div class="table-cell white-cell">預期標的價格上漲，看漲權利</div>
-        <div class="table-cell white-cell">預期標的價格下跌，看跌權利</div>
-      </div>
+            <p class="intro-p mt-4">
+                回到定義：選擇權 (Option) 是一種合約，買方支付權利金後擁有「選擇」是否履約的權利。
+            </p>
+            
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <div class="bg-red-500 text-white p-3 rounded-lg text-center font-bold">買權 (Call)</div>
+                <div class="bg-green-500 text-white p-3 rounded-lg text-center font-bold">賣權 (Put)</div>
+                <div class="bg-white border p-3 rounded-lg text-center text-sm">預期標的價格上漲<br>看漲權利</div>
+                <div class="bg-white border p-3 rounded-lg text-center text-sm">預期標的價格下跌<br>看跌權利</div>
+            </div>
+
+            <ul class="list-disc pl-5 space-y-2 text-gray-700 text-sm mb-6">
+                <li><strong>履約價</strong>：合約中約定可買賣的期交所公告價格。</li>
+                <li><strong>時間價值</strong>：離結算越久，價格越貴 (因為發生變化的機會越大)。</li>
+                <li><strong>生命總值</strong>：市場上所有選擇權的「時間價值總和」，你可以把它想像成「市場的水位」，隨著越接近結算日，水位（能賺的權利金）會自動降低直到歸零。</li>
+                <li><strong>到期結算</strong>：每份合約都有期限，時間到了一翻兩瞪眼，自動履約或歸零。</li>
+            </ul>
+
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-6">
+                <h4 class="font-bold text-gray-700 mb-2">🎭 角色比喻：賭客 vs 莊家</h4>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div class="bg-white p-3 rounded shadow-sm">
+                        <div class="font-bold text-blue-600 text-base mb-1">Buy (買方) ＝ 買樂透的人</div>
+                        <p class="text-gray-600">
+                            <strong>心態：以小博大</strong>
+                            <br>付出一點點錢 (權利金)，希望中大獎。
+                            <br>輸了只賠彩票錢，贏了翻好幾倍。
+                        </p>
+                    </div>
+                    <div class="bg-white p-3 rounded shadow-sm">
+                        <div class="font-bold text-orange-600 text-base mb-1">Sell (賣方) ＝ 開賭場的莊家</div>
+                        <p class="text-gray-600">
+                            <strong>心態：穩收租金</strong>
+                            <br>先收你的錢，賭你不會中獎。
+                            <br>勝率很高 (因為中獎很難)，但最怕遇到一次超級大獎賠光光 (所以需要風控)。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                <div class="bg-gray-200 p-2 text-center font-bold rounded">Buy (買方)</div>
+                <div class="bg-gray-200 p-2 text-center font-bold rounded">Sell (賣方)</div>
+                <div class="bg-white border p-2 rounded">擁有權利，最大損失僅為權利金</div>
+                <div class="bg-white border p-2 rounded">負有義務，風險可能無限 (需繳保證金)</div>
+            </div>
+        </div>
+
+        <div class="intro-card">
+            <h2 class="intro-h2">二、台指選擇權特色</h2>
+            <ul class="space-y-3 text-gray-700">
+                <li class="flex items-start"><span class="mr-2 text-blue-500">•</span>以台灣加權股價指數（台指期）為標的。</li>
+                <li class="flex items-start"><span class="mr-2 text-blue-500">•</span>每點價值為 <strong>新台幣 50 元</strong>。</li>
+                <li class="flex items-start"><span class="mr-2 text-blue-500">•</span><strong>權益總值</strong>：帳戶內實際擁有的錢（現金 + 浮動損益），是衡量風險與資金配置的依據。</li>
+                <li class="flex items-start"><span class="mr-2 text-blue-500">•</span><strong>交易商品契約</strong>：目前台指選擇權的契約一週的到期日分為週三到期(最原始)與週五到期。一週有2個到期日，未來可能還會增加週一到期的。</li>
+                <li class="flex items-start"><span class="mr-2 text-blue-500">•</span><strong>結算價</strong>：取結算日當天加權指數最後30分鐘的加權平均（13:00～13:30）。</li>
+                <li class="flex items-start"><span class="mr-2 text-blue-500">•</span><strong>交易時間</strong>：
+                    <br><span class="ml-4">☀️ 日盤：08:45 ~ 13:45</span>
+                    <br><span class="ml-4">🌙 夜盤：15:00 ~ 隔日 05:00</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="intro-card">
+            <h2 class="intro-h2">三、垂直價差策略 (Vertical Spread)</h2>
+            
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
+                <h4 class="font-bold text-blue-800 mb-2">🤔 為什麼要用「垂直價差」？</h4>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    單純當莊家 (Sell) 雖然容易贏，但風險無限大 (怕遇到像 911 或金融海嘯)。
+                    <br>垂直價差就像是：<strong>「保險公司把收到的保費，拿去跟更大的再保公司買個便宜保險」</strong>。
+                    <br>這樣就算發生大災難，你的虧損也被<strong>鎖定在一定範圍內</strong>，不會賠到脫褲子。這就是智能交易追求「長期穩健」的秘訣。
+                </p>
+            </div>
+
+            <p class="intro-p">
+                操作方式：同時「賣出」一檔選擇權 (當莊家收錢)，並「買入」另一檔選擇權 (買保險防護)。
+            </p>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <div class="font-bold text-red-700 text-lg mb-1">溫漲做多</div>
+                    <div class="text-gray-600 font-mono text-xl mb-1">SP + BP</div>
+                    <div class="text-sm text-gray-500">賣出賣權 +買進賣權<br>(看不跌策略)</div>
+                </div>
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                    <div class="font-bold text-green-700 text-lg mb-1">溫跌做空</div>
+                    <div class="text-gray-600 font-mono text-xl mb-1">SC + BC</div>
+                    <div class="text-sm text-gray-500">賣出買權 + 買進買權<br>(看不漲策略)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="intro-card">
+            <h2 class="intro-h2">四、智能交易與選擇權的關係</h2>
+            <p class="intro-p">
+                既然選擇權這麼複雜，為什麼還要用？因為它可以透過數據來提高勝率。
+                <br>智能交易就是你的<strong>「自動駕駛系統」</strong>，幫你根據預設的邏輯開車。
+            </p>
+            <div class="grid md:grid-cols-2 gap-4 mt-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-blue-800 mb-2">💰 資金管理 (油量控制)</h4>
+                    <p class="text-sm text-gray-600">系統幫你算好每次要下多少單，保留多少安全氣囊 (保留餘額)，避免一次撞車就畢業。</p>
+                </div>
+                <div class="bg-indigo-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-indigo-800 mb-2">🧭 方向判斷 (導航系統)</h4>
+                    <p class="text-sm text-gray-600">利用大數據 (多空溫度、籌碼) 判斷現在該往北走還是往南走，而不是憑感覺猜。</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-800 mb-2">📊 動態 Sell 價 (進場時機)</h4>
+                    <p class="text-sm text-gray-600">系統會計算現在市場的「價格」合不合理，太貴才賣，太便宜就不做。</p>
+                </div>
+                <div class="bg-pink-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-pink-800 mb-2">🛡️ 保利降部位 (自動煞車)</h4>
+                    <p class="text-sm text-gray-600">當賺到足夠的錢，系統會自動減少手上的單子，把錢放口袋，降低風險。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8 mb-8">
+            <p class="text-gray-500 text-sm mb-2">想了解更多？</p>
+            <a href="https://lin.ee/n3bZgtk" target="_blank" class="inline-block bg-[#00B900] text-white px-6 py-2 rounded-full font-bold hover:bg-[#009900] transition shadow-md flex items-center justify-center w-fit mx-auto mb-4">
+                <span class="mr-2">💬</span> 聯繫官方 LINE@308cobem
+            </a>
+            
+            <a href="index.html" class="inline-block bg-gray-500 text-white px-6 py-2 rounded-full font-bold hover:bg-gray-600 transition shadow-md flex items-center justify-center w-fit mx-auto">
+                <span class="mr-2">🏠</span> 回到首頁
+            </a>
+        </div>
     </div>
-
-    <p>
-      • <strong>履約價</strong>：合約中約定可買賣的期交所公告價格。
-      <br>• <strong>Buy / Sell</strong>：Buy 表示買入權利，Sell 表示賣出義務（莊家概念），風險與權利相對應。
-      <br>• <strong>時間價值</strong>：離結算越久，選擇權價格中包含的時間價值越高（涵蓋市場波動率）。
-      <br>• <strong>價內/價平/價外</strong>：比較標的現價與履約價的關係，決定選擇權的價值與風險。
-      <br>• <strong>到期結算</strong>：每一份選擇權合約皆有明確到期日，期滿將依結算價自動履約或歸零。
-    </p>
-
-    <div class="table-block">
-      <div class="table-row">
-        <div class="table-cell gray-cell">Buy（買方）</div>
-        <div class="table-cell gray-cell">Sell（賣方）</div>
-      </div>
-      <div class="table-row">
-        <div class="table-cell white-cell">擁有選擇是否履約的權利，最大損失為權利金</div>
-        <div class="table-cell white-cell">負有履約義務，風險可能無限但可收買方權利金</div>
-      </div>
-    </div>
-
-    <div class="table-block">
-      <div class="table-row">
-        <div class="table-cell gray-cell">價內（ITM）</div>
-        <div class="table-cell gray-cell">價平（ATM）</div>
-        <div class="table-cell gray-cell">價外（OTM）</div>
-      </div>
-      <div class="table-row">
-        <div class="table-cell white-cell">內含價值 + 時間價值</div>
-        <div class="table-cell white-cell">（內含價值）+ 時間價值（有一方向有內含價值，另一邊則無）</div>
-        <div class="table-cell white-cell">僅有時間價值，無內含價值</div>
-      </div>
-    </div>
-
-    <h2>二、台指選擇權特色</h2>
-    <p>
-      • 以台灣加權股價指數（台指期）為標的。
-      <br>• 每點價值為<strong>新台幣 50 元</strong>。
-      <br>• 每週皆有週選擇權（TX1/TX2/TXO/TX4/TX5），週三結算（遇假日延後到最近上班日）。
-      <br>• <strong>結算價</strong>：取結算日當天加權指數最後30分鐘的加權平均（13：00～13：30）。
-      <br>• 週選履約價每 50 點一檔，提供彈性交易區間。
-      <br>• <strong>交易時間</strong>：每週一至週五上午 8:45 至下午 1:45，夜盤為下午 3:00 至隔日凌晨 5:00。
-    </p>
-
-    <h2>三、垂直價差策略（Vertical Spread）</h2>
-    <p>
-      利用相同到期日與相同方向，但不同履約價的選擇權進行交易，如同時賣出一檔選擇權並買入另一檔。
-      <br>可用於風險控制及成本降低，常見於<strong>智能交易策略</strong>。
-    </p>
-
-    <div class="table-block">
-      <div class="table-row">
-        <div class="table-cell red-cell">溫漲做多</div>
-        <div class="table-cell green-cell">溫跌做空</div>
-      </div>
-      <div class="table-row">
-        <div class="table-cell white-cell">SP + BP<br>趨勢緩漲<br>莊家策略</div>
-        <div class="table-cell white-cell">SC + BC<br>趨勢緩跌<br>莊家策略</div>
-      </div>
-    </div>
-
-    <h2>四、智能交易與選擇權的關係</h2>
-    <p>
-      傳統交易需依賴人力觀察，智能交易則可根據預設邏輯條件自動判斷並下單，包括智能調整部位與停損。
-      <br>本系統主要依據以下核心指標：
-      <br>• <strong>資金管理</strong>：投入比例與風控設定，避免超額風險。
-      <br>• <strong>方向判斷</strong>：如多空溫度、當盤數值、成交行為等。
-      <br>• <strong>動態Sell價</strong>：依據報價數值決定切入時機，並智慧推算隨時變動的Sell價。
-      <br>• <strong>保利降部位</strong>：當績效達預期設定時，自動縮減部位降低風險，穩健管理每週報酬。
-    </p>
-
-    <a class="back-home" href="index.html">🏠 回到首頁</a>
-  </div>
-
-  <footer>
-    聯繫官方：<a href="https://lin.ee/n3bZgtk" target="_blank">LINE@308cobem</a>
-  </footer>
 
 </body>
 </html>
