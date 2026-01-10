@@ -42,6 +42,14 @@
             border-radius: 0 0.5rem 0.5rem 0;
             margin-bottom: 1.5rem;
         }
+        /* Fun Box Style */
+        .fun-box {
+            background-color: #eff6ff; /* blue-50 */
+            border: 1px dashed #3b82f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen pb-12">
@@ -95,12 +103,22 @@
 
             <ul class="list-disc pl-5 space-y-2 text-gray-700 text-sm mb-6">
                 <li><strong>履約價</strong>：合約中約定可買賣的期交所公告價格。</li>
-                <li><strong>時間價值</strong>：離結算越久，價格越貴 (因為發生變化的機會越大)。</li>
                 <li><strong>生命總值</strong>：市場上所有選擇權的「時間價值總和」，你可以把它想像成「市場的水位」，隨著越接近結算日，水位（能賺的權利金）會自動降低直到歸零。</li>
                 <li><strong>到期結算</strong>：每份合約都有期限，時間到了一翻兩瞪眼，自動履約或歸零。</li>
             </ul>
 
-            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-6">
+            <!-- Ice Cream Theory (New) -->
+            <div class="fun-box">
+                <h4 class="font-bold text-blue-800 mb-2">🍦 時間價值＝融化的冰淇淋</h4>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    <strong>時間價值</strong>聽起來很抽象？想像選擇權是一杯剛買的冰淇淋。
+                    <br>🔸 <strong>買方 (Buy)</strong>：必須在冰淇淋融化前趕快吃掉（行情要快點發動），不然時間一久，只剩下一攤糖水（歸零）。
+                    <br>🔸 <strong>賣方 (Sell)</strong>：就像是賣冰淇淋的人，只要時間滴答滴答過去，冰淇淋慢慢融化（價值降低），賣方就穩穩賺走了這筆錢。
+                    <br>👉 <strong>智能交易為什麼喜歡做賣方（莊家）？因為我們賺的是「時間融化」的錢。</strong>
+                </p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 mt-6 mb-6">
                 <h4 class="font-bold text-gray-700 mb-2">🎭 角色比喻：賭客 vs 莊家</h4>
                 <div class="grid md:grid-cols-2 gap-4 text-sm">
                     <div class="bg-white p-3 rounded shadow-sm">
@@ -121,19 +139,12 @@
                     </div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
-                <div class="bg-gray-200 p-2 text-center font-bold rounded">Buy (買方)</div>
-                <div class="bg-gray-200 p-2 text-center font-bold rounded">Sell (賣方)</div>
-                <div class="bg-white border p-2 rounded">擁有權利，最大損失僅為權利金</div>
-                <div class="bg-white border p-2 rounded">負有義務，風險可能無限 (需繳保證金)</div>
-            </div>
         </div>
 
         <div class="intro-card">
             <h2 class="intro-h2">二、台指選擇權特色</h2>
             <ul class="space-y-3 text-gray-700">
-                <li class="flex items-start"><span class="mr-2 text-blue-500">•</span>以台灣加權股價指數（台指期）為標的。</li>
+                <li class="flex items-start"><span class="mr-2 text-blue-500">•</span>標的物是<strong>台灣加權股價指數</strong> (大盤)。</li>
                 <li class="flex items-start"><span class="mr-2 text-blue-500">•</span>每點價值為 <strong>新台幣 50 元</strong>。</li>
                 <li class="flex items-start"><span class="mr-2 text-blue-500">•</span><strong>權益總值</strong>：帳戶內實際擁有的錢（現金 + 浮動損益），是衡量風險與資金配置的依據。</li>
                 <li class="flex items-start"><span class="mr-2 text-blue-500">•</span><strong>交易商品契約</strong>：目前台指選擇權的契約一週的到期日分為週三到期(最原始)與週五到期。一週有2個到期日，未來可能還會增加週一到期的。</li>
@@ -145,8 +156,44 @@
             </ul>
         </div>
 
+        <!-- Stock vs Options Comparison (New) -->
         <div class="intro-card">
-            <h2 class="intro-h2">三、垂直價差策略 (Vertical Spread)</h2>
+            <h2 class="intro-h2">三、為什麼不直接買股票？</h2>
+            <p class="intro-p">
+                很多小白只懂股票，覺得選擇權很複雜。但其實選擇權有一個股票做不到的絕對優勢：<strong>「盤整也能賺」</strong>。
+            </p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 border border-gray-200">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-3 border-r">比較項目</th>
+                            <th class="px-4 py-3 border-r">股票 (Stock)</th>
+                            <th class="px-4 py-3 bg-blue-50 text-blue-700">選擇權 (智能策略)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-bold border-r">獲利時機</td>
+                            <td class="px-4 py-3 border-r">只有漲才會賺 (或融券跌)</td>
+                            <td class="px-4 py-3 bg-blue-50 font-bold text-blue-600">漲、跌、盤整(不動) 都能賺</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3 font-bold border-r">資金門檻</td>
+                            <td class="px-4 py-3 border-r">高 (一張台積電要百萬)</td>
+                            <td class="px-4 py-3 bg-blue-50">低 (幾千元就能進場)</td>
+                        </tr>
+                        <tr class="bg-white">
+                            <td class="px-4 py-3 font-bold border-r">勝率</td>
+                            <td class="px-4 py-3 border-r">約 50% (非漲即跌)</td>
+                            <td class="px-4 py-3 bg-blue-50">高 (只要不跌破地板就贏)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="intro-card">
+            <h2 class="intro-h2">四、垂直價差策略 (Vertical Spread)</h2>
             
             <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
                 <h4 class="font-bold text-blue-800 mb-2">🤔 為什麼要用「垂直價差」？</h4>
@@ -157,9 +204,34 @@
                 </p>
             </div>
 
-            <p class="intro-p">
-                操作方式：同時「賣出」一檔選擇權 (當莊家收錢)，並「買入」另一檔選擇權 (買保險防護)。
-            </p>
+            <!-- Little Ming's Story (New) -->
+            <div class="highlight-box">
+                <h3 class="font-bold text-yellow-800 mb-2 text-lg">📖 小明的故事：秒懂區間交易</h3>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    小明覺得下週股市「應該不會跌破」20000 點。
+                    <br>於是他用智能系統，設了一個「看不跌」的地板 (溫漲做多)。
+                    <br>👉 <strong>週三結算日到了，雖然股市沒大漲，但只要沒跌破 20000 點地板，小明就收租金賺錢了！</strong>
+                    <br>(這就是為什麼盤整也能賺，因為他賭的是「不會發生的事」)
+                </p>
+            </div>
+
+            <!-- 3-Second Judgement (New) -->
+            <div class="bg-gray-800 text-white p-4 rounded-lg text-center mb-6">
+                <h4 class="font-bold text-lg mb-4 text-yellow-300">⚡ 3 秒鐘判斷法</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-2 border border-gray-600 rounded hover:bg-gray-700 transition">
+                        <div class="text-2xl mb-1">🏠</div>
+                        <div class="text-sm font-bold text-red-400">覺得地板有支撐</div>
+                        <div class="text-xs text-gray-400">看不跌 -> 做多 (SP+BP)</div>
+                    </div>
+                    <div class="p-2 border border-gray-600 rounded hover:bg-gray-700 transition">
+                        <div class="text-2xl mb-1">🌤️</div>
+                        <div class="text-sm font-bold text-green-400">覺得天花板擋住</div>
+                        <div class="text-xs text-gray-400">看不漲 -> 做空 (SC+BC)</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-4 mt-4">
                 <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
                     <div class="font-bold text-red-700 text-lg mb-1">溫漲做多</div>
@@ -175,10 +247,9 @@
         </div>
 
         <div class="intro-card">
-            <h2 class="intro-h2">四、智能交易與選擇權的關係</h2>
+            <h2 class="intro-h2">五、智能交易與選擇權的關係</h2>
             <p class="intro-p">
-                既然選擇權這麼複雜，為什麼還要用？因為它可以透過數據來提高勝率。
-                <br>智能交易就是你的<strong>「自動駕駛系統」</strong>，幫你根據預設的邏輯開車。
+                傳統交易需依賴人力觀察，智能交易則可根據預設邏輯條件自動判斷並下單，包括智能調整部位與停損。
             </p>
             <div class="grid md:grid-cols-2 gap-4 mt-4">
                 <div class="bg-blue-50 p-4 rounded-lg">
@@ -196,6 +267,31 @@
                 <div class="bg-pink-50 p-4 rounded-lg">
                     <h4 class="font-bold text-pink-800 mb-2">🛡️ 保利降部位 (自動煞車)</h4>
                     <p class="text-sm text-gray-600">當賺到足夠的錢，系統會自動減少手上的單子，把錢放口袋，降低風險。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Myths Q&A (New) -->
+        <div class="intro-card">
+            <h2 class="intro-h2">六、新手常見迷思 Q&A</h2>
+            <div class="space-y-4">
+                <div class="border-b pb-4">
+                    <h4 class="font-bold text-gray-800 mb-2 flex items-center">
+                        <span class="bg-red-100 text-red-600 py-1 px-2 rounded text-xs mr-2">迷思</span>
+                        聽說選擇權賣方風險無限，會賠光身家？
+                    </h4>
+                    <p class="text-sm text-gray-600 pl-2 border-l-2 border-green-500">
+                        <span class="font-bold text-green-600">破解：</span> 那是「裸賣」！我們的智能交易嚴格執行「垂直價差」，就像開車一定要綁安全帶（買保險）。<strong>最大虧損是被鎖定的</strong>，系統也設有停損機制，不用擔心賠光。
+                    </p>
+                </div>
+                <div class="border-b pb-4">
+                    <h4 class="font-bold text-gray-800 mb-2 flex items-center">
+                        <span class="bg-red-100 text-red-600 py-1 px-2 rounded text-xs mr-2">迷思</span>
+                        需要很多錢才能開始嗎？
+                    </h4>
+                    <p class="text-sm text-gray-600 pl-2 border-l-2 border-green-500">
+                        <span class="font-bold text-green-600">破解：</span> 不用！選擇權是保證金交易，比起買一張台積電股票，選擇權的垂直價差策略<strong>資金門檻非常低</strong>，非常適合小資族以小資金開始學習當莊家。
+                    </p>
                 </div>
             </div>
         </div>
