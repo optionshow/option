@@ -274,6 +274,13 @@
             font-family: monospace;
             white-space: pre-wrap;
         }
+
+        /* Image Protection */
+        .protected-image {
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none; /* Disables right-click menu effectively */
+        }
     </style>
 </head>
 <body>
@@ -457,6 +464,13 @@
             <div class="w-8"></div>
         </div>
 
+        <!-- Protected Image Section -->
+        <div class="mt-4 mb-2 flex justify-center">
+            <img src="0001.png" alt="Footer Image" class="max-w-full h-auto rounded-lg shadow-sm protected-image" oncontextmenu="return false;" draggable="false">
+        </div>
+
+        <!-- Extra space at the bottom to prevent overlap -->
+        <div class="footer-space"></div>
     </div>
 
     <!-- Floating Contact Button -->
