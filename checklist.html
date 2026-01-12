@@ -94,9 +94,9 @@
 
         /* Sticky Header Glassmorphism */
         .sticky-header {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
         /* Mode Switcher */
@@ -109,27 +109,29 @@
             font-weight: bold;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        /* Image Protection */
-        .protected-image {
-            user-select: none;
-            -webkit-user-drag: none;
-            pointer-events: none; /* Disables right-click menu effectively */
-        }
     </style>
 </head>
 <body class="pb-12">
 
     <!-- Sticky Progress Header -->
-    <div class="sticky-header fixed top-0 left-0 right-0 z-50 px-4 py-3 border-b border-gray-200">
+    <div class="sticky-header fixed top-0 left-0 right-0 z-50 px-4 py-3 border-b border-gray-800">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-lg font-bold text-gray-800 hidden sm:block">智能交易清單系統</h1>
-                <h1 class="text-lg font-bold text-gray-800 sm:hidden">智能交易</h1>
-                <p id="current-status-text" class="text-xs text-blue-600 mt-0.5 font-medium"></p>
+                <h1 class="text-lg font-bold text-white hidden sm:block">智能交易清單系統</h1>
+                <h1 class="text-lg font-bold text-white sm:hidden">智能交易</h1>
+                <p id="current-status-text" class="text-xs text-blue-400 mt-0.5 font-medium"></p>
             </div>
-            <div class="flex items-center gap-3">
-                <button id="btn-reset-all" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded border border-red-200 transition-colors">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="index.html" class="hidden sm:inline-block text-xs bg-gray-800 text-gray-300 hover:bg-gray-700 px-3 py-1.5 rounded border border-gray-700 transition-colors">回到首頁</a>
+                <a href="https://lin.ee/n3bZgtk" target="_blank" class="hidden sm:inline-block text-xs bg-green-900 text-green-400 hover:bg-green-800 px-3 py-1.5 rounded border border-green-800 transition-colors">聯繫LINE</a>
+                
+                <!-- Mobile Icons for links -->
+                <a href="index.html" class="sm:hidden text-gray-400 hover:text-white"><i class="fas fa-home"></i></a>
+                <a href="https://lin.ee/n3bZgtk" target="_blank" class="sm:hidden text-green-400 hover:text-green-300"><i class="fab fa-line"></i></a>
+
+                <div class="w-px h-6 bg-gray-600 mx-1"></div>
+
+                <button id="btn-reset-all" class="text-xs bg-red-900 text-red-400 hover:bg-red-800 px-3 py-1.5 rounded border border-red-800 transition-colors">
                     重置
                 </button>
             </div>
@@ -159,22 +161,11 @@
                     </button>
                 </div>
             </div>
-
-            <div class="flex flex-wrap gap-2 text-sm mt-2">
-                <a href="#video-section" class="bg-white/20 hover:bg-white/30 transition px-3 py-1 rounded-full flex items-center">
-                    🎬 觀看教學影片
-                </a>
-            </div>
         </div>
 
         <!-- Checklist Container -->
         <div id="checklist-container" class="space-y-6">
             <!-- Dynamic Content will be injected here by JS -->
-        </div>
-
-        <!-- Protected Image Section (Inserted 0002.png) -->
-        <div class="mt-8 mb-8 flex justify-center">
-            <img src="0002.png" alt="Smart Trading Info" class="max-w-full h-auto rounded-lg shadow-sm protected-image" oncontextmenu="return false;" draggable="false">
         </div>
 
         <!-- Video Section -->
@@ -220,7 +211,7 @@
         </div>
 
         <div class="text-center text-gray-400 text-xs mb-8">
-            Smart Trading System Checklist v3.3
+            Smart Trading System Checklist v3.4
         </div>
 
     </div>
@@ -368,7 +359,7 @@
                 description: '僅在損益不佳時執行此區塊設定',
                 items: [
                     { isHeader: true, text: '基本設定' },
-                    { text: '保留可用餘額設定為 <span class="val-badge">2%</span>' },
+                    { text: '保留可用餘額設定為 <span class="val-badge">2%</span> (目的是建立更多部位來補救虧損)' },
                     { isHeader: true, text: '方向判斷' },
                     { text: '勾選多空溫度' },
                     { isHeader: true, text: '多空溫度調整' },
@@ -460,14 +451,14 @@
                 description: '僅在損益不佳時執行此區塊設定',
                 items: [
                     { isHeader: true, text: '基本設定' },
-                    { text: '保留可用餘額設定為 <span class="val-badge">2%</span>' },
+                    { text: '保留可用餘額設定為 <span class="val-badge">2%</span> (目的是建立更多部位來補救虧損)' },
                     { isHeader: true, text: '方向判斷' },
                     { text: '勾選多空溫度' },
                     { isHeader: true, text: '多空溫度調整' },
                     { text: '勾選啟用' },
                     { isHeader: true, text: '停損停利' },
                     { text: '勾選停利(資金滾動再布局),是否勾選停損需自行決定' },
-                    { text: '勾選 保利降部位1 設定  獲利 % >=  <span class="val-badge">0.5%</span>, <span class="val-badge">15</span>點以下不平倉' }
+                    { text: '勾選 保利降部位1 設定  獲利 % >=  <span class="val-badge">0%</span>, <span class="val-badge">15</span>點以下不平倉' }
                 ]
             }
         ];
@@ -789,4 +780,3 @@
     </script>
 </body>
 </html>
-
