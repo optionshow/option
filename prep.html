@@ -32,6 +32,42 @@
             border-bottom: 3px solid #ffb6c1;
         }
 
+        /* Top Right Buttons */
+        .header-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            z-index: 1010;
+        }
+        
+        .header-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 99px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+        
+        .btn-home {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+        }
+        .btn-home:hover { background-color: #e5e7eb; }
+        
+        .btn-line {
+            background-color: #06c755;
+            color: white;
+        }
+        .btn-line:hover { background-color: #05b34c; }
+
         /* Progress Bar */
         .progress-container {
             width: 100%;
@@ -188,7 +224,7 @@
         }
         
         .celebration {
-            position: fixed;
+            position: fixed; /* Ensures it stays in place relative to viewport */
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -196,7 +232,7 @@
             padding: 2.5rem;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            z-index: 1100;
+            z-index: 3000; /* Highest z-index */
             text-align: center;
             opacity: 0;
             pointer-events: none;
@@ -287,8 +323,17 @@
 
     <!-- Header -->
     <div class="header-fixed">
+        <div class="header-actions">
+            <a href="index.html" class="header-btn btn-home">
+                <i class="fas fa-home"></i> <span class="hidden sm:inline">回到首頁</span>
+            </a>
+            <a href="https://lin.ee/n3bZgtk" target="_blank" class="header-btn btn-line">
+                <i class="fab fa-line"></i> <span class="hidden sm:inline">聯繫LINE</span>
+            </a>
+        </div>
+
         <div class="max-w-3xl mx-auto">
-            <h1 class="text-xl md:text-2xl font-bold text-center text-gray-800 mb-1">
+            <h1 class="text-xl md:text-2xl font-bold text-center text-gray-800 mb-1 pt-2">
                 <span class="text-pink-600">🚀 智能交易</span> 使用前置清單
             </h1>
             <div class="progress-container">
@@ -481,8 +526,9 @@
     <!-- Source Code Button -->
     <div class="source-btn" onclick="showCodeModal()">★</div>
 
-    <!-- Celebration Modal -->
-    <div class="celebration relative" id="celebration">
+    <!-- Celebration Modal (Fixed and Centered) -->
+    <!-- Removed 'relative' class and relying on CSS fixed + transform for centering -->
+    <div class="celebration" id="celebration">
         <!-- Close Button -->
         <button onclick="closeCelebration()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl font-bold leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">&times;</button>
         
