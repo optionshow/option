@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Options Intelligent Trading Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2c3e50", // Dark blue header
+                        secondary: "#3b82f6", // Blue accents
+                        success: "#22c55e", // Green
+                        danger: "#ef4444", // Red
+                        warning: "#f59e0b", // Orange/Gold
+                        "background-light": "#f3f4f6",
+                        "background-dark": "#111827",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1f2937",
+                        "sidebar-alert": "#fff1f2", // Light pink
+                        "sidebar-alert-text": "#e11d48", // Dark red
+                    },
+                    fontFamily: {
+                        display: ["'Noto Sans TC'", "sans-serif"],
+                        sans: ["'Noto Sans TC'", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        /* Custom disabled state for inputs to make them look clearly disabled */
+        input:disabled, select:disabled {
+            background-color: #e2e8f0;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .dark input:disabled, .dark select:disabled {
+            background-color: #374151;
+        }
+
+        /* Tooltip Indicator Style */
+        .term-tooltip {
+            cursor: help;
+            border-bottom: 1px dashed #9ca3af; /* Dotted underline */
+            position: relative;
+        }
+        
+        /* Global Floating Tooltip */
+        #global-tooltip {
+            position: fixed;
+            background-color: rgba(31, 41, 55, 0.98); /* dark gray */
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+            z-index: 10000; /* Topmost layer */
+            pointer-events: none; /* Let mouse pass through */
+            max-width: 250px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            border: 1px solid #4b5563;
+            display: none; /* Hidden by default */
+            text-align: justify; /* 齊頭 */
+            text-justify: inter-ideograph;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-sans text-gray-800 dark:text-gray-200 min-h-screen flex flex-col">
+
+    <!-- Global Tooltip Container -->
+    <div id="global-tooltip"></div>
+
+    <!-- Navbar -->
+    <nav class="bg-primary text-white px-4 md:px-6 py-3 flex justify-between items-center shadow-md z-30 sticky top-0">
+        <div class="flex items-center space-x-3">
+            <button id="mobile-menu-btn" class="lg:hidden p-1 hover:bg-white/10 rounded transition">
+                <span class="material-icons-outlined">menu</span>
+            </button>
+            <span class="material-icons-outlined text-3xl hidden md:block">cloud_queue</span>
+            <div>
+                <h1 class="text-xl font-bold tracking-wide"></h1>
+            </div>
+            <div class="h-6 w-px bg-white/30 mx-2 hidden md:block"></div>
+            <h2 class="text-sm md:text-lg font-medium">選擇權智能交易</h2>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="index.html" class="text-sm font-medium hover:text-white/80 transition flex items-center gap-1">
+                <span class="material-icons-outlined text-base">home</span>回到首頁
+            </a>
+            <a href="https://lin.ee/n3bZgtk" target="_blank" class="text-sm font-medium bg-green-600 hover:bg-green-700 px-3 py-1 rounded transition flex items-center gap-1">
+                <span class="material-icons-outlined text-base">chat</span>聯繫LINE
+            </a>
+            <button class="hover:bg-white/10 p-1 rounded-full transition ml-2">
+                <span class="material-icons-outlined">account_circle</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="flex flex-1 overflow-hidden relative">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="transform -translate-x-full lg:translate-x-0 transition-transform duration-300 absolute lg:relative z-20 w-64 h-full bg-surface-light dark:bg-surface-dark border-r border-gray-200 dark:border-gray-700 flex flex-col overflow-y-auto shadow-lg lg:shadow-none">
+            <div class="p-4 space-y-4">
+                <!-- Start/Stop Button -->
+                <button id="toggle-trading-btn" onclick="toggleTrading()" class="w-full bg-danger hover:bg-danger/90 text-white font-bold py-3 rounded shadow transition flex items-center justify-center space-x-2">
+                    <span id="btn-icon" class="material-icons-outlined" style="display: none;">play_arrow</span>
+                    <span id="btn-text">■ 停止交易</span>
+                </button>
+            </div>
+            
+            <!-- Transaction Overview Section -->
+            <div class="px-4 py-2">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-2 px-2">交易總覽</h3>
+                <nav class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between group" href="#">
+                        <span class="term-tooltip" data-tip="連線中=與券商連線正常">連線狀態</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">連線中</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="交易中=下單機運作正常">交易狀態</span>
+                        <span id="trading-status-text" class="font-medium text-gray-700 dark:text-gray-300">交易中</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="最真實的資金狀況(已扣除手續費/稅金)，括號顯示獲利％">權益總值</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300 text-right">350,856（0.2％）</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="用於保留可用餘額判斷，低於設定金額時不建立新部位">可用金額</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300 text-right">243,468 (70 %)</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="所有部位的總成本點數">持倉成本</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">186</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="所有部位目前的總價值點數。獲利時點數減少，虧損時點數增加">即時總點</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">161</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="Sell Call 與 Buy Call 價差點數總和">SCBC 總點</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">0</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="Sell Put 與 Buy Put 價差點數總和">SPBP 總點</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">161</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="顯示目前部位的多空偏向 (0=偏空, 100=偏多, 50=中立)">持倉溫度</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">100 %</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="目前持有的合約口數">持倉數量</span>
+                        <span class="font-mono text-xs text-gray-700 dark:text-gray-300">SP:23 BP:23</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between" href="#">
+                        <span class="term-tooltip" data-tip="已平倉的次數">平倉次數</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">0</span>
+                    </a>
+                    <a class="block px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" href="#">
+                        <div class="flex justify-between w-full">
+                            <span class="term-tooltip" data-tip="若持倉部位全部歸零的預估獲利%">歸零預期總報酬</span>
+                            <span class="font-mono text-gray-700 dark:text-gray-300">2.3 %</span>
+                        </div>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Intelligent Quotes Section -->
+            <div class="px-4 py-2 mt-4 border-t border-gray-200 dark:border-gray-700 pb-8">
+                <div class="flex flex-col mb-2 px-2">
+                    <h3 class="font-bold text-gray-900 dark:text-white term-tooltip" data-tip="市場行情分析工具，提供多空判斷依據">智能報價</h3>
+                    <span class="text-xs text-gray-500 dark:text-gray-500 font-mono mt-0.5">2026/01/12 13:18:36</span>
+                </div>
+                <nav class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                    <div class="px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                        <span>TX2 期貨價格</span>
+                        <span class="font-mono font-bold text-danger">30,643 ▲ 255</span>
+                    </div>
+                    <div class="px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                        <span class="term-tooltip" data-tip="判斷市場 Call 的買賣偏向">買權成交行為</span>
+                        <span class="font-mono text-danger">Buy ▲</span>
+                    </div>
+                    <div class="px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                        <span class="term-tooltip" data-tip="判斷市場 Put 的買賣偏向">賣權成交行為</span>
+                        <span class="font-mono text-danger">Sell ▲</span>
+                    </div>
+                    <div class="px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                        <span class="term-tooltip" data-tip="綜合市場所有部位計算出的單一數值，正數偏多，負數偏空">當盤數值</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">22,142</span>
+                    </div>
+                    <div class="px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                        <span class="term-tooltip" data-tip="市場多空溫度，達到設定數值時交易">多空溫度</span>
+                        <span class="font-mono text-danger">67 %</span>
+                    </div>
+                    <div class="px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                        <span class="term-tooltip" data-tip="市場上所有選擇權的「時間價值總和」，隨時間流逝歸零">生命總值 (增減%)</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">4,837 (0.1%)</span>
+                    </div>
+                    <div class="px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                        <span class="term-tooltip" data-tip="生命總值的平均狀態">生命平均值(現況%)</span>
+                        <span class="font-mono text-gray-700 dark:text-gray-300">28%</span>
+                    </div>
+                </nav>
+                <div class="mt-3 px-2 text-[10px] text-gray-400 leading-tight">
+                    ＊報價源由券商提供，經系統計算後呈現
+                </div>
+            </div>
+        </aside>
+
+        <!-- Overlay for mobile sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-10 hidden lg:hidden"></div>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-gray-100 dark:bg-gray-900 scroll-smooth">
+            
+            <!-- Performance Chart -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-md shadow-sm border border-gray-200 dark:border-gray-700">
+                <button onclick="toggleSection('chart-content', 'chart-icon')" class="w-full px-4 py-3 flex justify-between items-center text-left font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                    <span class="flex items-center space-x-2">
+                        <span class="term-tooltip" data-tip="累積損益的變化趨勢">績效走勢圖</span>
+                    </span>
+                    <span id="chart-icon" class="material-icons-outlined text-gray-400 transition-transform duration-200" style="transform: rotate(180deg);">expand_less</span>
+                </button>
+                <div id="chart-content" class="hidden p-4 border-t border-gray-100 dark:border-gray-700">
+                    <div class="h-48 bg-gray-50 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400">
+                        <div class="text-center">
+                            <span class="material-icons-outlined text-4xl mb-2">insert_chart_outlined</span>
+                            <p class="text-sm">Chart Placeholder</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Details -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-md shadow-sm border border-gray-200 dark:border-gray-700">
+                <button onclick="toggleSection('details-content', 'details-icon')" class="w-full px-4 py-3 flex justify-between items-center text-left font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                    <span class="flex items-center space-x-2">
+                        <span class="term-tooltip" data-tip="詳細的成交紀錄">交易明細</span>
+                    </span>
+                    <span id="details-icon" class="material-icons-outlined text-gray-400 transition-transform duration-200" style="transform: rotate(180deg);">expand_less</span>
+                </button>
+                <div id="details-content" class="hidden p-4 border-t border-gray-100 dark:border-gray-700">
+                    <div class="h-48 bg-gray-50 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400">
+                        <div class="text-center">
+                            <span class="material-icons-outlined text-4xl mb-2">receipt_long</span>
+                            <p class="text-sm">No transactions yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Settings -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-md shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                    <h3 class="font-bold text-gray-800 dark:text-white flex items-center space-x-2">
+                        <span class="term-tooltip" data-tip="資金與契約的基礎配置">基本設定</span>
+                    </h3>
+                    <button class="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded transition border border-gray-300 dark:border-gray-600">
+                        <span>💾</span>
+                        <span>儲存</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="選擇要交易的合約月份或週別 (如近週三)">交易商品契約</span>
+                        </label>
+                        <div class="relative">
+                            <select id="contract-select" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 pr-8 focus:ring-1 focus:ring-primary" disabled>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="設定結算後是否自動切換到下一個契約">結算自動換契約</span>
+                        </label>
+                        <select class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary">
+                            <option>固定近週三</option>
+                            <option>固定近週五</option>
+                            <option>近週三&lt;=&gt;近週五</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="用於計算口數與風險的本金基準">投入資金成本</span>
+                        </label>
+                        <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary" type="text" value="350,000"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="低於設定金額時不建立新部位，可設定百分比或金額">保留可用餘額</span>
+                        </label>
+                        <div class="flex rounded-md shadow-sm">
+                            <input class="flex-1 bg-gray-100 dark:bg-gray-800 border-none rounded-l text-sm p-2 focus:ring-1 focus:ring-primary" type="text" value="70"/>
+                            <select class="bg-gray-200 dark:bg-gray-700 border-none text-sm px-3 py-2 rounded-r w-20 focus:ring-1 focus:ring-primary cursor-pointer text-center">
+                                <option>%</option>
+                                <option>元</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="程式掃描行情的頻率 (秒)">交易檢查週期秒數 (Min: 10)</span>
+                        </label>
+                        <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary" type="number" min="10" value="33"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="連續平倉時的緩衝時間 (秒)">平倉間隔秒數 (Min: 4)</span>
+                        </label>
+                        <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary" type="number" min="4" value="17"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="動態Sell價低於此數值不下單">動態 Sell 價下限 (不下單)</span>
+                        </label>
+                        <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary" type="text" value="4"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="動態Sell價高於此數值自動降低為設定值">動態 Sell 價上限 (有下單)</span>
+                        </label>
+                        <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary" type="text" value="50"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
+                            <span class="term-tooltip" data-tip="平衡成交與滑價，賣方價格越高越容易成交">委託讓價</span>
+                        </label>
+                        <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary" type="text" value="0.5"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction Judgment -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-md shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                    <h3 class="font-bold text-gray-800 dark:text-white flex items-center space-x-2">
+                        <span class="term-tooltip" data-tip="決定進場方向的策略，勾選需同時符合">方向判斷 (勾選需同時符合)</span>
+                    </h3>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-1 cursor-pointer select-none text-sm text-gray-600 dark:text-gray-400 hover:text-primary">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4">
+                            <span class="term-tooltip" data-tip="符合（交易商品契約與結算自動換契約）相同的示範設定做即時同步">同步示範設定</span>
+                        </label>
+                        <button class="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded transition border border-gray-300 dark:border-gray-600">
+                            <span>💾</span>
+                            <span>儲存</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div class="space-y-2 group">
+                        <label class="flex items-center space-x-2 cursor-pointer select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" checked/>
+                            <span class="text-sm font-bold term-tooltip" data-tip="Call與Put交易行為方向一致時才交易">合計方向</span>
+                        </label>
+                        <!-- Equal distribution (flex-1) -->
+                        <div class="flex text-xs text-white text-center h-8">
+                            <div class="flex-1 bg-danger flex items-center justify-center rounded-l shadow-sm">同時向上做多</div>
+                            <div class="flex-1 bg-success flex items-center justify-center rounded-r shadow-sm">同時向下做空</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+                            <span class="text-sm font-bold term-tooltip" data-tip="市場多空溫度達到設定數值時交易">多空溫度</span>
+                        </label>
+                        <!-- Changed gray divs to inputs, ensure all 4 items have equal width (flex-1). Removed placeholder="0" -->
+                        <div class="flex text-xs text-center h-8">
+                            <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none rounded-l text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
+                            <div class="flex-1 w-0 bg-danger text-white flex items-center justify-center">以上做多</div>
+                            <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
+                            <div class="flex-1 w-0 bg-success text-white flex items-center justify-center rounded-r">以下做空</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+                            <span class="text-sm font-bold term-tooltip" data-tip="高低於設定值,做逆勢部位">逆勢多空溫度</span>
+                        </label>
+                        <!-- Changed gray divs to inputs, ensure all 4 items have equal width (flex-1). Removed placeholder="0" -->
+                        <div class="flex text-xs text-center h-8">
+                            <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none rounded-l text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
+                            <div class="flex-1 w-0 bg-success text-white flex items-center justify-center">以上做空</div>
+                            <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
+                            <div class="flex-1 w-0 bg-danger text-white flex items-center justify-center rounded-r">以下做多</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+                            <span class="text-sm font-bold term-tooltip" data-tip="可自行設定價格作為多空分界">期貨價格</span>
+                        </label>
+                        <!-- Changed gray divs to inputs, ensure all 4 items have equal width (flex-1). Removed placeholder="0" -->
+                        <div class="flex text-xs text-center h-8">
+                            <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none rounded-l text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
+                            <div class="flex-1 w-0 bg-danger text-white flex items-center justify-center">以上做多</div>
+                            <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
+                            <div class="flex-1 w-0 bg-success text-white flex items-center justify-center rounded-r">以下做空</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Temperature Adjustment -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-md shadow-sm border border-gray-200 dark:border-gray-700 p-4" id="temp-adjust-section">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                    <h3 class="font-bold text-gray-800 dark:text-white flex items-center space-x-2">
+                         <span class="term-tooltip" data-tip="將部位溫度調整至貼近市場，避免偏離過大">多空溫度調整</span>
+                    </h3>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-1 cursor-pointer select-none text-sm text-gray-600 dark:text-gray-400 hover:text-primary">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4">
+                            <span class="term-tooltip" data-tip="符合（交易商品契約與結算自動換契約）相同的示範設定做即時同步">同步示範設定</span>
+                        </label>
+                        <button class="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded transition border border-gray-300 dark:border-gray-600">
+                            <span>💾</span>
+                            <span>儲存</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="flex items-center space-x-2 cursor-pointer select-none">
+                        <input id="cb-temp-adjust" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" onchange="toggleInputs('temp-adjust-section', this.checked)"/>
+                        <span class="text-sm font-bold">啟用多空溫度調整</span>
+                    </label>
+                </div>
+                <!-- Removed opacity-50 class to cancel fading -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 transition-opacity duration-300 pointer-events-none" id="temp-adjust-inputs">
+                    <div class="flex rounded-md shadow-sm">
+                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-secondary bg-secondary/80 text-white text-xs font-bold min-w-[80px] justify-center term-tooltip pointer-events-auto" data-tip="參考市場多空溫度的權重 (100%完全相信市場，0%完全不相信市場)">
+                          設定力道
+                        </span>
+                        <div class="flex-1 min-w-0 relative">
+                            <select class="w-full border-none bg-gray-100 dark:bg-gray-700 text-sm p-2 rounded-none focus:ring-inset focus:ring-1 focus:ring-secondary" disabled>
+                                <option>100 %</option>
+                                <option>80 %</option>
+                                <option>50 %</option>
+                            </select>
+                            <span class="absolute right-2 top-2 material-icons-outlined text-gray-500 text-sm pointer-events-none">expand_more</span>
+                        </div>
+                        <span class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-secondary bg-secondary/80 text-white text-xs">
+                          =
+                        </span>
+                    </div>
+                    <div class="flex rounded-md shadow-sm">
+                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-secondary bg-secondary/80 text-white text-xs font-bold min-w-[80px] justify-center term-tooltip pointer-events-auto" data-tip="設定不動作範圍 (如 +/- 40點)，避免頻繁調整部位">
+                          容許範圍
+                        </span>
+                        <div class="flex-1 min-w-0 relative">
+                            <select class="w-full border-none bg-gray-100 dark:bg-gray-700 text-sm p-2 rounded-none focus:ring-inset focus:ring-1 focus:ring-secondary" disabled>
+                                <option>5</option>
+                                <option>10</option>
+                                <option>15</option>
+                            </select>
+                            <span class="absolute right-2 top-2 material-icons-outlined text-gray-500 text-sm pointer-events-none">expand_more</span>
+                        </div>
+                        <span class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-secondary bg-secondary/80 text-white text-xs">
+                          =
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Conditions -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-md shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                <div class="flex justify-between items-center mb-3 border-b border-gray-100 dark:border-gray-700 pb-2">
+                    <h3 class="font-bold text-gray-800 dark:text-white flex items-center space-x-2">
+                        <span class="term-tooltip" data-tip="決定進場時機與價位">交易條件</span>
+                    </h3>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-1 cursor-pointer select-none text-sm text-gray-600 dark:text-gray-400 hover:text-primary">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4">
+                            <span>同步示範設定</span>
+                        </label>
+                        <button class="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded transition border border-gray-300 dark:border-gray-600">
+                            <span>💾</span>
+                            <span>儲存</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-stretch rounded mb-4 overflow-hidden shadow-sm h-9">
+                    <div class="bg-primary text-white px-4 flex items-center text-sm font-medium whitespace-nowrap term-tooltip" data-tip="觸發交易的時機點 (當生命總值變化達到設定百分比)">生命總值與前期增減</div>
+                    <input type="text" class="flex-1 bg-white dark:bg-gray-600 border-gray-300 dark:border-gray-500 text-sm px-3 text-center focus:ring-inset focus:ring-1 focus:ring-primary border-y border-r-0" placeholder="輸入數值">
+                    <button class="bg-primary hover:bg-primary/90 text-white text-xs px-6 font-bold transition flex items-center whitespace-nowrap">
+                        % 執行
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Buy Side -->
+                    <div>
+                        <div class="bg-danger text-white text-sm font-bold p-2 rounded-t flex items-center justify-between">
+                            <span>做多：溫漲做莊 SP+BP</span>
+                            <span class="material-icons-outlined text-sm opacity-70">trending_up</span>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800/50 border border-t-0 border-gray-200 dark:border-gray-700 p-3 space-y-3 rounded-b">
+                            <div class="flex shadow-sm rounded">
+                                <span class="bg-primary text-white text-xs flex items-center px-2 rounded-l min-w-[80px]">生命總值 /</span>
+                                <input class="flex-1 bg-gray-100 dark:bg-gray-700 border-none text-xs text-center" disabled type="text" value="3000"/>
+                                <span class="bg-primary text-white text-xs flex items-center px-2 rounded-r min-w-[80px] justify-center term-tooltip" data-tip="決定賣出部位(Sell)的履約價，計算方式：生命總值 / 設定值 = 動態Sell價">= 動態 Sell 價</span>
+                            </div>
+                            <div class="flex shadow-sm rounded">
+                                <span class="bg-primary text-white text-xs flex items-center px-2 rounded-l min-w-[80px] term-tooltip" data-tip="決定買入部位(Buy)的履約價間距，建議設定100點">複式單 BP 價外</span>
+                                <div class="flex-1 relative bg-gray-100 dark:bg-gray-700">
+                                    <select class="w-full bg-transparent border-none text-xs h-full pl-2 pr-6">
+                                        <option>50</option>
+                                        <option>100</option>
+                                        <option>150</option>
+                                        <option>200</option>
+                                        <option>250</option>
+                                        <option>300</option>
+                                    </select>
+                                    <span class="absolute right-1 top-1.5 material-icons-outlined text-gray-500 text-xs pointer-events-none">expand_more</span>
+                                </div>
+                                <span class="bg-primary text-white text-xs flex items-center px-2 rounded-r min-w-[40px] justify-center">點</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sell Side -->
+                    <div>
+                        <div class="bg-success text-white text-sm font-bold p-2 rounded-t flex items-center justify-between">
+                             <span>做空：溫跌做莊 SC+BC</span>
+                             <span class="material-icons-outlined text-sm opacity-70">trending_down</span>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800/50 border border-t-0 border-gray-200 dark:border-gray-700 p-3 space-y-3 rounded-b">
+                            <div class="flex shadow-sm rounded">
+                                <span class="bg-primary text-white text-xs flex items-center px-2 rounded-l min-w-[80px]">生命總值 /</span>
+                                <input class="flex-1 bg-gray-100 dark:bg-gray-700 border-none text-xs text-center" disabled type="text" value="3000"/>
+                                <span class="bg-primary text-white text-xs flex items-center px-2 rounded-r min-w-[80px] justify-center term-tooltip" data-tip="決定賣出部位(Sell)的履約價，計算方式：生命總值 / 設定值 = 動態Sell價">= 動態 Sell 價</span>
+                            </div>
+                            <div class="flex shadow-sm rounded">
+                                <span class="bg-primary text-white text-xs flex items-center px-2 rounded-l min-w-[80px] term-tooltip" data-tip="決定買入部位(Buy)的履約價間距，建議設定100點">複式單 BC 價外</span>
+                                <div class="flex-1 relative bg-gray-100 dark:bg-gray-700">
+                                    <select class="w-full bg-transparent border-none text-xs h-full pl-2 pr-6">
+                                        <option>50</option>
+                                        <option>100</option>
+                                        <option>150</option>
+                                        <option>200</option>
+                                        <option>250</option>
+                                        <option>300</option>
+                                    </select>
+                                    <span class="absolute right-1 top-1.5 material-icons-outlined text-gray-500 text-xs pointer-events-none">expand_more</span>
+                                </div>
+                                <span class="bg-primary text-white text-xs flex items-center px-2 rounded-r min-w-[40px] justify-center">點</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stop Loss / Take Profit -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-md shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                    <h3 class="font-bold text-gray-800 dark:text-white flex items-center space-x-2">
+                        <span class="term-tooltip" data-tip="風險控制與獲利了結">停損停利</span>
+                    </h3>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-1 cursor-pointer select-none text-sm text-gray-600 dark:text-gray-400 hover:text-primary">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4">
+                            <span>同步示範設定</span>
+                        </label>
+                        <button class="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded transition border border-gray-300 dark:border-gray-600">
+                            <span>💾</span>
+                            <span>儲存</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Stop Loss Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 mb-6">
+                    <div class="group">
+                        <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary stop-loss-check" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                            <span class="text-sm font-bold">SC+BC 停損</span>
+                        </label>
+                        <!-- Removed opacity-50 -->
+                        <div class="flex h-8 shadow-sm rounded transition-opacity pointer-events-none input-group">
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/3">虧損 / 成交價 &lt;=</span>
+                            <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center focus:ring-1 focus:ring-warning" disabled type="number" value="-333"/>
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-10 justify-center">%</span>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary stop-loss-check" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                            <span class="text-sm font-bold">SP+BP 停損</span>
+                        </label>
+                         <!-- Removed opacity-50 -->
+                        <div class="flex h-8 shadow-sm rounded transition-opacity pointer-events-none input-group">
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/3">虧損 / 成交價 &lt;=</span>
+                            <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center focus:ring-1 focus:ring-warning" disabled type="number" value="-333"/>
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-10 justify-center">%</span>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary stop-loss-check" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                            <span class="text-sm font-bold">SC+BC 價差點數 % 停損 (Max 100%)</span>
+                        </label>
+                         <!-- Removed opacity-50 -->
+                        <div class="flex h-8 shadow-sm rounded transition-opacity pointer-events-none input-group">
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/3">現價 &gt;= 價差點數的</span>
+                            <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center focus:ring-1 focus:ring-warning" disabled type="number" value="55"/>
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-10 justify-center">%</span>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary stop-loss-check" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                            <span class="text-sm font-bold">SP+BP 價差點數 % 停損 (Max 100%)</span>
+                        </label>
+                         <!-- Removed opacity-50 -->
+                        <div class="flex h-8 shadow-sm rounded transition-opacity pointer-events-none input-group">
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/3">現價 &gt;= 價差點數的</span>
+                            <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center focus:ring-1 focus:ring-warning" disabled type="number" value="55"/>
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-10 justify-center">%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Take Profit Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div class="space-y-4">
+                        <!-- New Header Checkbox: SC+BC Profit -->
+                        <div class="group">
+                            <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                                <input class="rounded border-gray-300 text-primary focus:ring-primary stop-loss-check" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                                <span class="text-sm font-bold">SC+BC 停利 (Max 100%)</span>
+                            </label>
+                            <!-- Profit Target 1 (Changed to Warning Color) -->
+                            <div class="flex h-8 shadow-sm rounded transition-opacity pointer-events-none input-group">
+                                <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/3">獲利 / 成交價 &gt;=</span>
+                                <input class="flex-1 bg-gray-100 dark:bg-gray-700 border-none text-xs text-center focus:ring-1 focus:ring-warning" disabled type="number" value="85"/>
+                                <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-10 justify-center">%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="group">
+                            <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                                <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                                <span class="text-sm font-bold term-tooltip" data-tip="權益總值獲利%達到設定值時觸發，平倉鎖住獲利">保利降部位 1</span>
+                            </label>
+                             <!-- Removed opacity-50, Changed to Warning Color -->
+                            <div class="space-y-2 pointer-events-none input-group transition-opacity">
+                                <div class="flex h-8 shadow-sm rounded">
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/4">獲利 % &gt;=</span>
+                                    <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="number" value="1"/>
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-1/3 justify-center">% 平倉最高價</span>
+                                </div>
+                                <div class="flex h-8 shadow-sm rounded">
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/4">保留</span>
+                                    <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="number" placeholder="20"/>
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-1/3 justify-center">點以下不平倉</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group">
+                             <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                                <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                                <span class="text-sm font-bold term-tooltip" data-tip="權益總值虧損%達到設定值時觸發，平倉控制風險">虧損降部位</span>
+                            </label>
+                             <!-- Removed opacity-50, already Warning Color -->
+                             <div class="space-y-2 pointer-events-none input-group transition-opacity">
+                                <div class="flex h-8 shadow-sm rounded">
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/4">虧損 % &lt;=</span>
+                                    <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="number" value="-4"/>
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-1/3 justify-center">% 平倉最高價</span>
+                                </div>
+                                <div class="flex h-8 shadow-sm rounded">
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/4">保留</span>
+                                    <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="number" placeholder="10"/>
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-1/3 justify-center">點以下不平倉</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- New Header Checkbox: SP+BP Profit -->
+                        <div class="group">
+                            <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                                <input class="rounded border-gray-300 text-primary focus:ring-primary stop-loss-check" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                                <span class="text-sm font-bold">SP+BP 停利 (Max 100%)</span>
+                            </label>
+                            <!-- Profit Target 2 (Changed to Warning Color) -->
+                            <div class="flex h-8 shadow-sm rounded transition-opacity pointer-events-none input-group">
+                                <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/3">獲利 / 成交價 &gt;=</span>
+                                <input class="flex-1 bg-gray-100 dark:bg-gray-700 border-none text-xs text-center focus:ring-1 focus:ring-warning" disabled type="number" value="85"/>
+                                <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-10 justify-center">%</span>
+                            </div>
+                        </div>
+
+                         <div class="group">
+                            <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                                <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                                <span class="text-sm font-bold">保利降部位 2</span>
+                            </label>
+                             <!-- Removed opacity-50, Changed to Warning Color -->
+                            <div class="space-y-2 pointer-events-none input-group transition-opacity">
+                                <div class="flex h-8 shadow-sm rounded">
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/4">獲利 % &gt;=</span>
+                                    <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="number" value="2.5"/>
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-1/3 justify-center">% 平倉最高價</span>
+                                </div>
+                                <div class="flex h-8 shadow-sm rounded">
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-1/4">保留</span>
+                                    <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="number" placeholder="20"/>
+                                    <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-1/3 justify-center">點以下不平倉</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instant Total Point Control -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-md shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                    <h3 class="font-bold text-gray-800 dark:text-white flex items-center space-x-2">
+                        <span class="term-tooltip" data-tip="整體部位總點數達到數值時停損">即時總點管控</span>
+                    </h3>
+                    <button class="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded transition border border-gray-300 dark:border-gray-600">
+                        <span>💾</span>
+                        <span>儲存</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div class="group">
+                        <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                            <span class="text-sm font-bold term-tooltip" data-tip="在特定時間(如12:45)檢查並平倉">日盤定時平倉最高價 (收盤自動關閉)</span>
+                        </label>
+                         <!-- Removed opacity-50 -->
+                        <div class="flex h-8 items-center space-x-1 pointer-events-none input-group transition-opacity">
+                            <select class="flex-1 bg-gray-100 dark:bg-gray-700 border-none text-xs h-full rounded px-1 min-w-0" disabled>
+                                <option>09</option>
+                                <option>10</option>
+                                <option>11</option>
+                                <option selected>12</option>
+                            </select>
+                            <span class="font-bold text-gray-500 shrink-0">:</span>
+                            <select class="flex-1 bg-gray-100 dark:bg-gray-700 border-none text-xs h-full rounded px-1 min-w-0" disabled>
+                                <option>00</option>
+                                <option>15</option>
+                                <option>30</option>
+                                <option selected>45</option>
+                            </select>
+                            <span class="text-gray-500 mx-1 shrink-0">~</span>
+                            <button class="flex-1 bg-warning text-white text-xs px-0 h-full rounded hover:bg-warning/90 whitespace-nowrap min-w-0 flex items-center justify-center">即時總點 &gt;=</button>
+                            <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs h-full rounded text-center min-w-0" disabled type="text" value="48"/>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                            <span class="text-sm font-bold term-tooltip" data-tip="在特定時間檢查並平倉">夜盤定時平倉最高價 (收盤自動關閉)</span>
+                        </label>
+                         <!-- Removed opacity-50 -->
+                        <div class="flex h-8 items-center space-x-1 pointer-events-none input-group transition-opacity">
+                            <select class="flex-1 bg-gray-100 dark:bg-gray-700 border-none text-xs h-full rounded px-1 min-w-0" disabled>
+                                <option>23</option>
+                                <option>00</option>
+                                <option selected>01</option>
+                            </select>
+                            <span class="font-bold text-gray-500 shrink-0">:</span>
+                            <select class="flex-1 bg-gray-100 dark:bg-gray-700 border-none text-xs h-full rounded px-1 min-w-0" disabled>
+                                <option>00</option>
+                                <option selected>05</option>
+                                <option>10</option>
+                                <option>15</option>
+                            </select>
+                            <span class="text-gray-500 mx-1 shrink-0">~</span>
+                            <button class="flex-1 bg-warning text-white text-xs px-0 h-full rounded hover:bg-warning/90 whitespace-nowrap min-w-0 flex items-center justify-center">即時總點 &gt;=</button>
+                            <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs h-full rounded text-center min-w-0" disabled type="text" value="114"/>
+                        </div>
+                    </div>
+                    <!-- Duplicate removed from here -->
+                    <div class="group">
+                        <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                            <span class="text-sm font-bold term-tooltip" data-tip="整體部位總點數達到數值時停損，若超過數值，平倉最高點數部位">即時總點管控</span>
+                        </label>
+                         <!-- Removed opacity-50 -->
+                        <div class="flex h-8 shadow-sm rounded pointer-events-none input-group transition-opacity">
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l min-w-[80px]">即時總點 &gt;=</span>
+                            <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="text" placeholder="1000"/>
+                            <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r min-w-[80px] justify-center">平倉最高價</span>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" onchange="toggleInputInGroup(this)"/>
+                            <span class="text-sm font-bold">虧損降總點</span>
+                        </label>
+                         <!-- Removed opacity-50 -->
+                        <div class="space-y-2 pointer-events-none input-group transition-opacity">
+                            <div class="flex h-8 shadow-sm rounded">
+                                <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l w-24">虧損 % &lt;=</span>
+                                <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="text" placeholder="30"/>
+                                <span class="bg-warning text-white text-xs flex items-center px-2 rounded-r w-24">% 平倉最高價</span>
+                            </div>
+                            <div class="flex h-8 w-3/4 shadow-sm rounded">
+                                <span class="bg-warning text-white text-xs flex items-center px-2 rounded-l min-w-[80px]">即時總點降到</span>
+                                <input class="flex-1 bg-gray-200 dark:bg-gray-700 border-none text-xs text-center" disabled type="text" placeholder="500"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 1. Logic to set the contract date to the next Wednesday
+        function setNextWednesdayDate() {
+            const select = document.getElementById('contract-select');
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // Sunday - 0, Monday - 1, etc.
+            
+            // Calculate days until next Wednesday (3)
+            let daysUntilWednesday = 3 - dayOfWeek;
+            if (daysUntilWednesday <= 0) {
+                daysUntilWednesday += 7;
+            }
+            
+            const nextWed = new Date(today);
+            nextWed.setDate(today.getDate() + daysUntilWednesday);
+            
+            const year = nextWed.getFullYear();
+            const month = String(nextWed.getMonth() + 1).padStart(2, '0');
+            const day = String(nextWed.getDate()).padStart(2, '0');
+            
+            const dateString = `${year}/${month}/${day}`;
+            
+            // Create option
+            const option = document.createElement('option');
+            option.text = `近週三 (${dateString})`;
+            option.value = dateString;
+            select.add(option);
+        }
+
+        // 2. Logic to toggle collapsible sections
+        function toggleSection(contentId, iconId) {
+            const content = document.getElementById(contentId);
+            const icon = document.getElementById(iconId);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // 3. Logic to toggle inputs based on checkboxes
+        // Special case for temperature adjustment section
+        function toggleInputs(sectionId, isChecked) {
+            const inputsContainer = document.getElementById('temp-adjust-inputs');
+            if (isChecked) {
+                inputsContainer.classList.remove('pointer-events-none'); // Removed opacity-50
+                // Enable all form elements inside
+                const elements = inputsContainer.querySelectorAll('input, select, button');
+                elements.forEach(el => el.disabled = false);
+            } else {
+                inputsContainer.classList.add('pointer-events-none'); // Removed opacity-50
+                // Disable all form elements inside
+                const elements = inputsContainer.querySelectorAll('input, select, button');
+                elements.forEach(el => el.disabled = true);
+            }
+        }
+        
+        // General function for input groups
+        function toggleInputInGroup(checkbox) {
+            // Find the closest parent div with class 'group'
+            const group = checkbox.closest('.group');
+            if (!group) return;
+            
+            // Find the container with class 'input-group' inside this group
+            const inputGroups = group.querySelectorAll('.input-group');
+            
+            inputGroups.forEach(container => {
+                if (checkbox.checked) {
+                    container.classList.remove('pointer-events-none'); // Removed opacity-50 toggle
+                    // Enable inputs
+                    const inputs = container.querySelectorAll('input, select, button');
+                    inputs.forEach(input => {
+                        input.disabled = false;
+                        // If it's a text input, maybe clear the background color (handled by CSS now)
+                    });
+                } else {
+                    container.classList.add('pointer-events-none'); // Removed opacity-50 toggle
+                    // Disable inputs
+                    const inputs = container.querySelectorAll('input, select, button');
+                    inputs.forEach(input => input.disabled = true);
+                }
+            });
+        }
+
+        // 4. Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() {
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // 5. Toggle Trading Logic
+        // Initial state is true (Running)
+        let isTrading = true;
+
+        function toggleTrading() {
+            const btn = document.getElementById('toggle-trading-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+            const statusText = document.getElementById('trading-status-text');
+
+            isTrading = !isTrading;
+
+            if (isTrading) {
+                // State: Trading Started (Button shows Stop)
+                btn.classList.remove('bg-success', 'hover:bg-success/90');
+                btn.classList.add('bg-danger', 'hover:bg-danger/90');
+                btnText.textContent = '■ 停止交易';
+                btnIcon.style.display = 'none'; // Hide play icon
+                
+                statusText.textContent = '交易中';
+            } else {
+                // State: Trading Stopped (Button shows Start)
+                btn.classList.remove('bg-danger', 'hover:bg-danger/90');
+                btn.classList.add('bg-success', 'hover:bg-success/90');
+                btnText.textContent = '開始交易';
+                btnIcon.style.display = 'block'; // Show play icon
+                
+                statusText.textContent = '交易停止';
+            }
+        }
+
+        // Initialize and Tooltip Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            setNextWednesdayDate();
+            
+            // Initialize checkbox states
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if(cb.onchange) cb.onchange({target: cb});
+                // Manually trigger for the specific named ones if needed
+                if(cb.id === 'cb-temp-adjust') toggleInputs('temp-adjust-section', cb.checked);
+                if(cb.classList.contains('stop-loss-check')) toggleInputInGroup(cb);
+            });
+
+            // Tooltip Logic
+            const tooltip = document.getElementById('global-tooltip');
+            const tooltipTargets = document.querySelectorAll('.term-tooltip');
+
+            tooltipTargets.forEach(target => {
+                target.addEventListener('mouseenter', (e) => {
+                    const tipText = e.target.getAttribute('data-tip');
+                    if (tipText) {
+                        tooltip.textContent = tipText;
+                        tooltip.style.display = 'block';
+                        positionTooltip(e);
+                    }
+                });
+
+                target.addEventListener('mousemove', (e) => {
+                    positionTooltip(e);
+                });
+
+                target.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
+            });
+
+            function positionTooltip(e) {
+                const x = e.clientX;
+                const y = e.clientY;
+                
+                // Offset
+                const offsetX = 10;
+                const offsetY = 20;
+
+                // Viewport boundary check
+                const tooltipRect = tooltip.getBoundingClientRect();
+                let top = y + offsetY;
+                let left = x + offsetX;
+
+                if (left + tooltipRect.width > window.innerWidth) {
+                    left = x - tooltipRect.width - offsetX;
+                }
+                if (top + tooltipRect.height > window.innerHeight) {
+                    top = y - tooltipRect.height - offsetY;
+                }
+
+                tooltip.style.top = top + 'px';
+                tooltip.style.left = left + 'px';
+            }
+        });
+
+    </script>
+</body>
+</html>
