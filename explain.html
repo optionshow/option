@@ -307,7 +307,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
-                            <span class="term-tooltip" data-tip="用於計算口數與風險的本金基準">投入資金成本</span>
+                            <span class="term-tooltip" data-tip="投入的資金成本，入金增加/出金減少">投入資金成本</span>
                         </label>
                         <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary" type="text" value="350,000"/>
                     </div>
@@ -349,7 +349,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">
-                            <span class="term-tooltip" data-tip="平衡成交與滑價，賣方價格越高越容易成交">委託讓價</span>
+                            <span class="term-tooltip" data-tip="平衡成交機制，讓價越大越容易成交">委託讓價</span>
                         </label>
                         <input class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded text-sm p-2 focus:ring-1 focus:ring-primary" type="text" value="0.5"/>
                     </div>
@@ -507,7 +507,7 @@
                 </div>
                 
                 <div class="flex items-stretch rounded mb-4 overflow-hidden shadow-sm h-9">
-                    <div class="bg-primary text-white px-4 flex items-center text-sm font-medium whitespace-nowrap term-tooltip" data-tip="觸發交易的時機點 (當生命總值變化達到設定百分比)">生命總值與前期增減</div>
+                    <div class="bg-primary text-white px-4 flex items-center text-sm font-medium whitespace-nowrap term-tooltip" data-tip="觸發交易的時機點，與前一分鐘超過設定值，則送出委託（可設定正數或負數，0＝全部符合）">生命總值與前期增減</div>
                     <input type="text" class="flex-1 bg-white dark:bg-gray-600 border-gray-300 dark:border-gray-500 text-sm px-3 text-center focus:ring-inset focus:ring-1 focus:ring-primary border-y border-r-0" placeholder="輸入數值">
                     <button class="bg-primary hover:bg-primary/90 text-white text-xs px-6 font-bold transition flex items-center whitespace-nowrap">
                         % 執行
@@ -623,7 +623,7 @@
                     <div class="group">
                         <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
                             <input class="rounded border-gray-300 text-primary focus:ring-primary stop-loss-check" type="checkbox" onchange="toggleInputInGroup(this)"/>
-                            <span class="text-sm font-bold">SC+BC 價差點數 % 停損 (Max 100%)</span>
+                            <span class="text-sm font-bold term-tooltip" data-tip="以履約價差為100％，目前點數超過設定％則停損（不考慮成本）">SC+BC 價差點數 % 停損 (Max 100%)</span>
                         </label>
                          <!-- Removed opacity-50 -->
                         <div class="flex h-8 shadow-sm rounded transition-opacity pointer-events-none input-group">
@@ -635,7 +635,7 @@
                     <div class="group">
                         <label class="flex items-center space-x-2 cursor-pointer mb-2 select-none">
                             <input class="rounded border-gray-300 text-primary focus:ring-primary stop-loss-check" type="checkbox" onchange="toggleInputInGroup(this)"/>
-                            <span class="text-sm font-bold">SP+BP 價差點數 % 停損 (Max 100%)</span>
+                            <span class="text-sm font-bold term-tooltip" data-tip="以履約價差為100％，目前點數超過設定％則停損（不考慮成本）">SP+BP 價差點數 % 停損 (Max 100%)</span>
                         </label>
                          <!-- Removed opacity-50 -->
                         <div class="flex h-8 shadow-sm rounded transition-opacity pointer-events-none input-group">
