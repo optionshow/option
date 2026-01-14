@@ -42,6 +42,10 @@
         body {
             font-family: 'Noto Sans TC', sans-serif;
             scroll-behavior: smooth;
+            /* 禁止文字被選取 (反白) */
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
         }
         .hero-bg {
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1932&q=80');
@@ -121,7 +125,8 @@
         }
     </style>
 </head>
-<body class="bg-brand-dark text-brand-light antialiased">
+<!-- 加入 oncontextmenu="return false" 防止右鍵選單 -->
+<body class="bg-brand-dark text-brand-light antialiased" oncontextmenu="return false">
 
     <!-- Navbar -->
     <nav class="fixed w-full z-50 bg-brand-dark/95 backdrop-blur border-b border-slate-700">
@@ -542,8 +547,8 @@
                         </div>
                     </div>
 
-                     <!-- Part 4 (Moved from Right) -->
-                     <div class="order-4 bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+                      <!-- Part 4 (Moved from Right) -->
+                      <div class="order-4 bg-slate-800/50 rounded-lg p-6 border border-slate-700">
                         <h4 class="text-brand-gold font-bold mb-4 flex items-center gap-2">
                             <i data-lucide="award" class="w-5 h-5"></i> Part 4. 見證真實
                         </h4>
@@ -712,8 +717,8 @@
                 </div>
 
                 <div class="mt-14 mb-8 relative z-10">
-                     <!-- 提示動畫包裝容器 -->
-                     <div class="relative inline-block">
+                      <!-- 提示動畫包裝容器 -->
+                      <div class="relative inline-block">
                         <!-- 跳動的提示指引 -->
                         <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce pointer-events-none">
                             <span class="text-brand-gold font-bold text-sm bg-brand-dark/80 px-2 py-0.5 rounded border border-brand-gold/30 mb-1 whitespace-nowrap">點擊查看明細</span>
@@ -726,7 +731,7 @@
                             <i data-lucide="pointer" class="w-6 h-6 animate-[pulse_2s_ease-in-out_infinite]"></i>
                             智能交易 百萬示範績效
                         </a>
-                     </div>
+                      </div>
                 </div>
 
                 <p class="text-xs text-slate-500 mt-4 text-center">※ 過往績效不代表未來獲利，曲線僅供策略穩定性參考。</p>
@@ -784,6 +789,34 @@
     <!-- Initialize Lucide Icons & Audio Script -->
     <script>
         lucide.createIcons();
+
+        // -------------------------
+        // Page Protection Logic
+        // -------------------------
+        
+        // 禁止右鍵 (雖已在 body 標籤設定，雙重保險)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // 禁止特定快捷鍵 (Ctrl+S, Ctrl+U, F12, Ctrl+P, Ctrl+C)
+        document.addEventListener('keydown', function(event) {
+            // F12
+            if(event.key === "F12") {
+                event.preventDefault();
+                return false;
+            }
+            // Ctrl + S (存檔), Ctrl + U (原始碼), Ctrl + P (列印), Ctrl + C (複製)
+            if (event.ctrlKey && (event.key === 's' || event.key === 'u' || event.key === 'p' || event.key === 'c')) {
+                event.preventDefault();
+                return false;
+            }
+        });
+        
+        // 禁止圖片拖曳
+        document.addEventListener('dragstart', function(event) {
+            if (event.target.tagName === 'IMG') {
+                event.preventDefault();
+            }
+        });
 
         // -------------------------
         // ROI Calculator Logic
@@ -1011,4 +1044,5 @@
         });
     </script>
 </body>
+
 </html>
