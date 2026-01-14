@@ -16,6 +16,11 @@
             padding-top: 110px; /* Header space */
             padding-bottom: 10px; /* Reduced from 20px */
             color: #333;
+            /* Disable text selection */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         /* Sticky Header */
@@ -319,7 +324,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
 
     <!-- Header -->
     <div class="header-fixed">
@@ -526,9 +531,8 @@
     <!-- Source Code Button -->
     <div class="source-btn" onclick="showCodeModal()">★</div>
 
-    <!-- Celebration Modal (Fixed and Centered) -->
-    <!-- Removed 'relative' class and relying on CSS fixed + transform for centering -->
-    <div class="celebration" id="celebration">
+    <!-- Celebration Modal -->
+    <div class="celebration relative" id="celebration">
         <!-- Close Button -->
         <button onclick="closeCelebration()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl font-bold leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">&times;</button>
         
