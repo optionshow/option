@@ -51,6 +51,10 @@
         body {
             font-family: 'Noto Sans TC', sans-serif;
             scroll-behavior: smooth;
+            /* 禁止文字被選取 (反白) */
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
         }
         .gradient-text {
             background: linear-gradient(to right, #2563eb, #06b6d4);
@@ -75,7 +79,8 @@
         }
     </style>
 </head>
-<body class="bg-course-bg text-slate-800 antialiased pb-20">
+<!-- 加入 oncontextmenu="return false" 直接在 body 層級阻擋右鍵 -->
+<body class="bg-course-bg text-slate-800 antialiased pb-20" oncontextmenu="return false">
 
     <!-- Header / Nav + Marquee -->
     <header class="fixed w-full z-50 shadow-md">
@@ -103,7 +108,6 @@
     </header>
 
     <!-- Hero Section -->
-    <!-- 調整：pb-20 改為 pb-10，減少底部留白，拉近與下方列表距離 -->
     <section class="pt-40 pb-10 overflow-hidden relative" id="player-section">
         <!-- Background Decor -->
         <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
@@ -147,17 +151,15 @@
             </div>
 
             <!-- Real Video Player Container -->
-            <!-- 
-                 調整記錄：
-                 1. 寬度控制：加入 w-[90%] 讓它縮小為父層的90%，保留 max-w-5xl 限制最大寬度。
-                 2. 間距控制：mt-12 改為 mt-6，減少上方間距。
-                 3. 定位與捲動：保留 id="video-container" 與 scroll-mt-32 邏輯不變。
-            -->
             <div id="video-container" class="mt-6 relative w-[90%] max-w-5xl mx-auto scroll-mt-32">
                 <div class="absolute inset-0 bg-gradient-to-t from-course-bg via-transparent to-transparent z-0 h-20 bottom-0 pointer-events-none"></div>
                 <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black aspect-video relative z-10">
                     
                     <!-- Video Tag -->
+                    <!-- 
+                         controlsList="nodownload" 防止瀏覽器內建下載按鈕
+                         oncontextmenu="return false" 防止右鍵
+                    -->
                     <video id="main-video" class="w-full h-full object-contain" controls controlsList="nodownload" oncontextmenu="return false;">
                         <source src="https://optionshow.github.io/option/Video/01.mp4" type="video/mp4">
                         您的瀏覽器不支援影片播放。
@@ -174,7 +176,6 @@
         </section>
 
         <!-- Course Curriculum (Clickable) -->
-        <!-- 調整：py-20 改為 py-10，減少章節列表與上方的距離 -->
         <section class="py-10 bg-slate-50" id="curriculum">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -323,6 +324,34 @@
     <!-- Initialize Lucide Icons & Scripts -->
     <script>
         lucide.createIcons();
+        
+        // --- 增加網頁保護邏輯 ---
+        
+        // 禁止右鍵
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // 禁止特定快捷鍵 (Ctrl+S, Ctrl+U, F12, Ctrl+P)
+        document.addEventListener('keydown', function(event) {
+            // F12
+            if(event.key === "F12") {
+                event.preventDefault();
+                return false;
+            }
+            // Ctrl + S (存檔), Ctrl + U (原始碼), Ctrl + P (列印), Ctrl + C (複製)
+            if (event.ctrlKey && (event.key === 's' || event.key === 'u' || event.key === 'p' || event.key === 'c')) {
+                event.preventDefault();
+                return false;
+            }
+        });
+        
+        // 禁止圖片拖曳
+        document.addEventListener('dragstart', function(event) {
+            if (event.target.tagName === 'IMG') {
+                event.preventDefault();
+            }
+        });
+
+        // --- 原有邏輯 ---
 
         // Counter Logic
         let count = 168;
@@ -334,12 +363,11 @@
                 count++;
                 counterElement.innerText = count;
             }
-        }, 30000); // 更改為 30000 毫秒 (30秒)
+        }, 30000);
 
         // Video Player Logic
         const mainVideoPlayer = document.getElementById('main-video');
         
-        // 自動切換標記 (邏輯更新：其實現在人工和自動都要捲動，這個標記主要用途變小，但保留結構)
         let isAutoTransition = false;
 
         // Function to find and play the next chapter
@@ -373,7 +401,6 @@
             const titleElement = document.getElementById('current-video-title');
             const labelElement = document.getElementById('current-chapter-label');
             
-            // 修正：將捲動目標從 player-section (整個區塊) 改為 video-container (播放器本體)
             const videoContainer = document.getElementById('video-container');
 
             // Update Video Source
@@ -389,12 +416,9 @@
             });
             element.classList.add('active-chapter');
 
-            // 修正捲動邏輯：
-            // 1. 無論是 isAutoTransition (自動) 還是人工點擊，現在都要捲動。
-            // 2. 目標改為 videoContainer
+            // 執行捲動到播放器上緣
             videoContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
-            // 重置標記
             isAutoTransition = false;
 
             // Auto Play
