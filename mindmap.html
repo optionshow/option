@@ -20,6 +20,11 @@
             overflow: hidden; /* Prevent body scroll, let canvas handle it */
             height: 100vh;
             width: 100vw;
+            /* Disable text selection */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         #mindmap-container {
@@ -117,7 +122,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
 
     <!-- Floating Header -->
     <div class="header-title">
@@ -335,6 +340,22 @@
                             children: [
                                 { name: "可針對 Call/Put 的 Sell/Buy 單獨設定" },
                                 { name: "通常使用預設值" }
+                            ]
+                        },
+                        {
+                            name: "定時平倉",
+                            children: [
+                                { name: "例如：結算日盤 12:55" },
+                                { name: "設定即時總點數值，超過時平倉" },
+                                { name: "此設定隔天自動取消" }
+                            ]
+                        },
+                        {
+                            name: "即時總點管控",
+                            children: [
+                                { name: "整體部位總點數達到數值時停損" },
+                                { name: "若超過數值，平倉最高點數部位" },
+                                { name: "數值需依當前本金調整" }
                             ]
                         },
                         {
