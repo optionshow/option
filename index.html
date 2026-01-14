@@ -182,9 +182,22 @@
                 <div class="text-xs text-gray-400 mt-2">嚴格風控執行的結果</div>
             </div>
         </div>
-        <div class="text-center mt-8">
-            <!-- Performance Link -> photo.html -->
-            <a href="photo.html" class="text-blue-600 font-bold hover:underline">查看完整績效報告 →</a>
+        
+        <!-- Performance Link with Bouncing Reminder -->
+        <div class="text-center mt-12">
+            <div class="relative inline-block">
+                <!-- Jumping Reminder -->
+                <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+                    <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1 whitespace-nowrap">
+                        🔥 點我查看
+                        <span class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-red-500 rotate-45"></span>
+                    </span>
+                </div>
+                <!-- Link -->
+                <a href="photo.html" target="_blank" class="text-blue-600 font-bold text-xl hover:text-blue-800 transition border-b-2 border-blue-200 hover:border-blue-600 pb-1">
+                    查看完整績效報告 →
+                </a>
+            </div>
         </div>
     </section>
 
