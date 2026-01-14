@@ -13,6 +13,11 @@
             font-family: 'Noto Sans TC', sans-serif;
             background-color: #f3f4f6;
             color: #333;
+            /* Disable text selection */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         .intro-card {
             background-color: white;
@@ -52,7 +57,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen pb-12">
+<body class="bg-gray-100 min-h-screen pb-12" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
 
     <div class="container mx-auto px-4 pt-12 max-w-4xl">
         <!-- Header -->
@@ -103,6 +108,7 @@
 
             <ul class="list-disc pl-5 space-y-2 text-gray-700 text-sm mb-6">
                 <li><strong>履約價</strong>：合約中約定可買賣的期交所公告價格。</li>
+                <li><strong>時間價值</strong>：離結算越久，價格越貴 (因為發生變化的機會越大)。</li>
                 <li><strong>生命總值</strong>：市場上所有選擇權的「時間價值總和」，你可以把它想像成「市場的水位」，隨著越接近結算日，水位（能賺的權利金）會自動降低直到歸零。</li>
                 <li><strong>到期結算</strong>：每份合約都有期限，時間到了一翻兩瞪眼，自動履約或歸零。</li>
             </ul>
@@ -138,6 +144,13 @@
                         </p>
                     </div>
                 </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                <div class="bg-gray-200 p-2 text-center font-bold rounded">Buy (買方)</div>
+                <div class="bg-gray-200 p-2 text-center font-bold rounded">Sell (賣方)</div>
+                <div class="bg-white border p-2 rounded">擁有權利，最大損失僅為權利金</div>
+                <div class="bg-white border p-2 rounded">負有義務，風險可能無限 (需繳保證金)</div>
             </div>
         </div>
 
