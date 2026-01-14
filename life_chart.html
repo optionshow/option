@@ -15,6 +15,11 @@
             font-family: 'Noto Sans TC', sans-serif;
             background-color: #f3f4f6;
             color: #333;
+            /* Disable text selection */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         .chart-container {
             position: relative; 
@@ -23,7 +28,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen pb-12">
+<body class="bg-gray-100 min-h-screen pb-12" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
 
     <div class="container mx-auto px-4 pt-12 max-w-5xl">
         <!-- Header -->
