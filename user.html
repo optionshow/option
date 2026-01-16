@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 交易績效記錄表 (用戶版)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas for Screenshots -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #f3f4f6;
+            /* Anti-Select Styles */
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        input {
+            -webkit-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        .input-cell {
+            transition: all 0.2s;
+        }
+        .input-cell:focus {
+            outline: none;
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+        }
+        /* Read-only styling */
+        input:read-only {
+            background-color: transparent;
+            border-color: transparent;
+            cursor: default;
+        }
+        input:read-only:focus {
+            outline: none;
+            background-color: transparent;
+        }
+        
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        .delete-week-btn, .row-controls {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        th:hover .delete-week-btn {
+            opacity: 1;
+        }
+        tr:hover .row-controls {
+            opacity: 1;
+        }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: white;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        /* Stat Card Hover */
+        .stat-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="text-gray-800" oncontextmenu="return false;">
+
+    <div class="container mx-auto px-4 py-8 max-w-7xl" id="dashboard-container">
+        
+        <!-- Header with Controls -->
+        <div class="mb-6 flex flex-col xl:flex-row justify-between items-center gap-4">
+            <div class="w-full xl:w-auto text-center xl:text-left">
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center justify-center xl:justify-start gap-2 flex-wrap">
+                    <i class="fa-solid fa-user-pen text-teal-600"></i>
+                    交易績效記錄表
+                    
+                    <!-- LINE Link -->
+                    <a href="https://lin.ee/n3bZgtk" target="_blank" class="inline-flex items-center justify-center text-[#00B900] hover:scale-110 transition-transform ml-1" title="加入官方 LINE">
+                        <i class="fa-brands fa-line text-4xl"></i>
+                    </a>
+                </h1>
+                <p class="text-gray-500 mt-1 flex items-center justify-center xl:justify-start gap-2">
+                    <span id="connectionStatus" class="inline-block w-2 h-2 rounded-full bg-gray-300"></span>
+                    <span id="connectionText">系統初始化中...</span>
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-2" data-html2canvas-ignore="true">
+                <!-- Add Week -->
+                <button onclick="addWeek()" class="action-btn bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg shadow transition flex items-center">
+                    <i class="fa-solid fa-calendar-plus mr-2"></i> 新增周次
+                </button>
+                
+                <!-- Add Account -->
+                <button onclick="addAccount()" class="action-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition flex items-center">
+                    <i class="fa-solid fa-user-plus mr-2"></i> 新增帳號
+                </button>
+
+                <!-- Screenshot Button -->
+                <button onclick="takeScreenshot()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg shadow transition flex items-center">
+                    <i class="fa-solid fa-camera mr-2"></i> 截圖
+                </button>
+
+                <!-- Reset Button (Small) -->
+                <button onclick="resetData()" class="action-btn bg-red-100 hover:bg-red-200 text-red-600 px-3 py-2 rounded-lg shadow transition flex items-center text-sm" title="重置所有數據">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Stat 1: Total Profit -->
+            <div class="stat-card bg-white p-5 rounded-xl shadow border-l-4 border-purple-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">總累計獲利</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="stat-total-profit">$0</h3>
+                    </div>
+                    <div class="p-2 bg-purple-100 rounded-lg text-purple-600">
+                        <i class="fa-solid fa-sack-dollar text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stat 2: Avg Weekly Profit -->
+            <div class="stat-card bg-white p-5 rounded-xl shadow border-l-4 border-blue-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">平均週績效</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="stat-avg-weekly">$0</h3>
+                    </div>
+                    <div class="p-2 bg-blue-100 rounded-lg text-blue-600">
+                        <i class="fa-solid fa-chart-simple text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stat 3: Win Rate -->
+            <div class="stat-card bg-white p-5 rounded-xl shadow border-l-4 border-red-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">正獲利週數佔比</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="stat-win-rate">0%</h3>
+                        <p class="text-xs text-red-600 mt-1" id="stat-win-detail">0 勝 / 0 週</p>
+                    </div>
+                    <div class="p-2 bg-red-100 rounded-lg text-red-600">
+                        <i class="fa-solid fa-trophy text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Stat 4: Best Week -->
+             <div class="stat-card bg-white p-5 rounded-xl shadow border-l-4 border-amber-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">最佳單週績效</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="stat-best-week">$0</h3>
+                        <p class="text-xs text-gray-500 mt-1" id="stat-best-week-name">-</p>
+                    </div>
+                    <div class="p-2 bg-amber-100 rounded-lg text-amber-600">
+                        <i class="fa-solid fa-crown text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Input Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 overflow-hidden">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700 border-l-4 border-blue-500 pl-3 flex justify-between">
+                <span>績效輸入區 ($ TWD)</span>
+            </h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[600px] border-collapse" id="performanceTable">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200">
+                            <th class="p-3 text-left w-40 text-gray-600 font-bold sticky left-0 bg-gray-50 z-10 shadow-sm">帳號名稱</th>
+                            <!-- Weeks headers will be injected here -->
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Account rows will be injected here -->
+                    </tbody>
+                    <tfoot class="bg-gray-100 font-bold text-gray-800 border-t-2 border-gray-300">
+                        <tr id="totalRow">
+                            <td class="p-3 sticky left-0 bg-gray-100 z-10 shadow-sm text-blue-800">
+                                <i class="fa-solid fa-calculator mr-2"></i>當周合計
+                            </td>
+                            <!-- Totals cells will be injected here -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-center text-sm shadow-sm" data-html2canvas-ignore="true">
+            <p class="font-bold mb-2 text-base"><i class="fa-solid fa-circle-info mr-2"></i>使用說明</p>
+            <div class="space-y-1">
+                <p>記錄表為離線版本，輸入後會自動儲存於瀏覽軟體記憶體</p>
+                <p>下次開啟，會自動讀入之前的紀錄</p>
+                <p class="font-bold text-red-600 mt-2">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                    更換電腦或瀏覽軟體，紀錄會不見（沒有同步到雲端！）
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="resetConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 modal">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full mx-4">
+            <h3 class="text-xl font-bold mb-4 text-red-600"><i class="fa-solid fa-triangle-exclamation mr-2"></i>警告：重置數據</h3>
+            <p class="text-gray-600 mb-4 text-sm">這將會清除所有您輸入的數據並恢復預設值。此動作會同步到所有裝置且無法復原。</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeResetModal()" class="px-4 py-2 text-gray-500 hover:text-gray-700">取消</button>
+                <button onclick="confirmReset()" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 shadow">確定重置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Script -->
+    <script>
+        // Disable Right Click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // Disable Shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Prevent F12, Ctrl+U, Ctrl+S, Ctrl+P
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.key === 'u') || 
+                (e.ctrlKey && e.key === 's') || 
+                (e.ctrlKey && e.key === 'p') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Prevent dragging
+        document.addEventListener('dragstart', event => event.preventDefault());
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // --- Configuration Handling ---
+        const MY_OWN_FIREBASE_CONFIG = {}; 
+        
+        const STORAGE_KEY = 'trading_tracker_user_v1';
+        let appId = 'default-app-id';
+
+        // --- App State ---
+        let appState = {
+            weeks: ['第 1 周'],
+            accounts: [
+                { id: 'acc_1', name: '主要帳號 (Main)' },
+                { id: 'acc_2', name: '示範帳號' } // Renamed to Demo Account
+            ],
+            data: {
+                'acc_1_0': 1500,
+                'acc_2_0': -500
+            }
+        };
+
+        const defaultState = JSON.parse(JSON.stringify(appState)); 
+        let isLocked = false; // Always unlocked for user version
+        
+        // Mode: 'cloud' or 'local'
+        let currentMode = 'local'; 
+        let db, auth, user;
+        let unsubscribeData = null;
+        let saveDebounceTimer = null;
+
+        // --- Initialization ---
+        async function initApp() {
+            // Check for Config
+            let firebaseConfig = null;
+            
+            try {
+                if (typeof __firebase_config !== 'undefined') {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                    appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                } else if (Object.keys(MY_OWN_FIREBASE_CONFIG).length > 0) {
+                    firebaseConfig = MY_OWN_FIREBASE_CONFIG;
+                }
+            } catch (e) {
+                console.warn("Config detection failed, falling back to local mode.");
+            }
+
+            if (firebaseConfig) {
+                currentMode = 'cloud';
+                updateConnectionStatus('connecting');
+                
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    const initAuth = async () => {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    };
+                    await initAuth();
+
+                    onAuthStateChanged(auth, (currentUser) => {
+                        user = currentUser;
+                        if (user) {
+                            updateConnectionStatus('online');
+                            setupRealtimeListener();
+                        } else {
+                            updateConnectionStatus('error');
+                            showToast('雲端連線失敗，切換至離線模式', 'error');
+                            switchToLocalMode();
+                        }
+                    });
+                } catch (err) {
+                    console.error("Firebase Init Error:", err);
+                    switchToLocalMode();
+                }
+            } else {
+                switchToLocalMode();
+            }
+
+            renderTable();
+            updateStats(); 
+        }
+        
+        function switchToLocalMode() {
+            currentMode = 'local';
+            updateConnectionStatus('offline');
+            const localData = localStorage.getItem(STORAGE_KEY);
+            if (localData) {
+                try {
+                    appState = JSON.parse(localData);
+                } catch(e) { console.error(e); }
+            }
+            renderTable();
+            updateStats();
+        }
+
+        function updateConnectionStatus(status) {
+            const dot = document.getElementById('connectionStatus');
+            const text = document.getElementById('connectionText');
+            
+            if (status === 'online') {
+                dot.className = 'inline-block w-2 h-2 rounded-full bg-green-500';
+                text.innerText = '雲端同步中';
+            } else if (status === 'connecting') {
+                dot.className = 'inline-block w-2 h-2 rounded-full bg-yellow-400';
+                text.innerText = '連線中...';
+            } else if (status === 'offline') {
+                dot.className = 'inline-block w-2 h-2 rounded-full bg-gray-400';
+                text.innerText = '離線模式 (本機儲存)';
+            } else {
+                dot.className = 'inline-block w-2 h-2 rounded-full bg-red-500';
+                text.innerText = '連線錯誤';
+            }
+        }
+
+        // --- Data Logic ---
+
+        function setupRealtimeListener() {
+            if (currentMode !== 'cloud' || !user) return;
+
+            // Use a DIFFERENT document for user version if it's meant to be separate,
+            // OR the same if it's viewing the admin's work.
+            // Since this is "User Tracker", let's assume it shares the same DB path so they see the coach's updates?
+            // OR if it's a personal tool, it should use a different path.
+            // PROMPT: "User Use". "Test Account renamed to Demo".
+            // I'll keep the same path 'main_sheet' assuming it's a shared view or the user is the primary operator.
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_data', 'main_sheet');
+
+            unsubscribeData = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const remoteData = docSnap.data();
+                    if (saveDebounceTimer) return; 
+
+                    if(remoteData.json_data) {
+                        try {
+                            appState = JSON.parse(remoteData.json_data);
+                        } catch(e) {
+                            console.error("Data parse error", e);
+                        }
+                    }
+                    
+                    if (document.activeElement.tagName !== 'INPUT') {
+                        renderTable();
+                    }
+                    updateStats();
+                } else {
+                    saveToStorage(true);
+                }
+            }, (error) => {
+                console.error("Sync error, falling back to local:", error);
+                switchToLocalMode();
+            });
+        }
+
+        async function saveToStorage(silent = false) {
+            // Removed lock check
+
+            if (currentMode === 'cloud' && user) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_data', 'main_sheet');
+                try {
+                    await setDoc(docRef, { json_data: JSON.stringify(appState) });
+                } catch (e) {
+                    console.error("Save error", e);
+                    if (!silent) showToast('無法儲存到雲端', 'error');
+                }
+            } else {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            }
+        }
+
+        // --- Global Functions ---
+        
+        // Removed Auth Functions
+
+        window.updateUIState = function() {
+            // Simplified: No buttons to toggle state
+        };
+
+        // --- Toast Notification ---
+        window.showToast = function(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fa-solid fa-circle-info text-blue-500 text-xl mr-3"></i>';
+            if(type === 'error') {
+                toast.style.borderLeftColor = '#ef4444';
+                icon = '<i class="fa-solid fa-circle-exclamation text-red-500 text-xl mr-3"></i>';
+            } else if (type === 'success') {
+                toast.style.borderLeftColor = '#10b981';
+                icon = '<i class="fa-solid fa-circle-check text-green-500 text-xl mr-3"></i>';
+            }
+
+            toast.innerHTML = `
+                ${icon}
+                <div>
+                    <h4 class="font-bold text-gray-800">${message}</h4>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease-in';
+                setTimeout(() => container.removeChild(toast), 300);
+            }, 3000);
+        };
+
+        // --- Statistics Logic ---
+        window.updateStats = function() {
+            const weekTotals = calculateTotals();
+            const totalProfit = weekTotals.reduce((a, b) => a + b, 0);
+            const avgProfit = weekTotals.length > 0 ? (totalProfit / weekTotals.length) : 0;
+            const winWeeks = weekTotals.filter(val => val > 0).length;
+            const winRate = weekTotals.length > 0 ? ((winWeeks / weekTotals.length) * 100).toFixed(0) : 0;
+            const maxProfit = weekTotals.length > 0 ? Math.max(...weekTotals) : 0;
+            const bestWeekIndex = weekTotals.indexOf(maxProfit);
+            const bestWeekName = bestWeekIndex >= 0 ? appState.weeks[bestWeekIndex] : '-';
+            const fmt = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', maximumFractionDigits: 0 });
+
+            document.getElementById('stat-total-profit').innerText = fmt.format(totalProfit);
+            // Color Logic: Red for Profit (>=0), Green for Loss
+            document.getElementById('stat-total-profit').className = `text-2xl font-bold mt-1 ${totalProfit >= 0 ? 'text-red-600' : 'text-green-600'}`;
+            
+            document.getElementById('stat-avg-weekly').innerText = fmt.format(avgProfit);
+            
+            document.getElementById('stat-win-rate').innerText = `${winRate}%`;
+            document.getElementById('stat-win-detail').innerText = `${winWeeks} 勝 / ${weekTotals.length} 週`;
+            
+            document.getElementById('stat-best-week').innerText = maxProfit > -Infinity ? fmt.format(maxProfit) : '$0';
+            document.getElementById('stat-best-week-name').innerText = bestWeekName;
+        };
+
+        // --- Logic Functions ---
+
+        window.addWeek = function() {
+            const newWeekIndex = appState.weeks.length + 1;
+            appState.weeks.push(`第 ${newWeekIndex} 周`);
+            saveToStorage();
+            renderTable();
+            updateStats();
+        };
+
+        window.deleteWeek = function(index) {
+            // No lock check
+            
+            appState.weeks.splice(index, 1);
+            
+            const newData = {};
+            Object.keys(appState.data).forEach(key => {
+                const [accId, weekIdxStr] = key.split('_');
+                const weekIdx = parseInt(weekIdxStr);
+                if (weekIdx < index) {
+                    newData[key] = appState.data[key];
+                } else if (weekIdx > index) {
+                    newData[`${accId}_${weekIdx - 1}`] = appState.data[key];
+                }
+            });
+            appState.data = newData;
+
+            saveToStorage();
+            renderTable();
+            updateStats();
+            showToast('已刪除周次', 'info');
+        };
+
+        window.addAccount = function() {
+            const newId = `acc_${Date.now()}`;
+            const newCount = appState.accounts.length + 1;
+            appState.accounts.push({ id: newId, name: `帳號 ${newCount}` });
+            saveToStorage();
+            renderTable();
+            updateStats();
+        };
+
+        window.deleteAccount = function(index) {
+            // No lock check
+            
+            const accId = appState.accounts[index].id;
+            appState.accounts.splice(index, 1);
+            
+            Object.keys(appState.data).forEach(key => {
+                if (key.startsWith(`${accId}_`)) {
+                    delete appState.data[key];
+                }
+            });
+
+            saveToStorage();
+            renderTable();
+            updateStats();
+            showToast('已刪除帳號', 'info');
+        };
+
+        // --- NEW: Reorder Account Functions ---
+        window.moveAccountUp = function(index) {
+            if (index <= 0) return;
+            
+            // Swap in array
+            const temp = appState.accounts[index];
+            appState.accounts[index] = appState.accounts[index - 1];
+            appState.accounts[index - 1] = temp;
+            
+            saveToStorage();
+            renderTable();
+            updateStats();
+        };
+
+        window.moveAccountDown = function(index) {
+            if (index >= appState.accounts.length - 1) return;
+            
+            // Swap in array
+            const temp = appState.accounts[index];
+            appState.accounts[index] = appState.accounts[index + 1];
+            appState.accounts[index + 1] = temp;
+            
+            saveToStorage();
+            renderTable();
+            updateStats();
+        };
+
+        // --- Debounced Update ---
+        window.updateValue = function(accId, weekIndex, value) {
+            const key = `${accId}_${weekIndex}`;
+            
+            if (value === '' || isNaN(value)) {
+                delete appState.data[key];
+            } else {
+                appState.data[key] = parseFloat(value);
+            }
+            
+            calculateTotals();
+            
+            if (saveDebounceTimer) {
+                clearTimeout(saveDebounceTimer);
+            }
+
+            saveDebounceTimer = setTimeout(() => {
+                saveToStorage(true); 
+                renderTable(); 
+                updateStats();
+                saveDebounceTimer = null;
+            }, 1500); 
+        };
+
+        window.updateAccountName = function(accIndex, newName) {
+            appState.accounts[accIndex].name = newName;
+            
+            if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+            saveDebounceTimer = setTimeout(() => {
+                saveToStorage();
+                saveDebounceTimer = null;
+            }, 1500);
+        };
+
+        window.updateWeekName = function(weekIndex, newName) {
+            appState.weeks[weekIndex] = newName;
+            if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+            saveDebounceTimer = setTimeout(() => {
+                saveToStorage();
+                saveDebounceTimer = null;
+            }, 1500);
+        };
+
+        window.resetData = function() {
+            document.getElementById('resetConfirmModal').classList.remove('hidden');
+            document.getElementById('resetConfirmModal').classList.add('flex');
+        };
+
+        window.closeResetModal = function() {
+            document.getElementById('resetConfirmModal').classList.add('hidden');
+            document.getElementById('resetConfirmModal').classList.remove('flex');
+        };
+
+        window.confirmReset = function() {
+            appState = JSON.parse(JSON.stringify(defaultState));
+            saveToStorage();
+            renderTable();
+            updateStats();
+            closeResetModal();
+            showToast('數據已重置', 'info');
+        };
+
+        // --- Screenshot ---
+        window.takeScreenshot = function() {
+            const container = document.getElementById('dashboard-container');
+            const btn = document.querySelector('button[onclick="takeScreenshot()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> 處理中...';
+
+            html2canvas(container, {
+                scale: 2, 
+                backgroundColor: '#f3f4f6', 
+                ignoreElements: (element) => false
+            }).then(canvas => {
+                btn.innerHTML = originalText;
+                const link = document.createElement('a');
+                link.download = `交易績效_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            }).catch(err => {
+                console.error(err);
+                showToast('截圖失敗，請重試', 'error');
+                btn.innerHTML = originalText;
+            });
+        };
+
+        // --- Render Helpers ---
+        window.calculateTotals = function() {
+            const weekTotals = new Array(appState.weeks.length).fill(0);
+            let grandTotal = 0;
+
+            appState.weeks.forEach((_, weekIndex) => {
+                let sum = 0;
+                appState.accounts.forEach(acc => {
+                    const key = `${acc.id}_${weekIndex}`;
+                    const val = appState.data[key];
+                    if (val !== undefined) sum += val;
+                });
+                weekTotals[weekIndex] = sum;
+                grandTotal += sum;
+                
+                const td = document.getElementById(`total-col-${weekIndex}`);
+                if(td) {
+                    td.innerText = sum.toLocaleString(); 
+                    applyColorClass(td, sum);
+                }
+            });
+
+            // Update Grand Total in footer
+            const grandTotalTd = document.getElementById('grand-total-col');
+            if (grandTotalTd) {
+                grandTotalTd.innerText = grandTotal.toLocaleString();
+                applyColorClass(grandTotalTd, grandTotal);
+            }
+
+            return weekTotals;
+        };
+
+        function applyColorClass(element, value) {
+            element.classList.remove('text-green-600', 'text-red-600', 'font-bold', 'text-red-500', 'text-green-500'); 
+            
+            if (value > 0) {
+                element.classList.add('text-red-600', 'font-bold');
+            } else if (value < 0) {
+                element.classList.add('text-green-600', 'font-bold');
+            }
+        }
+
+        window.renderTable = function() {
+            const tableHeadRow = document.querySelector('#performanceTable thead tr');
+            const tableBody = document.getElementById('tableBody');
+            const totalRow = document.getElementById('totalRow');
+
+            while (tableHeadRow.children.length > 1) tableHeadRow.removeChild(tableHeadRow.lastChild);
+            
+            appState.weeks.forEach((week, index) => {
+                const th = document.createElement('th');
+                th.className = 'p-3 min-w-[120px] text-center border-l border-gray-200 relative group';
+                const container = document.createElement('div');
+                container.className = 'flex items-center justify-center';
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = week;
+                input.className = 'w-full text-center bg-transparent border-none font-bold text-gray-600 focus:ring-2 focus:ring-blue-300 rounded';
+                input.readOnly = isLocked; 
+                input.onchange = (e) => updateWeekName(index, e.target.value);
+                container.appendChild(input);
+
+                if (!isLocked) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+                    deleteBtn.className = 'delete-week-btn ml-2 text-red-400 hover:text-red-600 focus:outline-none';
+                    deleteBtn.onclick = () => deleteWeek(index);
+                    container.appendChild(deleteBtn);
+                }
+                th.appendChild(container);
+                tableHeadRow.appendChild(th);
+            });
+
+            const thTotal = document.createElement('th');
+            thTotal.className = 'p-3 min-w-[120px] text-center border-l-4 border-double border-gray-300 font-bold text-gray-700 bg-gray-100';
+            thTotal.innerText = "帳號合計";
+            tableHeadRow.appendChild(thTotal);
+
+            tableBody.innerHTML = '';
+            appState.accounts.forEach((acc, accIndex) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 border-b border-gray-100 transition-colors group';
+                
+                const nameTd = document.createElement('td');
+                nameTd.className = 'p-3 border-r border-gray-200 sticky left-0 bg-white z-10 shadow-sm font-medium';
+                
+                const nameContainer = document.createElement('div');
+                nameContainer.className = 'flex items-center justify-between';
+
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.value = acc.name;
+                nameInput.className = 'w-full bg-transparent border-b border-transparent focus:border-blue-500 focus:outline-none';
+                nameInput.readOnly = isLocked;
+                nameInput.onchange = (e) => updateAccountName(accIndex, e.target.value);
+                
+                nameContainer.appendChild(nameInput);
+
+                if (!isLocked) {
+                    // Controls Container
+                    const controls = document.createElement('div');
+                    controls.className = 'row-controls flex items-center ml-2';
+
+                    // Move Up
+                    if (accIndex > 0) {
+                        const upBtn = document.createElement('button');
+                        upBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+                        upBtn.className = 'text-gray-400 hover:text-blue-500 focus:outline-none mr-1';
+                        upBtn.onclick = () => moveAccountUp(accIndex);
+                        controls.appendChild(upBtn);
+                    } else {
+                        const spacer = document.createElement('span');
+                        spacer.className = 'w-4 mr-1'; 
+                        controls.appendChild(spacer);
+                    }
+
+                    // Move Down
+                    if (accIndex < appState.accounts.length - 1) {
+                        const downBtn = document.createElement('button');
+                        downBtn.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+                        downBtn.className = 'text-gray-400 hover:text-blue-500 focus:outline-none mr-1';
+                        downBtn.onclick = () => moveAccountDown(accIndex);
+                        controls.appendChild(downBtn);
+                    } else {
+                        const spacer = document.createElement('span');
+                        spacer.className = 'w-4 mr-1'; 
+                        controls.appendChild(spacer);
+                    }
+
+                    // Delete
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+                    deleteBtn.className = 'delete-acc-btn text-red-400 hover:text-red-600 focus:outline-none';
+                    deleteBtn.onclick = () => deleteAccount(accIndex);
+                    controls.appendChild(deleteBtn);
+
+                    nameContainer.appendChild(controls);
+                }
+
+                nameTd.appendChild(nameContainer);
+                tr.appendChild(nameTd);
+
+                let rowSum = 0;
+
+                appState.weeks.forEach((_, weekIndex) => {
+                    const td = document.createElement('td');
+                    td.className = 'p-2 border-r border-gray-100 text-center';
+                    
+                    // --- Text Input with Commas ---
+                    const input = document.createElement('input');
+                    input.type = 'text'; 
+                    input.inputMode = 'decimal'; 
+                    input.placeholder = isLocked ? '' : '-'; 
+                    input.className = 'input-cell w-full p-2 text-center border border-gray-200 rounded text-gray-700';
+                    input.readOnly = isLocked; 
+                    
+                    const key = `${acc.id}_${weekIndex}`;
+                    if (appState.data[key] !== undefined) {
+                        const val = appState.data[key];
+                        input.value = val.toLocaleString(); 
+                        rowSum += val;
+                    }
+
+                    input.onfocus = (e) => {
+                        if (!isLocked) {
+                            e.target.value = e.target.value.replace(/,/g, '');
+                            e.target.select();
+                        }
+                    };
+
+                    input.onblur = (e) => {
+                        const raw = e.target.value.replace(/,/g, '');
+                        if (raw !== '' && !isNaN(raw)) {
+                            e.target.value = parseFloat(raw).toLocaleString();
+                        }
+                    };
+
+                    input.oninput = (e) => {
+                        const raw = e.target.value.replace(/,/g, '');
+                        updateValue(acc.id, weekIndex, raw);
+                        if(!isNaN(raw) && raw !== '') {
+                            applyColorClass(e.target, parseFloat(raw));
+                        } else {
+                            e.target.classList.remove('text-red-600', 'text-green-600', 'font-bold');
+                        }
+                    };
+                    
+                    if (appState.data[key] !== undefined) {
+                        applyColorClass(input, appState.data[key]);
+                    }
+
+                    td.appendChild(input);
+                    tr.appendChild(td);
+                });
+
+                // Row Total
+                const totalTd = document.createElement('td');
+                totalTd.className = 'p-3 text-center border-l-4 border-double border-gray-300 font-mono text-lg font-bold bg-gray-50';
+                totalTd.innerText = rowSum.toLocaleString();
+                applyColorClass(totalTd, rowSum);
+                tr.appendChild(totalTd);
+
+                tableBody.appendChild(tr);
+            });
+
+            // Footer
+            while (totalRow.children.length > 1) totalRow.removeChild(totalRow.lastChild);
+            appState.weeks.forEach((_, index) => {
+                const td = document.createElement('td');
+                td.id = `total-col-${index}`;
+                td.className = 'p-3 text-center border-l border-gray-300 font-mono text-lg';
+                td.innerText = '0';
+                totalRow.appendChild(td);
+            });
+
+            // Grand Total
+            const grandTotalTd = document.createElement('td');
+            grandTotalTd.id = 'grand-total-col';
+            grandTotalTd.className = 'p-3 text-center border-l-4 border-double border-gray-300 font-mono text-xl font-black bg-gray-200';
+            grandTotalTd.innerText = '0';
+            totalRow.appendChild(grandTotalTd);
+
+            calculateTotals();
+        }
+
+        // Start App
+        initApp();
+
+    </script>
+</body>
+</html>
