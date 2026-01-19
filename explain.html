@@ -89,14 +89,6 @@
             text-align: justify; /* 齊頭 */
             text-justify: inter-ideograph;
         }
-
-        /* Disable Selection */
-        body {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-sans text-gray-800 dark:text-gray-200 min-h-screen flex flex-col" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
@@ -431,6 +423,19 @@
                             <div class="flex-1 w-0 bg-danger text-white flex items-center justify-center">以上做多</div>
                             <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
                             <div class="flex-1 w-0 bg-success text-white flex items-center justify-center rounded-r">以下做空</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer select-none">
+                            <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+                            <span class="text-sm font-bold term-tooltip" data-tip="高低於設定值,做逆勢部位">逆勢期貨價格</span>
+                        </label>
+                        <!-- Changed gray divs to inputs, ensure all 4 items have equal width (flex-1). Removed placeholder="0" -->
+                        <div class="flex text-xs text-center h-8">
+                            <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none rounded-l text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
+                            <div class="flex-1 w-0 bg-success text-white flex items-center justify-center">以上做空</div>
+                            <input type="number" class="flex-1 w-0 bg-gray-200 dark:bg-gray-700 border-none text-center p-0 text-gray-800 dark:text-white focus:ring-1 focus:ring-inset focus:ring-primary placeholder-gray-400" placeholder="">
+                            <div class="flex-1 w-0 bg-danger text-white flex items-center justify-center rounded-r">以下做多</div>
                         </div>
                     </div>
                 </div>
