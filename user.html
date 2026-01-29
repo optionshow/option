@@ -27,14 +27,54 @@
             user-select: text;
         }
 
+        /* Screenshot Alignment Fixes */
+        td, th {
+            vertical-align: middle;
+        }
+
         .input-cell {
             transition: all 0.2s;
+            /* Revert to standard box model for html2canvas stability */
+            display: block; 
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            line-height: 1.5;
+            background-color: transparent;
         }
+
         .input-cell:focus {
             outline: none;
-            background-color: #eff6ff;
+            background-color: #fff;
             border-color: #3b82f6;
+            box-shadow: inset 0 0 0 1px #3b82f6;
         }
+        
+        /* Flex center helper */
+        .flex-center-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Specific fix for footer cell alignment */
+        .footer-cell-content {
+            display: flex;
+            align-items: center;
+            /* For the first column (label), align left/start */
+            justify-content: flex-start; 
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Specific fix for icons in screenshot */
+        i {
+            vertical-align: middle;
+            display: inline-block;
+        }
+
         /* Read-only styling */
         input:read-only {
             background-color: transparent;
@@ -66,6 +106,10 @@
             opacity: 1;
         }
 
+        /* Modal transition */
+        .modal {
+            transition: opacity 0.25s ease;
+        }
         /* Toast Notification */
         #toast-container {
             position: fixed;
@@ -99,6 +143,9 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="text-gray-800" oncontextmenu="return false;">
@@ -113,8 +160,9 @@
                     交易績效記錄表
                     
                     <!-- LINE Link -->
-                    <a href="https://lin.ee/n3bZgtk" target="_blank" class="inline-flex items-center justify-center text-[#00B900] hover:scale-110 transition-transform ml-1" title="加入官方 LINE">
+                    <a href="https://lin.ee/n3bZgtk" target="_blank" class="inline-flex items-center justify-center text-[#00B900] hover:scale-105 transition-transform ml-2 gap-1 no-underline" title="加入官方 LINE">
                         <i class="fa-brands fa-line text-4xl"></i>
+                        <span class="text-xl font-bold">＠308cobem</span>
                     </a>
                 </h1>
                 <p class="text-gray-500 mt-1 flex items-center justify-center xl:justify-start gap-2">
@@ -138,6 +186,20 @@
                 <button onclick="takeScreenshot()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg shadow transition flex items-center">
                     <i class="fa-solid fa-camera mr-2"></i> 截圖
                 </button>
+
+                <!-- Import/Export Group -->
+                <div class="flex gap-1">
+                    <!-- Import Button -->
+                    <input type="file" id="importInput" accept=".csv" class="hidden" onchange="window.importCSV(this)">
+                    <button onclick="document.getElementById('importInput').click()" class="action-btn bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg shadow transition flex items-center" title="匯入 CSV">
+                        <i class="fa-solid fa-file-import mr-2"></i> 匯入
+                    </button>
+
+                    <!-- Export CSV Button -->
+                    <button onclick="exportToCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition flex items-center">
+                        <i class="fa-solid fa-file-csv mr-2"></i> 匯出
+                    </button>
+                </div>
 
                 <!-- Reset Button (Small) -->
                 <button onclick="resetData()" class="action-btn bg-red-100 hover:bg-red-200 text-red-600 px-3 py-2 rounded-lg shadow transition flex items-center text-sm" title="重置所有數據">
@@ -206,7 +268,7 @@
         <!-- Input Section -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-8 overflow-hidden">
             <h2 class="text-xl font-semibold mb-4 text-gray-700 border-l-4 border-blue-500 pl-3 flex justify-between">
-                <span>績效輸入區 ($ TWD)</span>
+                <span>績效明細（＄TWD）</span>
             </h2>
             
             <div class="overflow-x-auto">
@@ -223,7 +285,9 @@
                     <tfoot class="bg-gray-100 font-bold text-gray-800 border-t-2 border-gray-300">
                         <tr id="totalRow">
                             <td class="p-3 sticky left-0 bg-gray-100 z-10 shadow-sm text-blue-800">
-                                <i class="fa-solid fa-calculator mr-2"></i>當周合計
+                                <div class="footer-cell-content">
+                                    <i class="fa-solid fa-calculator mr-2"></i><span>當周合計</span>
+                                </div>
                             </td>
                             <!-- Totals cells will be injected here -->
                         </tr>
@@ -298,7 +362,7 @@
 
         // --- App State ---
         let appState = {
-            weeks: ['第 1 周'],
+            weeks: ['第 1 周'], // Deleted 2-4 weeks, starting fresh
             accounts: [
                 { id: 'acc_1', name: '主要帳號 (Main)' },
                 { id: 'acc_2', name: '示範帳號' } // Renamed to Demo Account
@@ -317,6 +381,52 @@
         let db, auth, user;
         let unsubscribeData = null;
         let saveDebounceTimer = null;
+
+        // --- Render Helpers (Definitions - Hoisted manually) ---
+        
+        window.applyColorClass = function(element, value) {
+            // Remove old classes
+            element.classList.remove('text-green-600', 'text-red-600', 'font-bold', 'text-red-500', 'text-green-500'); 
+            
+            if (value > 0) {
+                // Profit = RED (Taiwan Stock Style)
+                element.classList.add('text-red-600', 'font-bold');
+            } else if (value < 0) {
+                // Loss = GREEN (Taiwan Stock Style)
+                element.classList.add('text-green-600', 'font-bold');
+            }
+        };
+
+        window.calculateTotals = function() {
+            const weekTotals = new Array(appState.weeks.length).fill(0);
+            let grandTotal = 0;
+
+            appState.weeks.forEach((_, weekIndex) => {
+                let sum = 0;
+                appState.accounts.forEach(acc => {
+                    const key = `${acc.id}_${weekIndex}`;
+                    const val = appState.data[key];
+                    if (val !== undefined) sum += val;
+                });
+                weekTotals[weekIndex] = sum;
+                grandTotal += sum;
+                
+                const td = document.getElementById(`total-col-${weekIndex}`);
+                if(td) {
+                    td.innerHTML = `<div class="flex-center-box">${sum.toLocaleString()}</div>`;
+                    window.applyColorClass(td, sum);
+                }
+            });
+
+            // Update Grand Total in footer
+            const grandTotalTd = document.getElementById('grand-total-col');
+            if (grandTotalTd) {
+                grandTotalTd.innerHTML = `<div class="flex-center-box">${grandTotal.toLocaleString()}</div>`;
+                window.applyColorClass(grandTotalTd, grandTotal);
+            }
+
+            return weekTotals;
+        };
 
         // --- Initialization ---
         async function initApp() {
@@ -392,18 +502,22 @@
             const dot = document.getElementById('connectionStatus');
             const text = document.getElementById('connectionText');
             
+            // Get today's date dynamically
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+            
             if (status === 'online') {
                 dot.className = 'inline-block w-2 h-2 rounded-full bg-green-500';
-                text.innerText = '雲端同步中';
+                text.innerText = `雲端同步中 ${dateStr}`;
             } else if (status === 'connecting') {
                 dot.className = 'inline-block w-2 h-2 rounded-full bg-yellow-400';
-                text.innerText = '連線中...';
+                text.innerText = `連線中... ${dateStr}`;
             } else if (status === 'offline') {
                 dot.className = 'inline-block w-2 h-2 rounded-full bg-gray-400';
-                text.innerText = '離線模式 (本機儲存)';
+                text.innerText = `離線模式 (本機儲存) ${dateStr}`;
             } else {
                 dot.className = 'inline-block w-2 h-2 rounded-full bg-red-500';
-                text.innerText = '連線錯誤';
+                text.innerText = `連線錯誤 ${dateStr}`;
             }
         }
 
@@ -412,12 +526,6 @@
         function setupRealtimeListener() {
             if (currentMode !== 'cloud' || !user) return;
 
-            // Use a DIFFERENT document for user version if it's meant to be separate,
-            // OR the same if it's viewing the admin's work.
-            // Since this is "User Tracker", let's assume it shares the same DB path so they see the coach's updates?
-            // OR if it's a personal tool, it should use a different path.
-            // PROMPT: "User Use". "Test Account renamed to Demo".
-            // I'll keep the same path 'main_sheet' assuming it's a shared view or the user is the primary operator.
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_data', 'main_sheet');
 
             unsubscribeData = onSnapshot(docRef, (docSnap) => {
@@ -504,7 +612,7 @@
 
         // --- Statistics Logic ---
         window.updateStats = function() {
-            const weekTotals = calculateTotals();
+            const weekTotals = window.calculateTotals();
             const totalProfit = weekTotals.reduce((a, b) => a + b, 0);
             const avgProfit = weekTotals.length > 0 ? (totalProfit / weekTotals.length) : 0;
             const winWeeks = weekTotals.filter(val => val > 0).length;
@@ -624,7 +732,7 @@
                 appState.data[key] = parseFloat(value);
             }
             
-            calculateTotals();
+            window.calculateTotals();
             
             if (saveDebounceTimer) {
                 clearTimeout(saveDebounceTimer);
@@ -657,6 +765,12 @@
             }, 1500);
         };
 
+        // --- New Helper for Change Event ---
+        window.onInputChanged = function() {
+            saveToStorage();
+            updateStats(); 
+        };
+
         window.resetData = function() {
             document.getElementById('resetConfirmModal').classList.remove('hidden');
             document.getElementById('resetConfirmModal').classList.add('flex');
@@ -686,7 +800,51 @@
             html2canvas(container, {
                 scale: 2, 
                 backgroundColor: '#f3f4f6', 
-                ignoreElements: (element) => false
+                ignoreElements: (element) => false,
+                onclone: (clonedDoc) => {
+                    // 1. Force INPUT replacement
+                    const inputs = clonedDoc.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        const div = clonedDoc.createElement('div');
+                        div.textContent = input.value;
+                        div.style.width = '100%';
+                        div.style.height = input.offsetHeight + 'px';
+                        div.style.display = 'flex';
+                        div.style.alignItems = 'center';
+                        div.style.justifyContent = 'center';
+                        div.style.color = input.style.color || window.getComputedStyle(input).color;
+                        div.style.fontWeight = window.getComputedStyle(input).fontWeight;
+                        div.style.fontSize = window.getComputedStyle(input).fontSize;
+                        div.style.backgroundColor = 'transparent'; 
+                        if(input.parentNode) input.parentNode.replaceChild(div, input);
+                    });
+
+                    // 2. Fix Icons
+                    const icons = clonedDoc.querySelectorAll('i');
+                    icons.forEach(icon => {
+                        icon.style.display = 'inline-block';
+                        icon.style.verticalAlign = 'middle';
+                        icon.style.marginBottom = '2px';
+                    });
+                    
+                    // 3. Fix Flex Height
+                    const flexBoxes = clonedDoc.querySelectorAll('.flex-center-box, .footer-cell-content');
+                    flexBoxes.forEach(box => {
+                        const parent = box.parentNode;
+                        if(parent) {
+                            parent.style.padding = '0';
+                            parent.style.height = parent.offsetHeight + 'px';
+                            box.style.height = '100%';
+                            box.style.display = 'flex';
+                            box.style.alignItems = 'center';
+                            box.style.paddingLeft = '12px'; 
+                            box.style.paddingRight = '12px';
+                            if (box.classList.contains('flex-center-box')) {
+                                box.style.justifyContent = 'center';
+                            }
+                        }
+                    });
+                }
             }).then(canvas => {
                 btn.innerHTML = originalText;
                 const link = document.createElement('a');
@@ -700,46 +858,106 @@
             });
         };
 
-        // --- Render Helpers ---
-        window.calculateTotals = function() {
-            const weekTotals = new Array(appState.weeks.length).fill(0);
-            let grandTotal = 0;
+        // --- Export CSV Logic ---
+        window.exportToCSV = function() {
+            let csvContent = "\uFEFF"; 
+            let header = ["帳號名稱", ...appState.weeks, "帳號合計"].join(",");
+            csvContent += header + "\r\n";
 
-            appState.weeks.forEach((_, weekIndex) => {
-                let sum = 0;
-                appState.accounts.forEach(acc => {
-                    const key = `${acc.id}_${weekIndex}`;
-                    const val = appState.data[key];
-                    if (val !== undefined) sum += val;
+            appState.accounts.forEach(acc => {
+                let row = [acc.name];
+                let accSum = 0;
+                appState.weeks.forEach((_, wIndex) => {
+                    const val = appState.data[`${acc.id}_${wIndex}`] || 0;
+                    row.push(val);
+                    accSum += val;
                 });
-                weekTotals[weekIndex] = sum;
-                grandTotal += sum;
-                
-                const td = document.getElementById(`total-col-${weekIndex}`);
-                if(td) {
-                    td.innerText = sum.toLocaleString(); 
-                    applyColorClass(td, sum);
-                }
+                row.push(accSum);
+                csvContent += row.join(",") + "\r\n";
             });
 
-            // Update Grand Total in footer
-            const grandTotalTd = document.getElementById('grand-total-col');
-            if (grandTotalTd) {
-                grandTotalTd.innerText = grandTotal.toLocaleString();
-                applyColorClass(grandTotalTd, grandTotal);
-            }
+            const totals = window.calculateTotals();
+            const grandTotal = totals.reduce((a, b) => a + b, 0);
+            let totalRow = ["當周合計", ...totals, grandTotal].join(",");
+            csvContent += totalRow + "\r\n";
 
-            return weekTotals;
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `交易績效備份_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('已匯出 CSV 檔案', 'success');
         };
 
-        function applyColorClass(element, value) {
-            element.classList.remove('text-green-600', 'text-red-600', 'font-bold', 'text-red-500', 'text-green-500'); 
-            
-            if (value > 0) {
-                element.classList.add('text-red-600', 'font-bold');
-            } else if (value < 0) {
-                element.classList.add('text-green-600', 'font-bold');
+        // --- Import CSV Logic ---
+        window.importCSV = function(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    processCSVData(text);
+                    window.showToast('匯入成功', 'success');
+                } catch (err) {
+                    console.error(err);
+                    window.showToast('匯入失敗：格式錯誤', 'error');
+                }
+                input.value = ''; // Reset
+            };
+            reader.readAsText(file);
+        };
+
+        function processCSVData(csvText) {
+            if (csvText.charCodeAt(0) === 0xFEFF) {
+                csvText = csvText.substr(1);
             }
+
+            const lines = csvText.split(/\r\n|\n/).filter(line => line.trim() !== '');
+            if (lines.length < 2) throw new Error("File too short");
+
+            const header = lines[0].split(',');
+            if (header[0].trim() !== "帳號名稱" || header[header.length - 1].trim() !== "帳號合計") {
+                throw new Error("Invalid Header");
+            }
+
+            const newWeeks = header.slice(1, -1);
+            const newAccounts = [];
+            const newData = {};
+
+            for (let i = 1; i < lines.length; i++) {
+                const cols = lines[i].split(',');
+                const accName = cols[0].trim();
+                
+                if (accName === "當周合計") break;
+
+                const accId = `acc_${Date.now()}_${i}`; 
+                newAccounts.push({ id: accId, name: accName });
+
+                for (let j = 0; j < newWeeks.length; j++) {
+                    const colIndex = j + 1;
+                    if (colIndex < cols.length) {
+                        const valStr = cols[colIndex].trim();
+                        if (valStr !== '' && valStr !== '-') {
+                            const val = parseFloat(valStr);
+                            if (!isNaN(val)) {
+                                newData[`${accId}_${j}`] = val;
+                            }
+                        }
+                    }
+                }
+            }
+
+            appState.weeks = newWeeks;
+            appState.accounts = newAccounts;
+            appState.data = newData;
+
+            saveToStorage();
+            renderTable();
+            updateStats();
         }
 
         window.renderTable = function() {
@@ -782,10 +1000,12 @@
             tableBody.innerHTML = '';
             appState.accounts.forEach((acc, accIndex) => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-gray-50 border-b border-gray-100 transition-colors group';
+                // Zebra striping
+                const bgClass = accIndex % 2 === 0 ? 'bg-white' : 'bg-blue-50';
+                tr.className = `${bgClass} hover:bg-blue-100 border-b border-gray-200 transition-colors group`;
                 
                 const nameTd = document.createElement('td');
-                nameTd.className = 'p-3 border-r border-gray-200 sticky left-0 bg-white z-10 shadow-sm font-medium';
+                nameTd.className = `p-3 border-r border-gray-200 sticky left-0 ${bgClass} group-hover:bg-blue-100 z-10 shadow-sm font-medium`;
                 
                 const nameContainer = document.createElement('div');
                 nameContainer.className = 'flex items-center justify-between';
@@ -800,11 +1020,9 @@
                 nameContainer.appendChild(nameInput);
 
                 if (!isLocked) {
-                    // Controls Container
                     const controls = document.createElement('div');
                     controls.className = 'row-controls flex items-center ml-2';
 
-                    // Move Up
                     if (accIndex > 0) {
                         const upBtn = document.createElement('button');
                         upBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
@@ -817,7 +1035,6 @@
                         controls.appendChild(spacer);
                     }
 
-                    // Move Down
                     if (accIndex < appState.accounts.length - 1) {
                         const downBtn = document.createElement('button');
                         downBtn.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
@@ -830,7 +1047,6 @@
                         controls.appendChild(spacer);
                     }
 
-                    // Delete
                     const deleteBtn = document.createElement('button');
                     deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
                     deleteBtn.className = 'delete-acc-btn text-red-400 hover:text-red-600 focus:outline-none';
@@ -849,7 +1065,6 @@
                     const td = document.createElement('td');
                     td.className = 'p-2 border-r border-gray-100 text-center';
                     
-                    // --- Text Input with Commas ---
                     const input = document.createElement('input');
                     input.type = 'text'; 
                     input.inputMode = 'decimal'; 
@@ -882,31 +1097,34 @@
                         const raw = e.target.value.replace(/,/g, '');
                         updateValue(acc.id, weekIndex, raw);
                         if(!isNaN(raw) && raw !== '') {
-                            applyColorClass(e.target, parseFloat(raw));
+                            window.applyColorClass(e.target, parseFloat(raw));
                         } else {
                             e.target.classList.remove('text-red-600', 'text-green-600', 'font-bold');
                         }
                     };
+
+                    input.onchange = (e) => {
+                        window.onInputChanged();
+                    };
                     
                     if (appState.data[key] !== undefined) {
-                        applyColorClass(input, appState.data[key]);
+                        window.applyColorClass(input, appState.data[key]);
                     }
 
                     td.appendChild(input);
                     tr.appendChild(td);
                 });
 
-                // Row Total
                 const totalTd = document.createElement('td');
-                totalTd.className = 'p-3 text-center border-l-4 border-double border-gray-300 font-mono text-lg font-bold bg-gray-50';
-                totalTd.innerText = rowSum.toLocaleString();
-                applyColorClass(totalTd, rowSum);
+                // Use bgClass and group-hover for this cell as well
+                totalTd.className = `p-3 text-center border-l-4 border-double border-gray-300 font-mono text-lg font-bold ${bgClass} group-hover:bg-blue-100`;
+                totalTd.innerHTML = `<div class="flex-center-box">${rowSum.toLocaleString()}</div>`;
+                window.applyColorClass(totalTd, rowSum);
                 tr.appendChild(totalTd);
 
                 tableBody.appendChild(tr);
             });
 
-            // Footer
             while (totalRow.children.length > 1) totalRow.removeChild(totalRow.lastChild);
             appState.weeks.forEach((_, index) => {
                 const td = document.createElement('td');
@@ -916,14 +1134,13 @@
                 totalRow.appendChild(td);
             });
 
-            // Grand Total
             const grandTotalTd = document.createElement('td');
             grandTotalTd.id = 'grand-total-col';
             grandTotalTd.className = 'p-3 text-center border-l-4 border-double border-gray-300 font-mono text-xl font-black bg-gray-200';
-            grandTotalTd.innerText = '0';
+            grandTotalTd.innerHTML = '<div class="flex-center-box">0</div>';
             totalRow.appendChild(grandTotalTd);
 
-            calculateTotals();
+            window.calculateTotals();
         }
 
         // Start App
