@@ -51,10 +51,27 @@
 
         .img-container { overflow: auto; border: 1px solid #eee; border-radius: 8px; max-height: 80vh; background: #fafafa; position: relative; }
         
-        /* 圖片樣式更新：自動隱藏上方約2.2公分並為寬度縮放做準備 */
+        /* 新增：用於裁切上下邊緣的容器 */
+        .crop-container {
+            overflow: hidden; /* 隱藏超出的部分 */
+            position: relative;
+            /* 這裡使用 margin-bottom 來裁切下方。
+               因為 margin-top 是 -7%，所以如果原本圖片高度是 100%，
+               現在可見部分變成 93%。如果下方也要裁切 7%，
+               我們需要設定 margin-bottom: -7%。
+               但因為寬高比可能會變，這裡我們改用計算好的高度或 padding 技巧比較難。
+               最簡單的方式是直接給圖片上下都加上負的 margin。
+            */
+            margin-bottom: -7%; 
+        }
+
+        /* 圖片樣式更新：同時隱藏上下方約7%並為寬度縮放做準備 */
         img { 
-            transition: width 0.2s ease-in-out, margin-top 0.2s ease-in-out; 
-            margin-top: -7%; /* 改用百分比(約大螢幕2.2公分)，確保手機等小畫面不會因絕對單位裁切過多 */
+            transition: width 0.2s ease-in-out, margin-top 0.2s ease-in-out, margin-bottom 0.2s ease-in-out; 
+            margin-top: -7%; /* 隱藏上方 7% */
+            /* 下方隱藏我們交由外層的 crop-container 的 margin-bottom 來處理，
+               這樣在縮放時比較不容易跑版。
+            */
             width: 100%; 
             height: auto; 
             display: block; 
@@ -95,7 +112,10 @@
     
     <div class="img-container" id="container">
         <div id="loading">載入中...</div>
-        <img id="latestImg" src="" alt="測試影像" ondragstart="return false;">
+        <!-- 加入 crop-container 包覆圖片 -->
+        <div class="crop-container" id="cropBox">
+            <img id="latestImg" src="" alt="測試影像" ondragstart="return false;">
+        </div>
     </div>
 
     <p class="status" id="updateTime"></p>
@@ -139,13 +159,17 @@
 
     function applyScale() {
         const img = document.getElementById('latestImg');
+        const cropBox = document.getElementById('cropBox');
         
         /* 更新縮放邏輯：
            改用 width 控制縮放，能自然從左上角放大，且原生支援捲動條。
-           同時等比例加深 margin-top，改用 7% (約等同大螢幕2.2公分)，確保手機不會因寬度縮小而隱藏太多內容！
+           同時等比例加深 margin-top 與外層的 margin-bottom。
         */
         img.style.width = `${currentScale * 100}%`;
         img.style.marginTop = `-${currentScale * 7}%`;
+        
+        // 為了讓裁切下方的比例也跟著縮放
+        cropBox.style.marginBottom = `-${currentScale * 7}%`;
     }
 
     async function updateImage() {
