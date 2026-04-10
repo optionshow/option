@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><test></title>
+    <title>自動更新圖片測試</title>
     <style>
         /* 基本樣式 */
         body { 
@@ -47,10 +47,10 @@
 
         .img-container { overflow: auto; border: 1px solid #eee; border-radius: 8px; max-height: 80vh; background: #fafafa; position: relative; }
         
-        /* 圖片樣式更新：自動隱藏上方2.2公分並為寬度縮放做準備 */
+        /* 圖片樣式更新：自動隱藏上方約2.2公分並為寬度縮放做準備 */
         img { 
             transition: width 0.2s ease-in-out, margin-top 0.2s ease-in-out; 
-            margin-top: -2.2cm; /* 隱藏最上方3公分 */
+            margin-top: -7%; /* 改用百分比(約大螢幕2.2公分)，確保手機等小畫面不會因絕對單位裁切過多 */
             width: 100%; 
             height: auto; 
             display: block; 
@@ -71,7 +71,7 @@
 <div class="card">
     <!-- 加入紅色粗體警語 -->
     <div class="warning-msg">
-        <測試用> 圖片僅供參考，不代表未來獲利，需自行謹慎評估！
+        &lt;測試用&gt; 圖片僅供參考，不代表未來獲利，需自行謹慎評估！
     </div>
 
     <div class="top-bar">
@@ -137,10 +137,10 @@
         
         /* 更新縮放邏輯：
            改用 width 控制縮放，能自然從左上角放大，且原生支援捲動條。
-           同時等比例加深 margin-top，確保「最上方2.2公分」不管縮放多少次都隱藏得恰到好處！
+           同時等比例加深 margin-top，改用 7% (約等同大螢幕2.2公分)，確保手機不會因寬度縮小而隱藏太多內容！
         */
         img.style.width = `${currentScale * 100}%`;
-        img.style.marginTop = `-${currentScale * 2.2}cm`;
+        img.style.marginTop = `-${currentScale * 7}%`;
     }
 
     async function updateImage() {
