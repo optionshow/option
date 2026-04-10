@@ -26,7 +26,7 @@
         .warning-msg {
             color: #dc3545; /* 使用較具質感的紅色 */
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: clamp(14px, 4.5vw, 20px); /* 依據螢幕寬度自動變化字體大小 */
             margin-bottom: 20px;
             padding: 10px;
             background-color: #f8d7da;
@@ -39,11 +39,15 @@
         .source-selector { display: flex; gap: 5px; }
         .controls { display: flex; gap: 8px; }
         
-        .btn { border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.2s; background: #e4e6eb; color: #050505; }
+        /* 按鈕字體與內距自動縮放 */
+        .btn { border: none; padding: clamp(6px, 2vw, 8px) clamp(10px, 3vw, 16px); border-radius: 6px; cursor: pointer; font-size: clamp(12px, 3.5vw, 16px); transition: all 0.2s; background: #e4e6eb; color: #050505; }
         .btn:hover { background: #d8dadf; }
         .btn.active { background: #007bff; color: white; }
         .btn.zoom-btn { background: #28a745; color: white; }
         .btn.zoom-btn:hover { background: #218838; }
+
+        /* 標題字體自動縮放 */
+        h3 { font-size: clamp(16px, 5vw, 24px); margin: 10px 0; }
 
         .img-container { overflow: auto; border: 1px solid #eee; border-radius: 8px; max-height: 80vh; background: #fafafa; position: relative; }
         
@@ -57,7 +61,8 @@
             pointer-events: none; 
         }
         
-        .status { color: #666; font-size: 12px; margin: 10px 0 0 0; }
+        /* 狀態文字自動縮放 */
+        .status { color: #666; font-size: clamp(10px, 3vw, 14px); margin: 10px 0 0 0; }
         #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 10; }
 
         /* 禁用列印 */
