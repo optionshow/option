@@ -55,12 +55,13 @@
         .crop-container {
             overflow: hidden; /* 隱藏超出的部分 */
             position: relative;
-            /* 已經移除這裡的 margin-bottom，改加到圖片上才會真正裁切 */
+            width: 100%; /* 加入預設寬度 */
+            transition: width 0.2s ease-in-out; /* 將寬度縮放的動畫移到這裡 */
         }
 
         /* 圖片樣式更新：隱藏上方約7%與下方約7%並為寬度縮放做準備 */
         img { 
-            transition: width 0.2s ease-in-out, margin-top 0.2s ease-in-out, margin-bottom 0.2s ease-in-out; 
+            transition: margin-top 0.2s ease-in-out, margin-bottom 0.2s ease-in-out; /* 移除此處的 width 動畫 */
             margin-top: -7%; /* 隱藏上方 7% */
             margin-bottom: -7%; /* 將負邊距加在圖片本身，外層容器就會縮短並裁掉這7%的畫面 */
             width: 100%; 
@@ -150,12 +151,13 @@
 
     function applyScale() {
         const img = document.getElementById('latestImg');
+        const cropBox = document.getElementById('cropBox');
         
         /* 更新縮放邏輯：
-           改用 width 控制縮放，能自然從左上角放大，且原生支援捲動條。
-           同時等比例加深 margin-top 與 margin-bottom，確保縮放時裁切比例完美一致。
+           將寬度縮放交給外層的 cropBox，這樣 img-container 才會正確產生水平捲軸，不會被裁掉右半邊。
+           同時等比例加深 img 的 margin-top 與 margin-bottom。
         */
-        img.style.width = `${currentScale * 100}%`;
+        cropBox.style.width = `${currentScale * 100}%`;
         img.style.marginTop = `-${currentScale * 7}%`;
         img.style.marginBottom = `-${currentScale * 7}%`;
     }
