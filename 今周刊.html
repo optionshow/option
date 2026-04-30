@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【今周刊】贈閱申請表 - 溫馨柔和版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #FFF9F5;
+            cursor: default;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .soft-shadow {
+            box-shadow: 0 10px 25px -5px rgba(139, 94, 60, 0.1), 0 8px 10px -6px rgba(139, 94, 60, 0.05);
+        }
+        .form-input {
+            transition: all 0.3s ease;
+            border-color: #EEDDCC;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #D4A373;
+            box-shadow: 0 0 0 4px rgba(212, 163, 115, 0.2);
+            background-color: #FFFFFF;
+        }
+        .warm-gradient {
+            background: linear-gradient(135deg, #FAEDCD 0%, #FEFAE0 100%);
+        }
+        /* 隱藏原生 Checkbox 樣式 */
+        .custom-checkbox {
+            appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid #D4A373;
+            border-radius: 0.5rem;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            background-color: white;
+            transition: all 0.2s;
+        }
+        .custom-checkbox:checked {
+            background-color: #D4A373;
+        }
+        .custom-checkbox:checked::after {
+            content: '✔';
+            position: absolute;
+            color: white;
+            font-size: 1rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body class="text-[#5F4339] antialiased">
+
+    <!-- 隱藏的 iframe 攔截機制 -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(window.submitted){ document.getElementById('success-message').style.display='flex'; document.getElementById('custom-form').style.display='none'; window.scrollTo(0,0); }"></iframe>
+
+    <div class="max-w-4xl mx-auto w-full px-6 py-12">
+        
+        <!-- 表單區塊 -->
+        <div id="custom-form" class="space-y-8">
+            <!-- 標題卡片 -->
+            <div class="warm-gradient rounded-3xl p-8 md:p-12 soft-shadow border border-[#EEDDCC]">
+                <h1 class="text-3xl md:text-5xl font-extrabold text-[#8B5E3C] leading-tight mb-6">
+                    【今周刊】紙本雜誌半年期（26期）贈閱申請表
+                </h1>
+                <div class="text-base md:text-lg text-[#7B5E57] leading-relaxed space-y-4">
+                    <p>您好！感謝您長久以來的支持。</p>
+                    <p>贈於您《今周刊》致力於提供最精準的財經趨勢、產業動態及深度報導，陪伴您在變動的時代中精準佈局。</p>
+                    <div class="bg-white/50 p-6 rounded-xl border border-[#EEDDCC]">
+                        <p class="font-bold text-[#A67C52]">本表單為【紙本雜誌半年期（共26期）】贈閱專用（零售總價＄2,574元）</p>
+                        <p>《今周刊》為週刊形式，於每週四出刊。您的第一期雜誌將於訂閱程序完成後的「隔週四」寄出。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 表單內容 -->
+            <form action="https://docs.google.com/forms/d/e/1FAIpQLSd4M0YSGap8GZ3LrkywjqlTxJQw8AVXdDorapTGAycKD6Lmjg/formResponse" method="POST" target="hidden_iframe" onsubmit="window.submitted = true;" class="space-y-6">
+                
+                <!-- 單一題目卡片 -->
+                <div class="bg-white rounded-2xl p-6 md:p-8 soft-shadow border border-[#FAF3E0]">
+                    <label class="block text-xl font-bold text-[#8B5E3C] mb-2">姓名 <span class="text-red-400">*</span></label>
+                    <p class="text-sm text-[#9C847D] mb-4">請填寫收件人真實姓名。</p>
+                    <input type="text" name="entry.1612846950" required placeholder="您的回答" 
+                           class="w-full text-lg px-4 py-3 bg-[#FFFBF8] border-2 rounded-xl form-input">
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 md:p-8 soft-shadow border border-[#FAF3E0]">
+                    <label class="block text-xl font-bold text-[#8B5E3C] mb-2">雜誌寄送地址 <span class="text-red-400">*</span></label>
+                    <p class="text-sm text-[#9C847D] mb-4">請完整填寫：郵遞區號 + 縣市 + 鄉鎮市區 + 路巷弄號樓。</p>
+                    <input type="text" name="entry.809907317" required placeholder="您的回答" 
+                           class="w-full text-lg px-4 py-3 bg-[#FFFBF8] border-2 rounded-xl form-input">
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 md:p-8 soft-shadow border border-[#FAF3E0]">
+                    <label class="block text-xl font-bold text-[#8B5E3C] mb-2">行動電話 / 手機 <span class="text-red-400">*</span></label>
+                    <p class="text-sm text-[#9C847D] mb-4">格式範例：0912-345-678</p>
+                    <input type="tel" name="entry.812121863" required placeholder="您的回答" 
+                           class="w-full text-lg px-4 py-3 bg-[#FFFBF8] border-2 rounded-xl form-input">
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 md:p-8 soft-shadow border border-[#FAF3E0]">
+                    <label class="block text-xl font-bold text-[#8B5E3C] mb-2">常用電子郵件 (E-mail) <span class="text-red-400">*</span></label>
+                    <p class="text-sm text-[#9C847D] mb-4">用於寄送訂閱成功通知。</p>
+                    <input type="email" name="entry.1676228230" required placeholder="您的回答" 
+                           class="w-full text-lg px-4 py-3 bg-[#FFFBF8] border-2 rounded-xl form-input">
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 md:p-8 soft-shadow border border-[#FAF3E0]">
+                    <label class="block text-xl font-bold text-[#8B5E3C] mb-2">LINE ID</label>
+                    <p class="text-sm text-[#9C847D] mb-4">方便未來接收專屬讀者服務與優惠資訊。</p>
+                    <input type="text" name="entry.1384079670" placeholder="您的回答" 
+                           class="w-full text-lg px-4 py-3 bg-[#FFFBF8] border-2 rounded-xl form-input">
+                </div>
+
+                <!-- 核取方塊區塊 -->
+                <div class="bg-white rounded-2xl p-6 md:p-8 soft-shadow border border-[#FAF3E0]">
+                    <label class="block text-xl font-bold text-[#8B5E3C] mb-6">訂閱須知確認 <span class="text-red-400">*</span></label>
+                    <div class="space-y-4">
+                        <label class="flex items-start cursor-pointer group">
+                            <input type="checkbox" name="entry.1340104497" value="我已知悉《今周刊》為每週四出刊。" required class="custom-checkbox mt-1">
+                            <span class="ml-4 text-[#7B5E57] text-lg leading-relaxed">我已知悉《今周刊》為每週四出刊。</span>
+                        </label>
+                        <label class="flex items-start cursor-pointer group">
+                            <input type="checkbox" name="entry.1340104497" value="我已理解第一期雜誌將於訂閱完成後的「隔週四」寄出。" required class="custom-checkbox mt-1">
+                            <span class="ml-4 text-[#7B5E57] text-lg leading-relaxed">我已理解第一期雜誌將於訂閱完成後的「隔週四」寄出。</span>
+                        </label>
+                        <label class="flex items-start cursor-pointer group">
+                            <input type="checkbox" name="entry.1340104497" value="我同意上述資料僅供《今周刊》寄送雜誌及相關讀者權益通知使用。" required class="custom-checkbox mt-1">
+                            <span class="ml-4 text-[#7B5E57] text-lg leading-relaxed">我同意上述資料僅供《今周刊》寄送雜誌及相關讀者權益通知使用。</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-8">
+                    <button type="submit" class="bg-[#D4A373] hover:bg-[#B88A5B] text-white font-bold py-4 px-12 rounded-2xl text-xl soft-shadow transition-all transform hover:-translate-y-1 active:scale-95">
+                        提交申請
+                    </button>
+                    <p class="text-sm text-[#9C847D]">這不是 Google 官方表單</p>
+                </div>
+            </form>
+        </div>
+
+        <!-- 成功訊息區塊 -->
+        <div id="success-message" class="hidden min-h-[60vh] flex-col items-center justify-center text-center space-y-8 animate-fade-in">
+            <div class="w-24 h-24 bg-[#D4A373] text-white rounded-full flex items-center justify-center shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <div class="space-y-4">
+                <h2 class="text-4xl font-bold text-[#8B5E3C]">感謝您的訂閱！</h2>
+                <div class="max-w-md mx-auto text-lg text-[#7B5E57] leading-relaxed bg-white p-8 rounded-3xl soft-shadow border border-[#EEDDCC]">
+                    <p>資料送出後，我們將於 2-3 個工作天內核對您的資料。</p>
+                    <p class="mt-4">若有任何問題，歡迎致電服務專線。</p>
+                    <p class="font-bold text-[#D4A373] mt-4">祝您閱讀愉快，掌握致富先機！</p>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="text-[#D4A373] font-medium hover:underline">返回填寫新申請</button>
+        </div>
+
+    </div>
+
+    <script>
+        // 禁用右鍵選單
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // 禁用開發者工具快捷鍵
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123) { return false; }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+        };
+
+        // 簡單路徑混淆處理
+        const _0x4a2b = ['formResponse', 'https://docs.google.com/forms/d/e/1FAIpQLSd4M0YSGap8GZ3LrkywjqlTxJQw8AVXdDorapTGAycKD6Lmjg/'];
+        const _fPath = _0x4a2b[1] + _0x4a2b[0];
+        document.querySelector('form').action = _fPath;
+    </script>
+</body>
+</html>
