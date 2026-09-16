@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台指選擇權：垂直價差 × 微中性策略 × 智能交易 新手教學指南</title>
+  <style>
+    :root {
+      --primary: #1d4ed8;
+      --primary-dark: #1e40af;
+      --primary-light: #dbeafe;
+      --secondary: #0f766e;
+      --secondary-light: #ccfbf1;
+      --accent-warm: #d97706;
+      --accent-warm-light: #fef3c7;
+      --rose: #be123c;
+      --rose-light: #ffe4e6;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #334155;
+      --slate-700: #1e293b;
+      --slate-800: #0f172a;
+      --slate-900: #020617;
+      --bg: #faf9f6;
+      --card-bg: #ffffff;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--slate-800);
+      line-height: 1.85;
+      font-size: 17.5px;
+      font-weight: 450;
+      letter-spacing: 0.02em;
+    }
+
+    /* 頂部導覽列 */
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--slate-200);
+      padding: 1rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .header-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--slate-900);
+      text-decoration: none;
+    }
+    .logo-cloud-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b82f6, #0d9488);
+      color: white;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+    }
+    .logo-cloud-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+    nav.nav-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+    nav.nav-links a {
+      color: var(--slate-700);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+    nav.nav-links a:hover {
+      color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    /* 主視覺 Hero 區塊 */
+    .hero {
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+      border-bottom: 1px solid var(--slate-300);
+      padding: 4.5rem 1.5rem 4rem;
+      text-align: center;
+    }
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-warm-light);
+      color: #78350f;
+      padding: 7px 18px;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      border: 1.5px solid #fde68a;
+    }
+    .hero h1 {
+      font-size: 2.6rem;
+      color: var(--slate-900);
+      line-height: 1.35;
+      font-weight: 900;
+      margin-bottom: 1.4rem;
+      letter-spacing: -0.5px;
+    }
+    .hero p.subtitle {
+      font-size: 1.22rem;
+      color: var(--slate-700);
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
+      font-weight: 500;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+    .stat-card {
+      background: white;
+      padding: 1.5rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-card .val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .stat-card .lbl {
+      font-size: 0.95rem;
+      color: var(--slate-700);
+      font-weight: 600;
+    }
+
+    /* 內文容器 */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3.5rem 1.5rem;
+    }
+
+    /* 章節標題 */
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .section-num {
+      color: var(--secondary);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .section-header h2 {
+      font-size: 2.2rem;
+      color: var(--slate-900);
+      font-weight: 900;
+      margin-bottom: 0.9rem;
+    }
+    .section-header p {
+      color: var(--slate-700);
+      max-width: 720px;
+      margin: 0 auto;
+      font-size: 1.12rem;
+      font-weight: 500;
+    }
+
+    /* 卡片與區塊 */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--slate-300);
+      box-shadow: var(--shadow-md);
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    /* 圖文解說兩欄排版 */
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2.25rem;
+      align-items: center;
+    }
+    @media (max-width: 880px) {
+      .split-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 圖片展示區 */
+    .img-wrapper {
+      background: var(--slate-50);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1.5px solid var(--slate-300);
+      text-align: center;
+      padding: 1rem;
+    }
+    .img-wrapper img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-sm);
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .img-caption {
+      font-size: 0.95rem;
+      color: var(--slate-700);
+      margin-top: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* 概念對照表 */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.75rem;
+      margin-top: 2rem;
+    }
+    .concept-box {
+      padding: 1.75rem;
+      border-radius: var(--radius-md);
+      background: white;
+      border: 1.5px solid var(--slate-300);
+    }
+    .concept-box.bull {
+      border-left: 6px solid #e11d48;
+      background: #fff1f2;
+    }
+    .concept-box.bear {
+      border-left: 6px solid #16a34a;
+      background: #f0fdf4;
+    }
+    .concept-box h3 {
+      font-size: 1.35rem;
+      margin-bottom: 0.85rem;
+      color: var(--slate-900);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill {
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+    .pill-green { background: #bbf7d0; color: #14532d; }
+    .pill-rose { background: #fecdd3; color: #881337; }
+    .pill-blue { background: #bfdbfe; color: #1e3a8a; }
+    .pill-warm { background: #fde68a; color: #78350f; }
+
+    /* 步驟 / 設定列表 */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2.25rem;
+    }
+    .step-item {
+      display: grid;
+      grid-template-columns: 85px 1fr;
+      gap: 1.75rem;
+      background: white;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--slate-300);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+    @media (max-width: 640px) {
+      .step-item {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+    .step-badge {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #dbeafe, #c7d2fe);
+      color: #1e40af;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.6rem;
+      line-height: 1;
+      border: 2px solid #93c5fd;
+    }
+    .step-badge span {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-top: 3px;
+      letter-spacing: 0.5px;
+    }
+    .step-content h3 {
+      font-size: 1.35rem;
+      color: var(--slate-900);
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .step-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin-bottom: 1.2rem;
+    }
+    .step-field {
+      font-size: 0.95rem;
+      background: var(--slate-100);
+      color: var(--slate-800);
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: 1px solid var(--slate-300);
+    }
+    .step-field strong {
+      color: var(--slate-900);
+    }
+    .step-desc {
+      color: var(--slate-800);
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+      line-height: 1.85;
+    }
+
+    .notice-box {
+      background: #fffbeb;
+      border-left: 5px solid var(--accent-warm);
+      border-top: 1px solid #fde68a;
+      border-right: 1px solid #fde68a;
+      border-bottom: 1px solid #fde68a;
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 1.02rem;
+      color: #78350f;
+      margin-top: 1.2rem;
+      line-height: 1.8;
+    }
+    .notice-box strong {
+      color: #92400e;
+      font-weight: 800;
+    }
+
+    /* FAQ 折疊問答 */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .faq-item {
+      background: white;
+      border: 1.5px solid var(--slate-300);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .faq-item.active {
+      border-color: var(--primary);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12);
+    }
+    .faq-question {
+      width: 100%;
+      text-align: left;
+      padding: 1.4rem 1.75rem;
+      background: none;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      transition: color 0.2s ease;
+      line-height: 1.5;
+    }
+    .faq-question:hover {
+      color: var(--primary);
+    }
+    .faq-icon {
+      font-size: 1.35rem;
+      color: var(--slate-600);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+      color: var(--primary);
+    }
+    .faq-answer {
+      display: none;
+      padding: 0 1.75rem 1.75rem;
+      color: var(--slate-800);
+      font-size: 1.05rem;
+      line-height: 1.9;
+      border-top: 1.5px dashed var(--slate-300);
+      padding-top: 1.35rem;
+    }
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    /* 頁尾 */
+    footer.site-footer {
+      background: #090d16;
+      color: #cbd5e1;
+      padding: 3.5rem 1.5rem 2.5rem;
+      font-size: 0.95rem;
+      margin-top: 4rem;
+    }
+    .footer-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .footer-warning {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      text-align: left;
+    }
+    .footer-warning strong {
+      color: #fde047;
+    }
+    .footer-copy {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    /* 實用標記與輔助元素 */
+    .highlight {
+      background: #fef08a;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    ul.check-list {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    ul.check-list li {
+      position: relative;
+      padding-left: 1.8rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.8;
+    }
+    ul.check-list li::before {
+      content: "✔";
+      position: absolute;
+      left: 0;
+      color: #16a34a;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.75rem 0;
+      font-size: 1.02rem;
+    }
+    table.data-table th, table.data-table td {
+      border: 1.5px solid var(--slate-300);
+      padding: 12px 16px;
+      text-align: left;
+      line-height: 1.75;
+    }
+    table.data-table th {
+      background: var(--slate-100);
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+    table.data-table tr:nth-child(even) {
+      background: var(--slate-50);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部導覽列 -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="#" class="logo">
+        <span class="logo-cloud-icon" title="雲端智能交易">
+          <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+        </span>
+        <span>選擇權微中性教學網</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#concept">基礎概念</a>
+        <a href="#neutral">微中性哲學</a>
+        <a href="#settings">9大核心設定</a>
+        <a href="#faq">新手常見Q&A</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 主視覺 Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">📘 台指選擇權・垂直價差與微中性策略智能交易設定指南（教學參考）</div>
+      <h1>台指選擇權：垂直價差 × 微中性策略<br>智能交易設定全指南</h1>
+      <p class="subtitle">
+        不再單純裸賣承擔未知風險！透過「垂直價差」鎖定安全邊界，<br>
+        搭配「微中性」動態平衡與智能下單機紀律監控，協助建立時間價值交易與風險控管體系。
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="val">垂直價差</div>
+          <div class="lbl">最大虧損鎖定・自帶保險</div>
+        </div>
+        <div class="stat-card">
+          <div class="val">微中性 10%</div>
+          <div class="lbl">不過敏、不逆勢硬抗的彈性力道</div>
+        </div>
+        <div class="stat-card">
+          <div class="val">25% 保留</div>
+          <div class="lbl">可用資金安全水位・嚴守餘額</div>
+        </div>
+        <div class="stat-card">
+          <div class="val">9大關鍵設定</div>
+          <div class="lbl">紀律進出場與即時總點歸零</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+
+    <!-- 第一單元：選擇權與垂直價差入門 -->
+    <section id="concept" class="card">
+      <div class="section-header">
+        <span class="section-num">Module 01</span>
+        <h2>什麼是選擇權與垂直價差？</h2>
+        <p>為零基礎讀者拆解：為什麼新手絕對不能「裸賣」，而必須採用自帶安全帶的「垂直價差」？</p>
+      </div>
+
+      <div class="split-grid">
+        <div>
+          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--slate-900);">💡 生活化比喻：保險公司與保戶</h3>
+          <p style="margin-bottom: 1rem;">
+            選擇權主要分為<strong>買方（Buy）</strong>與<strong>賣方（Sell，做莊）</strong>：
+          </p>
+          <ul class="check-list">
+            <li><strong>買方（買保險）：</strong>支付權利金（保費）。若市場出現符合預期的大漲或大跌，可享有數倍獲利；若行情不動，保費將隨時間流逝自然歸零。</li>
+            <li><strong>賣方（保險公司做莊）：</strong>先收取權利金（保費）。只要大盤不突破特定關卡，在特定市場條件下，嘗試獲取時間價值收益（Theta）。</li>
+            <li><strong>裸賣的致命風險：</strong>若只單純做賣方（裸賣），一旦遇到突發黑天鵝或單邊暴漲暴跌，虧損金額可能沒有上限，極度危險！</li>
+          </ul>
+        </div>
+        <div style="background: #eff6ff; padding: 2rem; border-radius: var(--radius-md); border: 1.5px solid #93c5fd;">
+          <h4 style="color: #1e40af; font-size: 1.25rem; margin-bottom: 0.85rem; font-weight: 800;">🛡️ 什麼是「垂直價差」（Vertical Spread）？</h4>
+          <p style="font-size: 1.02rem; color: var(--slate-800); margin-bottom: 0.85rem; line-height: 1.85;">
+            垂直價差就是在「做莊收租」的同時，也「買一張遠價外的保護腳（買保險）」，<strong>最大損失可依價差結構事先估算，但仍有滑價、流動性與執行風險</strong>。
+          </p>
+          <p style="font-size: 0.98rem; color: #1e3a8a; font-weight: 600; line-height: 1.8;">
+            因為有了保護腳，垂直價差的理論損失上限通常可事先估算，但實際損益受成交與市場條件影響。
+          </p>
+        </div>
+      </div>
+
+      <div class="concept-grid">
+        <div class="concept-box bull">
+          <h3>溫漲做莊（SP + BP） <span class="pill pill-rose">多方價差</span></h3>
+          <p><strong>組合方式：</strong>賣出較高履約價的 Put（收取權利金）＋ 買進更低履約價的 Put（買保護腳保險）。</p>
+          <p style="margin-top: 0.75rem; font-size: 0.98rem; color: var(--slate-700);">
+            <strong>適用情境：</strong>當智能系統指標偏多（&gt;55）時建立。只要大盤溫和上漲、盤整或小跌不破防守線，即可收取全額權利金。
+          </p>
+        </div>
+        <div class="concept-box bear">
+          <h3>溫跌做莊（SC + BC） <span class="pill pill-green">空方價差</span></h3>
+          <p><strong>組合方式：</strong>賣出較低履約價的 Call（收取權利金）＋ 買進更高履約價的 Call（買保護腳保險）。</p>
+          <p style="margin-top: 0.75rem; font-size: 0.98rem; color: var(--slate-700);">
+            <strong>適用情境：</strong>當智能系統指標偏空（&lt;45）時建立。只要大盤溫和下跌、盤整或小漲不破天花板，即可收取全額權利金。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第二單元：什麼是微中性策略？ -->
+    <section id="neutral" class="card">
+      <div class="section-header">
+        <span class="section-num">Module 02</span>
+        <h2>什麼是「微中性策略」？</h2>
+        <p>平衡時間價值獲利與單邊走勢風險的核心哲學</p>
+      </div>
+
+      <div class="split-grid" style="margin-bottom: 2rem;">
+        <div>
+          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--slate-900);">⚖️ 傳統中性 vs 微中性（Micro-Neutral）</h3>
+          <p style="margin-bottom: 1rem;">
+            市場上常見的「完全中性策略」（Delta=0），雖然兩端對抗平衡，但容易在行情出現小單邊時引發過度頻繁的對沖調整，產生多餘手續費與磨損成本。
+          </p>
+          <p style="margin-bottom: 0.75rem;">
+            <strong>「微中性策略」的優勢：</strong>
+          </p>
+          <ul class="check-list">
+            <li><strong>雙向收租為本：</strong>平時透過 Call 價差與 Put 價差同時在盤中收取時間價值（Theta Decay）。</li>
+            <li><strong>微幅傾斜（力道 10%）：</strong>不是呆板的五五對等，而是依據市場多空溫度只給予 10% 的微調力道，順勢微傾，不劇烈翻多翻空。</li>
+            <li><strong>足夠寬的容許範圍（設定為 10）：</strong>過濾盤中細微雜訊，維持高安定度。</li>
+          </ul>
+        </div>
+        <div class="img-wrapper">
+          <img src="微中性交易核心攻略.png" alt="微中性策略與智能交易核心設定全攻略">
+          <div class="img-caption">圖 1：微中性交易核心攻略四階段生命週期</div>
+        </div>
+      </div>
+
+      <!-- 四階段生命週期摘要 -->
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">階段</th>
+            <th style="width: 35%;">核心目標</th>
+            <th style="width: 40%;">微中性策略落實機制</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>第一階段：基礎與資金規劃</strong></td>
+            <td>挑選流動性熱絡契約，嚴守資金額度</td>
+            <td>鎖定近週三與近週五自動換約，嚴格保留 25% 以上可用資金作為安全避震緩衝。</td>
+          </tr>
+          <tr>
+            <td><strong>第二階段：方向與動態平衡</strong></td>
+            <td>多空過濾建倉，維持雙向微中性</td>
+            <td>多空溫度 &gt;55 溫漲做莊、&lt;45 溫跌做莊；透過 10% 力道與容許範圍 10 進行平滑平衡。</td>
+          </tr>
+          <tr>
+            <td><strong>第三階段：嚴格風險控管</strong></td>
+            <td>系統依規則處理，但極端行情、斷線、流動性不足仍可能影響執行</td>
+            <td>組合單 -250% 與價差 55% 停損；獲利達 2% 啟動保利降部位機制，保住戰果。</td>
+          </tr>
+          <tr>
+            <td><strong>第四階段：定時平倉與結算</strong></td>
+            <td>避開非流動時段與結算劇烈波動</td>
+            <td>非結算日於 13:30 / 00:35 彈性出清參考；結算日務必於 12:50 提早出清全部歸零。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 第三單元：9 大核心設定完全攻略 -->
+    <section id="settings" class="card">
+      <div class="section-header">
+        <span class="section-num">Module 03</span>
+        <h2>智能交易 9 大核心設定指南</h2>
+        <p>依據實務設定參數，手把手帶您逐項配置下單機系統</p>
+      </div>
+
+      <div class="img-wrapper" style="margin-bottom: 2.5rem;">
+        <img src="智能交易九大設定指南.png" alt="微中性策略+智能交易:9大核心設定指南">
+        <div class="img-caption">圖 2：微中性策略＋智能交易 9 大核心設定全圖覽</div>
+      </div>
+
+      <div class="step-list">
+
+        <!-- 設定 1 -->
+        <div class="step-item">
+          <div class="step-badge">1<span>Step</span></div>
+          <div class="step-content">
+            <h3>結算自動換契約 <span class="pill pill-blue">合約換約</span></h3>
+            <div class="step-meta">
+              <span class="step-field">建議設定值：<strong>選『近週三 &lt;=&gt; 近週五』</strong></span>
+              <span class="step-field">位置：<strong>基本設定</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>設定原因：</strong>越接近到期日期的週選擇權契約交易最為熱絡、流動性最佳。選擇在近週三與近週五之間自動切換，能有效降低委託時的買賣滑價風險，確保每次委託與成交都最貼近真實市價。
+            </p>
+          </div>
+        </div>
+
+        <!-- 設定 2 -->
+        <div class="step-item">
+          <div class="step-badge">2<span>Step</span></div>
+          <div class="step-content">
+            <h3>投入資金成本 <span class="pill pill-warm">資金基準</span></h3>
+            <div class="step-meta">
+              <span class="step-field">建議設定值：<strong>手動輸入實際投入金額（如 400,000）</strong></span>
+              <span class="step-field">位置：<strong>基本設定</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>設定原因：</strong>下單機內的所有比例（如可用金額 %、權益總值報酬率 %、停損保利 %）都是以您在此處手動輸入的「資金成本」作為計算分母。若帳戶實際注資或提領變動，請務必在此同步更新數值。
+            </p>
+          </div>
+        </div>
+
+        <!-- 設定 3 -->
+        <div class="step-item">
+          <div class="step-badge">3<span>Step</span></div>
+          <div class="step-content">
+            <h3>保留可用餘額 <span class="pill pill-rose">額度管理</span></h3>
+            <div class="step-meta">
+              <span class="step-field">建議設定值：<strong>建議 25%</strong></span>
+              <span class="step-field">位置：<strong>基本設定</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>核心觀念釐清：</strong>新手最常困惑的是<span class="highlight">「明明帳戶還有可用資金，為什麼下單機卻無法下單？」</span><br>
+              <strong>答案在於：交易額度太少！</strong>雖然垂直價差具備保護腳結構，但整體帳戶仍須依期貨商風控、帳戶權益與市場狀況管理，不保證不會發生風險處置。實務上下單機常遇到的是期貨商給帳戶的「交易額度」有限，若交易額度太少就會被限制無法下單。保留 25% 作為安全水位，能確保系統有餘裕進行後續的雙向調整，當可用餘額低於 25% 時系統會自動停止建新倉。
+            </p>
+          </div>
+        </div>
+
+        <!-- 設定 4 -->
+        <div class="step-item">
+          <div class="step-badge">4<span>Step</span></div>
+          <div class="step-content">
+            <h3>動態 Sell 價上限（有下單） <span class="pill pill-blue">履約控制</span></h3>
+            <div class="step-meta">
+              <span class="step-field">建議設定值：<strong>133</strong></span>
+              <span class="step-field">位置：<strong>基本設定</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>設定原因：</strong>防止系統委託的賣出履約價點數過大。點數過大代表該履約價過於靠近價平或價內，面臨被大盤穿透的風險暴增。將上限設為 133 能有效過濾高風險檔位，維持安全履約價間隔。
+            </p>
+          </div>
+        </div>
+
+        <!-- 設定 5 -->
+        <div class="step-item">
+          <div class="step-badge">5<span>Step</span></div>
+          <div class="step-content">
+            <h3>參考【基本設定】環境參數 <span class="pill pill-warm">系統環境</span></h3>
+            <div class="step-meta">
+              <span class="step-field">建議設定值：<strong>檢查週期 10 秒 / 平倉間隔 4 秒 / Sell價下限 4 / 委託讓價 0.5</strong></span>
+              <span class="step-field">位置：<strong>基本設定</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>設定要領：</strong>檢查建立新部位的週期最少 10 秒；平倉與調整部位間隔最少 4 秒以防重複連續下單；「動態 Sell 價下限設為 4」（低於 4 點表示時間價值過薄，不符交易手續費成本，不下單）；委託讓價設 0.5 點以提高成交機會。
+            </p>
+            <div class="img-wrapper" style="margin-top: 1rem;">
+              <img src="基本設定.png" alt="基本設定畫面">
+              <div class="img-caption">圖 3：智能交易軟體【基本設定】實機配置截圖</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 設定 6 -->
+        <div class="step-item">
+          <div class="step-badge">6<span>Step</span></div>
+          <div class="step-content">
+            <h3>方向判斷：多空溫度指標 <span class="pill pill-green">進場過濾</span></h3>
+            <div class="step-meta">
+              <span class="step-field">建議設定值：<strong>勾選 √多空溫度（55 以上做多，45 以下做空）</strong></span>
+              <span class="step-field">位置：<strong>方向判斷</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>設定原因：</strong>由系統報價反推市場買權與賣權總點比例：當數值在 55 以上時執行「溫漲做莊 SP+BP」；45 以下執行「溫跌做莊 SC+BC」；<strong>落在 45～55 之間代表市場方向不明，多空互抵不建新倉</strong>，嘗試降低部分訊號雜訊，不能保證避免虧損。
+            </p>
+            <div class="img-wrapper" style="margin-top: 1rem;">
+              <img src="方向判斷.png" alt="方向判斷畫面">
+              <div class="img-caption">圖 4：智能交易軟體【方向判斷】實機配置截圖</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 設定 7 -->
+        <div class="step-item">
+          <div class="step-badge">7<span>Step</span></div>
+          <div class="step-content">
+            <h3>多空溫度調整與交易條件 <span class="pill pill-blue">微中性靈魂</span></h3>
+            <div class="step-meta">
+              <span class="step-field">建議設定值：<strong>力道 10% ｜ 容許範圍 10 ｜ 增減 0% ｜ 價外 100~300 點</strong></span>
+              <span class="step-field">位置：<strong>多空溫度調整</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>核心原理拆解：</strong>
+            </p>
+            <ul class="check-list">
+              <li><strong>設定力道 10%：</strong>力道越低越偏向完全中性（0% 為絕對中性）。10% 既能保持雙向收租，又具備微幅動態對沖能力。</li>
+              <li><strong>容許範圍（選單僅 5/10/15/20...50 可選）：</strong>實務建議選擇 <strong>10</strong>。容許範圍若設太小會造成下單機過度頻繁交易洗盤；設太寬則保護反應過慢。</li>
+              <li><strong style="color:#1e40af;">關鍵機制（建新倉 vs 平舊倉）：</strong>當持倉溫度跑出容許範圍需要調整時，程式究竟會在正確方向「建新倉」還是「平舊倉」？<strong>這完全取決於當時的可用資金是否超過預設保留的 25%</strong>：
+                <div style="margin: 0.5rem 0 0.5rem 1rem; padding: 0.75rem 1rem; background: #f8fafc; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 0.98rem; line-height: 1.8;">
+                  • <strong>可用資金 ＞ 保留 25%（資金充足）：</strong>程式會在正確方向<strong>建立新倉</strong>（以對沖部位拉回中性溫度）。<br>
+                  • <strong>可用資金 ＜ 保留 25%（資金不足）：</strong>程式絕不冒進加倉，而是會在正確方向<strong>平倉舊部位</strong>（以減倉方式拉回中性溫度並釋放資金）。
+                </div>
+              </li>
+              <li><strong>生命總值增減 % 設為 0：</strong>填入 0 代表<span class="highlight">隨時符合增減條件</span>，不論市場生命總值是微增還是微減，只要可用資金與多空條件符合，下單機隨時都能依動態 Sell 價建立新倉。</li>
+              <li><strong>複式單 BP / BC 價外點數（價差寬度）：</strong>完全新手建議從 <strong>100 點、200 點或 300 點</strong> 起步。可隨接近結算日而逐步縮小（初期 200~300 點安全距離大，接近結算時縮小至 100 點提高資金收益率）。</li>
+            </ul>
+            <div class="img-wrapper" style="margin-top: 1rem;">
+              <img src="多空溫度調整.png" alt="多空溫度調整畫面">
+              <div class="img-caption">圖 5：智能交易軟體【多空溫度調整】實機配置截圖</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 設定 8 -->
+        <div class="step-item">
+          <div class="step-badge">8<span>Step</span></div>
+          <div class="step-content">
+            <h3>停損停利與保利降部位 <span class="pill pill-rose">紀律防守</span></h3>
+            <div class="step-meta">
+              <span class="step-field">建議設定值：<strong>停損 -250%（委託平倉含成本） ｜ 價差停損 55% ｜ 保利 2%</strong></span>
+              <span class="step-field">位置：<strong>停損停利</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>嚴密的三道防護網與點數計算：</strong>
+            </p>
+            <ul class="check-list">
+              <li><strong>SC+BC / SP+BP 停損（-250%）：</strong>以收取權利金為基數。例如當初進場淨收 10 點（成本），虧損 250% 即為虧損 25 點。<br>
+              <span class="highlight">⚠️ 特別提醒：委託平倉點數是包含原本的成本！</span>因此委託平倉點數為 <strong>10 點原本成本 ＋ 25 點虧損 ＝ 35 點</strong>！系統以此點數送出平倉委託。</li>
+              <li><strong>價差點數 % 停損（55%）：</strong>不考慮原先成交價，只要現價點數膨脹超過價外點數的 55%（約價平位置），強制停損退場，絕不留戀。</li>
+              <li><strong>保利降部位 1（獲利 2%，保留 0 點以下不平倉）：</strong>當總資金獲利達到 2% 時，系統主動平倉高價危險部位，落袋為安。</li>
+              <li><strong>彈性備註：</strong>在結算前一天（週二或週四日盤），若帳戶已累積獲利 0.5%，可視盤勢狀況彈性將保利數值改為 0.5% 提早保利；虧損降部位 -2% 則可自行評估定期勾選。</li>
+            </ul>
+            <div class="img-wrapper" style="margin-top: 1rem;">
+              <img src="停損停利.png" alt="停損停利畫面">
+              <div class="img-caption">圖 6：智能交易軟體【停損停利】實機配置截圖</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 設定 9 -->
+        <div class="step-item">
+          <div class="step-badge">9<span>Step</span></div>
+          <div class="step-content">
+            <h3>定時出清部位（即時總點管控） <span class="pill pill-warm">結算紀律</span></h3>
+            <div class="step-meta">
+              <span class="step-field">非結算日：<strong>13:30 (日盤) / 00:35 (夜盤) 平倉至總點 0（提供選擇參考）</strong></span>
+              <span class="step-field">結算日：<strong>12:50 提早出清至總點 0（避開劇烈結算）</strong></span>
+            </div>
+            <p class="step-desc">
+              <strong>設定邏輯與新手注意：</strong>
+            </p>
+            <ul class="check-list">
+              <li><strong>非結算日（13:30 / 00:35）：</strong><span class="highlight">此為提供選擇參考的出場時間點，非強制執行</span>。供希望降低留倉跨日/跨盤跳空風險的交易者評估使用，於日盤收盤前（13:30）或夜盤熱絡時段結束後（00:35）自動平倉最高價部位至即時總點歸零。</li>
+              <li><strong>結算日（12:50）：</strong>結算日（週三或週五）最後 30 分鐘（13:00~13:30）常出現法人控盤或劇烈波動，因此設定於 12:50 提早出清歸零，徹底鎖住獲利！</li>
+            </ul>
+            <div class="img-wrapper" style="margin-top: 1rem;">
+              <img src="即時總點管控.png" alt="即時總點管控畫面">
+              <div class="img-caption">圖 7：智能交易軟體【即時總點管控】實機配置截圖</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 第四單元：新手實務痛點與 Q&A 折疊問答 -->
+    <section id="faq" class="card">
+      <div class="section-header">
+        <span class="section-num">Module 04</span>
+        <h2>新手最常踩的坑與常見 Q&A</h2>
+        <p>整理完全新手實務操作中最容易困惑的 10 個核心問題與權威解答</p>
+      </div>
+
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q1. 我是完全新手，為什麼不能只做「勝率很高」的單邊賣方（裸賣）？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            單純裸賣（Sell Call 或 Sell Put）雖然平時勝率看似很高，但每次賺取的只是有限的權利金，而承擔的卻是極大的潛在損失風險。一旦遇上單日暴跌千點、地緣衝突或突發黑天鵝，裸賣賣方會遭遇極大損失。「垂直價差」透過同時買入一張遠價外保護腳，在進場的第一秒就為您設下了絕對不會被突破的「最大虧損天花板」，這是新手長期生存在市場的唯一保命法則。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q2. 帳戶明明還有可用資金，為什麼系統會無法下單？保證金與風控機制為何？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            垂直價差雖然在理論上具有界定風險的特性，但帳戶整體<strong>仍須依期貨商風控、帳戶權益與市場狀況管理，不保證不會發生風險處置</strong>。<br>
+            而在實務操作中，使用者常遇到<strong style="color:#b45309;">「明明還有可用資金，卻無法下單」</strong>的情況，<strong>原因出在「期貨商給的交易額度太少」！</strong><br>
+            期貨商給帳戶的每日常態交易額度若設得太低，額度用罄後就無法再送出新委託。因此「保留可用餘額 25%」能確保帳戶維持靈活彈性；若頻繁出現可用資金充足卻無法下單，只需向期貨商營業員申請提高交易額度即可。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q3. 什麼是「動態 Sell 價」？為什麼它不等於最後的價差成交價？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            「動態 Sell 價」是系統將全市場履約價的時間價值（生命總值）加總後，除以設定常數（如做多除以 99、做空除以 111）所推算出來的「合適賣出履約價標準點數」。系統會自動挑選賣出點數大於等於此數值的履約價。然而，我們實際委託進場的是「一買一賣的垂直價差組合單」，成交的是扣除買方保護腳後的「淨價差點數」，因此動態 Sell 價通常會大於最終的價差成交價。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q4. 為什麼「動態 Sell 價上限」要鎖在 133？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            在選擇權市場中，權利金點數越高的契約，代表離大盤目前價位越接近（甚至已經是價平或價內）。若系統挑選超過 133 點的契約來當賣方，雖然看似能收很多權利金，但被大盤波動貫穿的機率大幅飆升。設定 133 點上限，是為了防止下單機在市場波動放大時冒進去賣太近的危險履約價。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q5. 「多空溫度」落在 45 到 55 之間時，系統會怎麼做？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            系統認定 50 為完全中性。當多空溫度在 45～55 之間時，代表市場買賣權行為均勻、無明顯趨勢方向，屬於無方向的混沌震盪區。此時方向判斷會呈現「多空互抵不動作」，系統不會盲目建立新部位，能有效避免在盤整盤中反覆進場被雙向洗盤。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q6. 「力道 10%」與「容許範圍 10」代表什麼意思？系統調整時會「建新倉」還是「平倉」？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            <ul style="margin-left: 1.25rem;">
+              <li><strong>力道 10%：</strong>代表系統對市場多空溫度的採納比例只有 10%，其餘 90% 依舊回歸完全中性中軸（50）。力道越低（接近 0%），部位越趨向絕對中性；設定 10% 既能保持中性收租，又具備微幅避險能力。</li>
+              <li><strong>容許範圍（選單僅有 5/10/15/20...50 可選）：</strong>代表持倉溫度偏離期望值多少以內「不觸發調整」。設為 10 是最佳平衡點；若設為 5 會過度敏感引發頻繁交易手續費耗損；若設太寬則無法及時對沖。</li>
+              <li style="margin-top: 0.5rem;"><strong style="color:#1d4ed8;">建倉還是平倉的決策機制：</strong>當持倉溫度超出容許範圍時，下單機在正確方向究竟是「建新倉」還是「平倉」，<strong>完全取決於當時的可用資金是否超過預設保留的 25%</strong>：
+                <br>• <strong>若可用資金 ＞ 保留 25%：</strong>判定資金水位充足安全，系統會在正確方向<strong>建立新倉</strong>來對沖拉回中性溫度。
+                <br>• <strong>若可用資金 ＜ 保留 25%：</strong>判定資金水位緊繃不足，系統<strong>改以平倉既有部位</strong>來拉回中性溫度，絕不硬性加倉，確保帳戶安全第一！
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q7. 組合停損設 -250% 是怎麼計算的？委託平倉點數是多少？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            百分比基準是「當初進場收取的權利金點數（成本）」。<br>
+            舉例來說：若您賣出價差單當初淨收取 <strong>10 點</strong>（新台幣 500 元，為原本成本）。<br>
+            當虧損達到 <strong>-250%</strong> 時，代表虧損達到 $10 \times 250\% = 25$ 點（1,250 元）。<br>
+            <strong style="color:#b91c1c; font-size: 1.08rem;">⚠️ 關鍵提醒：委託平倉點數是「包含原本的成本」！</strong><br>
+            因此系統送出的平倉委託點數為：<strong>原本成本 10 點 ＋ 虧損 25 點 ＝ 35 點</strong>。<br>
+            加上平倉委託有讓價機制（市價+30%），能確保在盤勢不利時快速成交退場，並且因為有買方保護腳（BP/BC），理論最大損失可依價差結構事先估算，但實際執行仍受成交價、滑價與市場條件影響。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q8. 什麼是「保利降部位」？為什麼結算前夕（週二或週四日盤）建議可以改為 0.5%？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            當帳戶權益總值獲利達到 2% 時，系統會啟動「保利降部位」，自動平倉帳面上點數最高的部位，讓利潤落袋為安，且降部位期間不會再建新倉，防止獲利回吐。<br>
+            而在結算日前一天（週二或週四日盤），如果當期合約已經累積獲利達 0.5%，考慮到距離結算（近週三或近週五）只剩一天，為了防止結算當天盤勢突發劇變，交易者可視盤況彈性將保利條件下修至 0.5%，提早鎖住戰果、安心過夜。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q9. 非結算日為什麼要在 13:30 和 00:35 出清？我一定要每天平倉嗎？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            非結算日的 13:30（日盤收盤前）與 00:35（美股早盤熱絡期過後）平倉設定，<strong>是提供給投資人的選擇參考，並非強制執行！</strong><br>
+            定時平倉設定<strong>可協助建立事前風險與出場規則，但不代表沒有損失風險</strong>。若交易者希望降低美股開盤震盪或隔天早盤跳空開高/開低的暴露，可評估勾選定時平倉；若偏好持續持有部位至到期以爭取時間價值耗損，亦可依個人風險偏好與資金承受能力自行決定是否開啟。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Q10. 為什麼我在網頁上改了參數，下單機卻好像沒有反應？</span>
+            <span class="faq-icon">▼</span>
+          </button>
+          <div class="faq-answer">
+            這是新手最容易犯的 3 個小失誤：
+            <ol style="margin-left: 1.25rem; margin-top: 0.5rem; line-height: 1.85;">
+              <li><strong>忘記按「儲存」按鈕：</strong>修改任何參數（包含換約、多空溫度、停損數值）後，畫面會變紅提示，<strong>必須點擊磁碟圖示「儲存」</strong>才會正式同步至下單後台。</li>
+              <li><strong>更換契約未停止交易：</strong>手動變更交易商品契約時，必須先點擊「停止交易」，更換並儲存完畢後再重啟。</li>
+              <li><strong>手動平倉未同步庫存：</strong>若您透過手機 App 或券商軟體手動平倉，回到系統務必點擊「同步券商庫存」按鈕，否則下單機會誤以為部位仍然存在而產生邏輯衝突。</li>
+            </ol>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 注意事項與避坑備忘錄 -->
+    <div class="notice-box" style="margin-bottom: 3rem;">
+      <h4 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: #92400e; font-weight: 800;">⚠️ 系統日常維護三字訣：查、存、步</h4>
+      <p>
+        <strong>1. 查：</strong>盤前確認 API 憑證有效、下單機連線正常、保留可用餘額大於 25%。<br>
+        <strong>2. 存：</strong>動過任何參數欄位，眼睛一定要看到「儲存成功」字樣才算生效。<br>
+        <strong>3. 步：</strong>若有任何手動介入或券商端委託，第一時間按下「同步券商庫存」，確保軟體數據精準合拍。
+      </p>
+    </div>
+
+  </main>
+
+  <!-- 頁尾聲明 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-warning">
+        <strong style="color: #fde047; font-size: 1.05rem;">【期貨與選擇權交易風險預警與法規聲明】</strong><br>
+        本教學網站所載之微中性策略架構、智能交易軟體參數設定與示範說明，僅供量化策略研究與教育訓練參考，非作為任何投資買賣之推薦或獲利保證。期貨及選擇權交易具備高財務槓桿特性，可能產生高於原始保證金之損失，投資人進場前應審慎評估自身財務狀況與風險承受能力。<br>
+        <strong>嚴正聲明：期貨及選擇權交易具高財務槓桿與高度市場風險，絕無零風險或獲利承諾，亦非適合每一位投資人。</strong>系統依預設規則輔助執行，但實際交易仍受市場流動性、網路延遲、軟硬體連線異常、交易所停復牌及極端行情滑價等不可抗力因素影響，使用者應自行承擔所有交易風險與盈虧結果。
+      </div>
+      <p class="footer-copy">© 台指選擇權垂直價差・微中性策略智能交易教學 ｜ 專注策略研究、紀律執行與風險管理</p>
+    </div>
+  </footer>
+
+  <script>
+    // FAQ 折疊展開互動邏輯
+    document.addEventListener('DOMContentLoaded', () => {
+      const faqItems = document.querySelectorAll('.faq-item');
+      faqItems.forEach(item => {
+        const questionBtn = item.querySelector('.faq-question');
+        questionBtn.addEventListener('click', () => {
+          const isActive = item.classList.contains('active');
+          // 關閉其他開啟項目
+          faqItems.forEach(i => i.classList.remove('active'));
+          if (!isActive) {
+            item.classList.add('active');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
