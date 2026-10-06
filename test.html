@@ -20,7 +20,16 @@
             -ms-user-select: none;
             user-select: none;
         }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 95%; width: 1200px; position: relative; }
+        .card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            text-align: center; 
+            max-width: 95%; 
+            width: 1200px; 
+            position: relative; 
+        }
         
         /* 警語樣式 */
         .warning-msg {
@@ -35,23 +44,44 @@
         }
 
         /* 頂部控制列 */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-        .source-selector { display: flex; gap: 5px; }
+        .top-bar { 
+            display: flex; 
+            justify-content: flex-end; /* 因為移除了來源選擇，改靠右對齊 */
+            align-items: center; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+        }
         .controls { display: flex; gap: 8px; }
         
         /* 按鈕字體與內距自動縮放 */
-        .btn { border: none; padding: clamp(6px, 2vw, 8px) clamp(10px, 3vw, 16px); border-radius: 6px; cursor: pointer; font-size: clamp(12px, 3.5vw, 16px); transition: all 0.2s; background: #e4e6eb; color: #050505; }
+        .btn { 
+            border: none; 
+            padding: clamp(6px, 2vw, 8px) clamp(10px, 3vw, 16px); 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: clamp(12px, 3.5vw, 16px); 
+            transition: all 0.2s; 
+            background: #e4e6eb; 
+            color: #050505; 
+        }
         .btn:hover { background: #d8dadf; }
-        .btn.active { background: #007bff; color: white; }
         .btn.zoom-btn { background: #28a745; color: white; }
         .btn.zoom-btn:hover { background: #218838; }
 
         /* 標題字體自動縮放 */
         h3 { font-size: clamp(16px, 5vw, 24px); margin: 10px 0; }
 
-        .img-container { overflow: auto; border: 1px solid #eee; border-radius: 8px; max-height: 80vh; background: #fafafa; position: relative; }
+        .img-container { 
+            overflow: auto; 
+            border: 1px solid #eee; 
+            border-radius: 8px; 
+            max-height: 80vh; 
+            background: #fafafa; 
+            position: relative; 
+        }
         
-        /* 新增：用於裁切上下邊緣的容器 */
+        /* 用於裁切上下邊緣的容器 */
         .crop-container {
             overflow: hidden; /* 隱藏超出的部分 */
             position: relative;
@@ -61,7 +91,7 @@
 
         /* 圖片樣式更新：隱藏上方約7%與下方約7%並為寬度縮放做準備 */
         img { 
-            transition: margin-top 0.2s ease-in-out, margin-bottom 0.2s ease-in-out; /* 移除此處的 width 動畫 */
+            transition: margin-top 0.2s ease-in-out, margin-bottom 0.2s ease-in-out; 
             margin-top: -7%; /* 隱藏上方 7% */
             margin-bottom: -7%; /* 將負邊距加在圖片本身，外層容器就會縮短並裁掉這7%的畫面 */
             width: 100%; 
@@ -89,10 +119,7 @@
     </div>
 
     <div class="top-bar">
-        <div class="source-selector">
-            <button id="btnSrc1" class="btn active" onclick="switchSource(0)">測試來源 1</button>
-            <button id="btnSrc2" class="btn" onclick="switchSource(1)">測試來源 2</button>
-        </div>
+        <!-- 移除來源選擇按鈕 (測試來源 1, 測試來源 2) -->
         <div class="controls">
             <button class="btn zoom-btn" onclick="zoom(1.2)">放大 ＋</button>
             <button class="btn zoom-btn" onclick="zoom(0.8)">縮小 －</button>
@@ -115,29 +142,18 @@
 </div>
 
 <script>
-    const SOURCES = [
-        "https://script.google.com/macros/s/AKfycbyQVGpIhvtsmJM6opiss-rlLSH8lsGUL0q4xMoaYbb5iqbALe8AkCEvWEo41nEj1Ws/exec",
-        "https://script.google.com/macros/s/AKfycbyFKEvA8J5l7XduAGSRKYAg6S4fJ60c5wBP31CmLokKS9eAFsjFOxBaACJmhrxC8qY/exec"
-    ];
+    // 移除測試來源 2，僅保留原本測試來源 1 的 URL
+    const SOURCE_URL = "https://script.google.com/macros/s/AKfycbyQVGpIhvtsmJM6opiss-rlLSH8lsGUL0q4xMoaYbb5iqbALe8AkCEvWEo41nEj1Ws/exec";
 
-    let currentSourceIndex = 0;
     let currentScale = 1.0;
 
     // 禁用儲存與列印快捷鍵
     window.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'p' || e.key === 'u')) {
             e.preventDefault();
-            alert('此頁面已啟用保護，無法執行此操作。');
+            // 系統要求禁止使用 alert()，因此僅阻擋預設行為不跳窗
         }
     });
-
-    function switchSource(index) {
-        currentSourceIndex = index;
-        document.getElementById('btnSrc1').classList.toggle('active', index === 0);
-        document.getElementById('btnSrc2').classList.toggle('active', index === 1);
-        resetZoom();
-        updateImage();
-    }
 
     function zoom(factor) {
         currentScale *= factor;
@@ -167,7 +183,7 @@
         loading.style.display = 'block';
 
         try {
-            const response = await fetch(SOURCES[currentSourceIndex]);
+            const response = await fetch(SOURCE_URL);
             const data = await response.json();
             
             if (data.id) {
@@ -186,6 +202,7 @@
 
     // 每 10 min 自動更新一次
     setInterval(updateImage, 600000);
+    // 初始載入
     updateImage();
 </script>
 
