@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 【已修改】網頁書籤名稱刪除文字 -登入 -->
     <title>選擇權多功能報價測試版</title>
     <style>
         body, html {
@@ -54,16 +53,21 @@
         #header strong { font-size: 13px; }
         #last-update { font-size: 12px; color: #aaaaaa; }
         
-        .header-right {
-            display: flex; align-items: center;
-        }
+        .header-right { display: flex; align-items: center; }
 
         #logout-btn {
             background: #ff4444; color: white; border: none; padding: 3px 8px;
             border-radius: 2px; cursor: pointer; margin-left: 10px; font-size: 11px;
         }
 
-        /* 歷史圖片切換按鈕樣式 */
+        /* 【新增】查閱期限的樣式設定 */
+        #expiry-display {
+            font-size: 11px;
+            color: #ffaa33; /* 醒目的橘色 */
+            margin-left: 12px;
+            display: none; /* 預設隱藏，沒期限就不顯示 */
+        }
+
         .nav-btn {
             background: #444444; color: #ffffff; border: 1px solid #666;
             padding: 2px 8px; border-radius: 3px; cursor: pointer;
@@ -83,9 +87,7 @@
             color: #ffaa33; font-size: 16px;
         }
         
-        #image-container.full-size-mode {
-            justify-content: flex-start; align-items: flex-start;
-        }
+        #image-container.full-size-mode { justify-content: flex-start; align-items: flex-start; }
 
         #monitor-img {
             max-width: 100%; 
@@ -93,11 +95,7 @@
             object-fit: contain;
             display: block;
         }
-        
-        #monitor-img.full-size {
-            max-width: none;
-            max-height: none;
-        }
+        #monitor-img.full-size { max-width: none; max-height: none; }
     </style>
 </head>
 <body>
@@ -117,12 +115,13 @@
         <div id="header">
             <div>
                 <strong style="color: #00ffcc;">選擇權多功能報價測試版</strong>
+                <!-- 【新增】查閱期限顯示區塊 -->
+                <span id="expiry-display"></span>
                 <button id="logout-btn" onclick="logout()">登出</button>
             </div>
             <div class="header-right">
                 <button id="prev-btn" class="nav-btn" onclick="goOlder()" style="display:none;">◀ </button>
                 <button id="next-btn" class="nav-btn" onclick="goNewer()" style="display:none;"> ▶</button>
-                
                 <span id="last-update">資料讀取中...</span>
                 <button id="zoom-btn" onclick="toggleZoom()">100%</button>
             </div>
@@ -133,9 +132,7 @@
     </div>
 
     <script>
-        // ==========================================
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwmQ2Ub1coaWJggJXk4D4nAwTqbc-KTqCFzHW_7dAhNTorZqGkT5mqp-oiaOmS0hQqv/exec";
-        // ==========================================
         
         let imageList = []; 
         let currentIndex = 0; 
@@ -196,9 +193,22 @@
                 if (savedUser) {
                     document.getElementById("login-msg").innerText = "已跨越週一 07:00 系統結算，請重新登入確認。";
                     localStorage.removeItem("lastLoginTime"); 
+                    localStorage.removeItem("winExpiry"); // 登出時一併清除期限記憶
                 }
             }
         };
+
+        // 載入與顯示期限文字
+        function loadExpiryDisplay() {
+            const expiryStr = localStorage.getItem("winExpiry");
+            const displayEl = document.getElementById("expiry-display");
+            if (expiryStr) {
+                displayEl.innerText = expiryStr;
+                displayEl.style.display = "inline-block";
+            } else {
+                displayEl.style.display = "none";
+            }
+        }
 
         async function attemptLogin(autoUser = null, autoPass = null) {
             const user = autoUser || document.getElementById("username").value;
@@ -228,6 +238,13 @@
                     localStorage.setItem("winPass", pass);
                     localStorage.setItem("lastLoginTime", new Date().getTime().toString());
                     
+                    // 【已新增】如果 GAS 有傳回期限文字，則存入 localStorage
+                    if (result.expiryText) {
+                        localStorage.setItem("winExpiry", result.expiryText);
+                    } else {
+                        localStorage.removeItem("winExpiry");
+                    }
+                    
                     document.getElementById("login-container").style.display = "none";
                     document.getElementById("app-container").style.display = "block";
                     startSystem();
@@ -235,6 +252,7 @@
                     msgBox.innerText = result.message;
                     msgBox.style.color = "#ff4444";
                     localStorage.removeItem("lastLoginTime");
+                    localStorage.removeItem("winExpiry");
                 }
             } catch (error) {
                 msgBox.innerText = "連線失敗，請檢查網路狀態";
@@ -245,6 +263,7 @@
 
         function logout() {
             localStorage.removeItem("lastLoginTime");
+            localStorage.removeItem("winExpiry"); // 登出時徹底清空記憶
             clearInterval(imageTimer);
             document.getElementById("app-container").style.display = "none";
             document.getElementById("login-container").style.display = "flex";
@@ -253,6 +272,7 @@
         }
 
         function startSystem() {
+            loadExpiryDisplay(); // 進入畫面時顯示查閱期限
             fetchLatestFolderImages(); 
             
             imageTimer = setInterval(() => {
@@ -266,7 +286,7 @@
             }, 5 * 60 * 1000);
         }
 
-       async function fetchLatestFolderImages() {
+        async function fetchLatestFolderImages() {
             try {
                 const response = await fetch(GAS_WEB_APP_URL, {
                     method: 'GET',
@@ -279,7 +299,6 @@
                     currentIndex = 0; 
                     renderCurrentImage();
                 } else {
-                    // 【已修改】如果後端有傳回詳細錯誤，直接顯示出來抓臭蟲！
                     const errMsg = data.message ? data.message : "資料夾中目前無圖片";
                     document.getElementById('last-update').innerText = errMsg;
                     document.getElementById('last-update').style.color = "#ff4444";
