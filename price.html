@@ -55,29 +55,40 @@
         
         .header-right { display: flex; align-items: center; }
 
+        /* 所有上方小按鈕的共用游標與字體設定 */
+        button { cursor: pointer; }
+
         #logout-btn {
             background: #ff4444; color: white; border: none; padding: 3px 8px;
-            border-radius: 2px; cursor: pointer; margin-left: 10px; font-size: 11px;
+            border-radius: 2px; margin-left: 10px; font-size: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
         }
+        #logout-btn:hover { background: #cc0000; }
 
-        /* 【新增】查閱期限的樣式設定 */
         #expiry-display {
-            font-size: 11px;
-            color: #ffaa33; /* 醒目的橘色 */
-            margin-left: 12px;
-            display: none; /* 預設隱藏，沒期限就不顯示 */
+            font-size: 11px; color: #ffaa33; margin-left: 12px; display: none; 
         }
 
+        /* 導航按鈕樣式 */
         .nav-btn {
             background: #444444; color: #ffffff; border: 1px solid #666;
-            padding: 2px 8px; border-radius: 3px; cursor: pointer;
-            margin-right: 5px; font-size: 11px;
+            padding: 2px 8px; border-radius: 3px; 
+            margin-right: 5px; font-size: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
         }
         .nav-btn:hover { background: #666666; }
+
+        /* 【新增】紅底白字播放按鈕專屬樣式 */
+        .play-btn {
+            background: #ff4444 !important; 
+            border: 1px solid #cc0000 !important;
+            color: #ffffff;
+        }
+        .play-btn:hover { background: #cc0000 !important; }
         
         #zoom-btn {
             background: #0088cc; color: white; border: none; padding: 3px 8px;
-            border-radius: 2px; cursor: pointer; margin-left: 10px; font-size: 11px;
+            border-radius: 2px; margin-left: 10px; font-size: 11px;
         }
         #zoom-btn:hover { background: #00aaff; }
 
@@ -86,14 +97,11 @@
             overflow: auto; display: flex; justify-content: center; align-items: center;
             color: #ffaa33; font-size: 16px;
         }
-        
         #image-container.full-size-mode { justify-content: flex-start; align-items: flex-start; }
 
         #monitor-img {
-            max-width: 100%; 
-            max-height: calc(100vh - 26px); 
-            object-fit: contain;
-            display: block;
+            max-width: 100%; max-height: calc(100vh - 26px); 
+            object-fit: contain; display: block;
         }
         #monitor-img.full-size { max-width: none; max-height: none; }
     </style>
@@ -115,15 +123,22 @@
         <div id="header">
             <div>
                 <strong style="color: #00ffcc;">選擇權多功能報價測試版</strong>
-                <!-- 【新增】查閱期限顯示區塊 -->
                 <span id="expiry-display"></span>
-                <button id="logout-btn" onclick="logout()">登出</button>
+                <!-- 【修改】登出改為純圖示 SVG，並加入 title -->
+                <button id="logout-btn" onclick="logout()" title="登出">
+                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
             </div>
             <div class="header-right">
-                <button id="prev-btn" class="nav-btn" onclick="goOlder()" style="display:none;">◀ </button>
-                <button id="next-btn" class="nav-btn" onclick="goNewer()" style="display:none;"> ▶</button>
+                <!-- 【新增】播放按鈕 (預設隱藏，有圖片才顯示) -->
+                <button id="play-btn" class="nav-btn play-btn" onclick="togglePlay()" style="display:none;" title="播放">▶</button>
+                
+                <!-- 【修改】往前、往後改為純圖示，並加入 title -->
+                <button id="prev-btn" class="nav-btn" onclick="goOlder()" style="display:none;" title="往前">◀</button>
+                <button id="next-btn" class="nav-btn" onclick="goNewer()" style="display:none;" title="往後">▶</button>
+                
                 <span id="last-update">資料讀取中...</span>
-                <button id="zoom-btn" onclick="toggleZoom()">100%</button>
+                <button id="zoom-btn" onclick="toggleZoom()" title="縮放">100%</button>
             </div>
         </div>
         <div id="image-container">
@@ -141,6 +156,10 @@
         let imageTimer = null;
         let isZoomed = false;
 
+        // 【新增】自動播放相關變數
+        let isPlaying = false;
+        let autoPlayInterval = null;
+
         function toggleZoom() {
             const img = document.getElementById('monitor-img');
             const container = document.getElementById('image-container');
@@ -155,6 +174,41 @@
                 img.classList.remove('full-size');
                 container.classList.remove('full-size-mode');
                 btn.innerText = "100%";
+            }
+        }
+
+        // ========================================================
+        // 【新增】自動播放核心邏輯
+        // ========================================================
+        function togglePlay() {
+            const btn = document.getElementById('play-btn');
+            if (!isPlaying) {
+                // 開始播放
+                isPlaying = true;
+                btn.innerText = "■"; // 變成方塊
+                btn.title = "停止";
+                
+                // 設定 5 秒循環執行一次
+                autoPlayInterval = setInterval(() => {
+                    if (imageList.length > 0) {
+                        currentIndex++;
+                        // 如果到底了，就回到最新的一張 (循環)
+                        if (currentIndex >= imageList.length) {
+                            currentIndex = 0;
+                        }
+                        renderCurrentImage();
+                    }
+                }, 5000);
+            } else {
+                // 停止播放
+                isPlaying = false;
+                clearInterval(autoPlayInterval);
+                btn.innerText = "▶"; // 變成箭頭
+                btn.title = "播放";
+                
+                // 停止時強制跳回最新圖片
+                currentIndex = 0;
+                renderCurrentImage();
             }
         }
 
@@ -193,12 +247,11 @@
                 if (savedUser) {
                     document.getElementById("login-msg").innerText = "已跨越週一 07:00 系統結算，請重新登入確認。";
                     localStorage.removeItem("lastLoginTime"); 
-                    localStorage.removeItem("winExpiry"); // 登出時一併清除期限記憶
+                    localStorage.removeItem("winExpiry");
                 }
             }
         };
 
-        // 載入與顯示期限文字
         function loadExpiryDisplay() {
             const expiryStr = localStorage.getItem("winExpiry");
             const displayEl = document.getElementById("expiry-display");
@@ -238,7 +291,6 @@
                     localStorage.setItem("winPass", pass);
                     localStorage.setItem("lastLoginTime", new Date().getTime().toString());
                     
-                    // 【已新增】如果 GAS 有傳回期限文字，則存入 localStorage
                     if (result.expiryText) {
                         localStorage.setItem("winExpiry", result.expiryText);
                     } else {
@@ -262,8 +314,11 @@
         }
 
         function logout() {
+            // 如果正在播放，登出時順便停止
+            if (isPlaying) togglePlay();
+            
             localStorage.removeItem("lastLoginTime");
-            localStorage.removeItem("winExpiry"); // 登出時徹底清空記憶
+            localStorage.removeItem("winExpiry"); 
             clearInterval(imageTimer);
             document.getElementById("app-container").style.display = "none";
             document.getElementById("login-container").style.display = "flex";
@@ -272,7 +327,7 @@
         }
 
         function startSystem() {
-            loadExpiryDisplay(); // 進入畫面時顯示查閱期限
+            loadExpiryDisplay(); 
             fetchLatestFolderImages(); 
             
             imageTimer = setInterval(() => {
@@ -296,7 +351,10 @@
                 
                 if (data.success && data.images && data.images.length > 0) {
                     imageList = data.images;
-                    currentIndex = 0; 
+                    // 如果沒有在自動播放中，刷新時確保視角回到最新圖
+                    if (!isPlaying) {
+                        currentIndex = 0; 
+                    }
                     renderCurrentImage();
                 } else {
                     const errMsg = data.message ? data.message : "資料夾中目前無圖片";
@@ -330,8 +388,11 @@
                 document.getElementById('last-update').style.color = "#ffaa33"; 
             }
             
-            document.getElementById('prev-btn').style.display = (currentIndex < imageList.length - 1) ? "inline-block" : "none";
-            document.getElementById('next-btn').style.display = (currentIndex > 0) ? "inline-block" : "none";
+            // 判斷按鈕顯示邏輯
+            document.getElementById('prev-btn').style.display = (currentIndex < imageList.length - 1) ? "inline-flex" : "none";
+            document.getElementById('next-btn').style.display = (currentIndex > 0) ? "inline-flex" : "none";
+            // 只要圖片大於1張，就顯示播放按鈕
+            document.getElementById('play-btn').style.display = (imageList.length > 1) ? "inline-flex" : "none";
         }
 
         function goOlder() {
