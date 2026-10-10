@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 【已修改】網頁書籤名稱刪除文字 -登入 -->
     <title>選擇權多功能報價測試版</title>
     <style>
         body, html {
@@ -44,33 +45,42 @@
         #app-container { display: none; width: 100%; height: 100%; }
         
         #header {
-            position: fixed; top: 0; left: 0; width: 100%; height: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 26px;
             background: rgba(0, 0, 0, 0.85); display: flex; justify-content: space-between;
             align-items: center; padding: 0 10px; box-sizing: border-box;
             z-index: 100; border-bottom: 1px solid #444;
         }
         
-        #header strong { font-size: 12px; }
-        #last-update { font-size: 11px; color: #aaaaaa; }
+        #header strong { font-size: 13px; }
+        #last-update { font-size: 12px; color: #aaaaaa; }
         
         .header-right {
             display: flex; align-items: center;
         }
 
         #logout-btn {
-            background: #ff4444; color: white; border: none; padding: 2px 6px;
-            border-radius: 2px; cursor: pointer; margin-left: 10px; font-size: 10px;
+            background: #ff4444; color: white; border: none; padding: 3px 8px;
+            border-radius: 2px; cursor: pointer; margin-left: 10px; font-size: 11px;
         }
+
+        /* 歷史圖片切換按鈕樣式 */
+        .nav-btn {
+            background: #444444; color: #ffffff; border: 1px solid #666;
+            padding: 2px 8px; border-radius: 3px; cursor: pointer;
+            margin-right: 5px; font-size: 11px;
+        }
+        .nav-btn:hover { background: #666666; }
         
         #zoom-btn {
-            background: #0088cc; color: white; border: none; padding: 2px 6px;
-            border-radius: 2px; cursor: pointer; margin-left: 8px; font-size: 10px;
+            background: #0088cc; color: white; border: none; padding: 3px 8px;
+            border-radius: 2px; cursor: pointer; margin-left: 10px; font-size: 11px;
         }
         #zoom-btn:hover { background: #00aaff; }
 
         #image-container {
-            width: 100vw; height: 100vh; padding-top: 20px; box-sizing: border-box;
+            width: 100vw; height: 100vh; padding-top: 26px; box-sizing: border-box;
             overflow: auto; display: flex; justify-content: center; align-items: center;
+            color: #ffaa33; font-size: 16px;
         }
         
         #image-container.full-size-mode {
@@ -79,7 +89,7 @@
 
         #monitor-img {
             max-width: 100%; 
-            max-height: calc(100vh - 20px); 
+            max-height: calc(100vh - 26px); 
             object-fit: contain;
             display: block;
         }
@@ -110,27 +120,28 @@
                 <button id="logout-btn" onclick="logout()">登出</button>
             </div>
             <div class="header-right">
-                <span id="last-update">連線中...</span>
+                <button id="prev-btn" class="nav-btn" onclick="goOlder()" style="display:none;">◀ </button>
+                <button id="next-btn" class="nav-btn" onclick="goNewer()" style="display:none;"> ▶</button>
+                
+                <span id="last-update">資料讀取中...</span>
                 <button id="zoom-btn" onclick="toggleZoom()">100%</button>
             </div>
         </div>
         <div id="image-container">
-            <img id="monitor-img" alt="正在載入監控畫面..." onerror="handleError()" />
+            <img id="monitor-img" alt="圖片正在準備中，請稍候..." onerror="handleError()" />
         </div>
     </div>
 
     <script>
         // ==========================================
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwmQ2Ub1coaWJggJXk4D4nAwTqbc-KTqCFzHW_7dAhNTorZqGkT5mqp-oiaOmS0hQqv/exec";
-        const fileId = "1iDGN3xDOD_G2ap0IDwIyjJ-ILf15O8V_";
         // ==========================================
         
-        // 改用 export=view 更能避免部分裝置強制下載的問題，破除快取更有效
-        const primaryUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
-        const fallbackUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w5000";
+        let imageList = []; 
+        let currentIndex = 0; 
+        
         let useFallback = false;
         let imageTimer = null;
-        
         let isZoomed = false;
 
         function toggleZoom() {
@@ -139,7 +150,6 @@
             const btn = document.getElementById('zoom-btn');
             
             isZoomed = !isZoomed;
-            
             if (isZoomed) {
                 img.classList.add('full-size');
                 container.classList.add('full-size-mode');
@@ -168,7 +178,6 @@
             if (dayOfWeek === 1 && now.getHours() < 7) {
                 recentMonday7AM.setDate(recentMonday7AM.getDate() - 7);
             }
-
             return lastLogin < recentMonday7AM;
         }
 
@@ -179,7 +188,6 @@
             if (savedUser) document.getElementById("username").value = savedUser;
             if (savedPass) document.getElementById("password").value = savedPass;
 
-            // 【已修正】如果記憶中有帳密且未到重置時間，直接秒進系統，不再呼叫 API 驗證
             if (savedUser && savedPass && !needsReLogin()) {
                 document.getElementById("login-container").style.display = "none";
                 document.getElementById("app-container").style.display = "block";
@@ -187,7 +195,7 @@
             } else if (needsReLogin()) {
                 if (savedUser) {
                     document.getElementById("login-msg").innerText = "已跨越週一 07:00 系統結算，請重新登入確認。";
-                    localStorage.removeItem("lastLoginTime"); // 確保時間戳記清空
+                    localStorage.removeItem("lastLoginTime"); 
                 }
             }
         };
@@ -202,19 +210,15 @@
                 msgBox.innerText = "請輸入帳號與密碼";
                 return;
             }
-
             msgBox.innerText = "驗證中，請稍候...";
             msgBox.style.color = "#aaaaaa";
             btn.disabled = true;
 
             try {
-                // 加入 redirect 與純文字 headers，避免 CORS 錯誤
                 const response = await fetch(GAS_WEB_APP_URL, {
                     method: 'POST',
                     redirect: 'follow',
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8"
-                    },
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ username: user, password: pass })
                 });
                 const result = await response.json();
@@ -249,43 +253,94 @@
         }
 
         function startSystem() {
-            refreshImage();
+            fetchLatestFolderImages(); 
+            
             imageTimer = setInterval(() => {
                 if (needsReLogin()) {
                     logout();
                     document.getElementById("login-msg").innerText = "登入時效已過(週一 07:00)，請重新登入。";
                     document.getElementById("login-msg").style.color = "#ff4444";
                 } else {
-                    refreshImage();
+                    fetchLatestFolderImages();
                 }
             }, 5 * 60 * 1000);
         }
 
-        function handleError() {
-            // 如果主圖片載入失敗，才切換到備用並加上防快取時間戳記
-            if (!useFallback) {
-                useFallback = true;
-                const now = new Date();
-                const separator = fallbackUrl.includes('?') ? '&' : '?';
-                document.getElementById('monitor-img').src = fallbackUrl + separator + "t=" + now.getTime();
-            } else {
-                document.getElementById('last-update').innerText = "圖片讀取失敗";
+       async function fetchLatestFolderImages() {
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.images && data.images.length > 0) {
+                    imageList = data.images;
+                    currentIndex = 0; 
+                    renderCurrentImage();
+                } else {
+                    // 【已修改】如果後端有傳回詳細錯誤，直接顯示出來抓臭蟲！
+                    const errMsg = data.message ? data.message : "資料夾中目前無圖片";
+                    document.getElementById('last-update').innerText = errMsg;
+                    document.getElementById('last-update').style.color = "#ff4444";
+                    document.getElementById('monitor-img').alt = "無法顯示圖片：" + errMsg;
+                }
+            } catch (e) {
+                console.error("同步失敗", e);
+                document.getElementById('last-update').innerText = "雲端連線失敗，請檢查 API 部署";
+                document.getElementById('last-update').style.color = "#ff4444";
+                document.getElementById('monitor-img').alt = "無法取得圖片清單，請確認 GAS 部署時是否選擇了「建立新版本」！";
             }
         }
 
-        function refreshImage() {
-            // 每次刷新都先預設嘗試最高畫質的主網址，避免卡在快取的舊縮圖裡
-            useFallback = false; 
+        function renderCurrentImage() {
+            if (imageList.length === 0) return;
             
+            useFallback = false;
+            const fileId = imageList[currentIndex];
+            const primaryUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
             const now = new Date();
-            const separator = primaryUrl.includes('?') ? '&' : '?';
             
-            // 加入時間戳記強制瀏覽器不使用快取
-            document.getElementById('monitor-img').src = primaryUrl + separator + "t=" + now.getTime();
+            document.getElementById('monitor-img').src = primaryUrl + "&t=" + now.getTime();
             
-            // 顯示文字變更為「網頁同步時間」
-            document.getElementById('last-update').innerText = "網頁同步時間：" + now.toLocaleTimeString('zh-TW', { hour12: false });
-            document.getElementById('last-update').style.color = "#aaaaaa";
+            if (currentIndex === 0) {
+                document.getElementById('last-update').innerText = "網頁同步時間：" + now.toLocaleTimeString('zh-TW', { hour12: false });
+                document.getElementById('last-update').style.color = "#aaaaaa";
+            } else {
+                document.getElementById('last-update').innerText = "正在查看歷史圖片 (" + (currentIndex + 1) + "/5)";
+                document.getElementById('last-update').style.color = "#ffaa33"; 
+            }
+            
+            document.getElementById('prev-btn').style.display = (currentIndex < imageList.length - 1) ? "inline-block" : "none";
+            document.getElementById('next-btn').style.display = (currentIndex > 0) ? "inline-block" : "none";
+        }
+
+        function goOlder() {
+            if (currentIndex < imageList.length - 1) {
+                currentIndex++;
+                renderCurrentImage();
+            }
+        }
+
+        function goNewer() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderCurrentImage();
+            }
+        }
+
+        function handleError() {
+            if (imageList.length === 0) return;
+            
+            if (!useFallback) {
+                useFallback = true;
+                const fileId = imageList[currentIndex];
+                const fallbackUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w5000";
+                const now = new Date();
+                document.getElementById('monitor-img').src = fallbackUrl + "&t=" + now.getTime();
+            } else {
+                document.getElementById('last-update').innerText = "圖片讀取失敗";
+            }
         }
     </script>
 </body>
