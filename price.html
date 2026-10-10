@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇權多功能報價測試版 - 登入</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #1e1e1e; color: #ffffff;
+            font-family: "Microsoft JhengHei", sans-serif;
+            overflow: hidden;
+        }
+        
+        #login-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background-color: #1e1e1e; z-index: 200;
+        }
+        .login-box {
+            background: #2c2c2c; padding: 40px; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; width: 300px;
+        }
+        .login-box h2 { color: #00ffcc; margin-top: 0; font-size: 22px; }
+        .login-box input {
+            width: 100%; padding: 10px; margin: 10px 0; border: none;
+            border-radius: 5px; box-sizing: border-box; background: #444; color: #fff;
+        }
+        .login-box button {
+            width: 100%; padding: 10px; margin-top: 15px; border: none;
+            border-radius: 5px; background: #00ffcc; color: #000; font-weight: bold; cursor: pointer;
+        }
+        .login-box button:hover { background: #00cca3; }
+        #login-msg { color: #ff4444; font-size: 14px; margin-top: 10px; min-height: 20px; }
+        
+        #line-contact {
+            color: #06C755; 
+            font-size: 14px; 
+            font-weight: bold; 
+            margin-top: 20px;
+            letter-spacing: 1px;
+        }
+
+        #app-container { display: none; width: 100%; height: 100%; }
+        
+        #header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 20px;
+            background: rgba(0, 0, 0, 0.85); display: flex; justify-content: space-between;
+            align-items: center; padding: 0 10px; box-sizing: border-box;
+            z-index: 100; border-bottom: 1px solid #444;
+        }
+        
+        #header strong { font-size: 12px; }
+        #last-update { font-size: 11px; color: #aaaaaa; }
+        
+        .header-right {
+            display: flex; align-items: center;
+        }
+
+        #logout-btn {
+            background: #ff4444; color: white; border: none; padding: 2px 6px;
+            border-radius: 2px; cursor: pointer; margin-left: 10px; font-size: 10px;
+        }
+        
+        #zoom-btn {
+            background: #0088cc; color: white; border: none; padding: 2px 6px;
+            border-radius: 2px; cursor: pointer; margin-left: 8px; font-size: 10px;
+        }
+        #zoom-btn:hover { background: #00aaff; }
+
+        #image-container {
+            width: 100vw; height: 100vh; padding-top: 20px; box-sizing: border-box;
+            overflow: auto; display: flex; justify-content: center; align-items: center;
+        }
+        
+        #image-container.full-size-mode {
+            justify-content: flex-start; align-items: flex-start;
+        }
+
+        #monitor-img {
+            max-width: 100%; 
+            max-height: calc(100vh - 20px); 
+            object-fit: contain;
+            display: block;
+        }
+        
+        #monitor-img.full-size {
+            max-width: none;
+            max-height: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-container">
+        <div class="login-box">
+            <h2>選擇權多功能報價測試版</h2>
+            <input type="text" id="username" placeholder="請輸入帳號" autocomplete="off">
+            <input type="password" id="password" placeholder="請輸入密碼">
+            <button onclick="attemptLogin()" id="login-btn">登入</button>
+            <div id="login-msg"></div>
+            <div id="line-contact">Line@308cobem</div>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <div id="header">
+            <div>
+                <strong style="color: #00ffcc;">選擇權多功能報價測試版</strong>
+                <button id="logout-btn" onclick="logout()">登出</button>
+            </div>
+            <div class="header-right">
+                <span id="last-update">連線中...</span>
+                <button id="zoom-btn" onclick="toggleZoom()">100%</button>
+            </div>
+        </div>
+        <div id="image-container">
+            <img id="monitor-img" alt="正在載入監控畫面..." onerror="handleError()" />
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwmQ2Ub1coaWJggJXk4D4nAwTqbc-KTqCFzHW_7dAhNTorZqGkT5mqp-oiaOmS0hQqv/exec";
+        const fileId = "1iDGN3xDOD_G2ap0IDwIyjJ-ILf15O8V_";
+        // ==========================================
+        
+        // 改用 export=view 更能避免部分裝置強制下載的問題，破除快取更有效
+        const primaryUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
+        const fallbackUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w5000";
+        let useFallback = false;
+        let imageTimer = null;
+        
+        let isZoomed = false;
+
+        function toggleZoom() {
+            const img = document.getElementById('monitor-img');
+            const container = document.getElementById('image-container');
+            const btn = document.getElementById('zoom-btn');
+            
+            isZoomed = !isZoomed;
+            
+            if (isZoomed) {
+                img.classList.add('full-size');
+                container.classList.add('full-size-mode');
+                btn.innerText = "適應螢幕";
+            } else {
+                img.classList.remove('full-size');
+                container.classList.remove('full-size-mode');
+                btn.innerText = "100%";
+            }
+        }
+
+        function needsReLogin() {
+            const lastLoginStamp = localStorage.getItem("lastLoginTime");
+            if (!lastLoginStamp) return true;
+
+            const lastLogin = new Date(parseInt(lastLoginStamp));
+            const now = new Date();
+            
+            let recentMonday7AM = new Date(now);
+            let dayOfWeek = now.getDay();
+            let daysSinceMonday = (dayOfWeek >= 1) ? (dayOfWeek - 1) : 6;
+            
+            recentMonday7AM.setDate(now.getDate() - daysSinceMonday);
+            recentMonday7AM.setHours(7, 0, 0, 0);
+
+            if (dayOfWeek === 1 && now.getHours() < 7) {
+                recentMonday7AM.setDate(recentMonday7AM.getDate() - 7);
+            }
+
+            return lastLogin < recentMonday7AM;
+        }
+
+        window.onload = function() {
+            const savedUser = localStorage.getItem("winUser");
+            const savedPass = localStorage.getItem("winPass");
+            
+            if (savedUser) document.getElementById("username").value = savedUser;
+            if (savedPass) document.getElementById("password").value = savedPass;
+
+            if (savedUser && savedPass && !needsReLogin()) {
+                attemptLogin(savedUser, savedPass);
+            } else if (needsReLogin()) {
+                if (savedUser) {
+                    document.getElementById("login-msg").innerText = "已跨越週一 07:00 系統結算，請重新登入確認。";
+                }
+            }
+        };
+
+        async function attemptLogin(autoUser = null, autoPass = null) {
+            const user = autoUser || document.getElementById("username").value;
+            const pass = autoPass || document.getElementById("password").value;
+            const msgBox = document.getElementById("login-msg");
+            const btn = document.getElementById("login-btn");
+
+            if (!user || !pass) {
+                msgBox.innerText = "請輸入帳號與密碼";
+                return;
+            }
+
+            msgBox.innerText = "驗證中，請稍候...";
+            msgBox.style.color = "#aaaaaa";
+            btn.disabled = true;
+
+            try {
+                // 【已優化】加入 redirect 與純文字 headers，避免 CORS 錯誤
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    localStorage.setItem("winUser", user);
+                    localStorage.setItem("winPass", pass);
+                    localStorage.setItem("lastLoginTime", new Date().getTime().toString());
+                    
+                    document.getElementById("login-container").style.display = "none";
+                    document.getElementById("app-container").style.display = "block";
+                    startSystem();
+                } else {
+                    msgBox.innerText = result.message;
+                    msgBox.style.color = "#ff4444";
+                    localStorage.removeItem("lastLoginTime");
+                }
+            } catch (error) {
+                msgBox.innerText = "連線失敗，請檢查網路狀態";
+                msgBox.style.color = "#ff4444";
+            }
+            btn.disabled = false;
+        }
+
+        function logout() {
+            localStorage.removeItem("lastLoginTime");
+            clearInterval(imageTimer);
+            document.getElementById("app-container").style.display = "none";
+            document.getElementById("login-container").style.display = "flex";
+            document.getElementById("login-msg").innerText = "已登出系統";
+            document.getElementById("login-msg").style.color = "#aaaaaa";
+        }
+
+        function startSystem() {
+            refreshImage();
+            imageTimer = setInterval(() => {
+                if (needsReLogin()) {
+                    logout();
+                    document.getElementById("login-msg").innerText = "登入時效已過(週一 07:00)，請重新登入。";
+                    document.getElementById("login-msg").style.color = "#ff4444";
+                } else {
+                    refreshImage();
+                }
+            }, 5 * 60 * 1000);
+        }
+
+        function handleError() {
+            // 如果主圖片載入失敗，才切換到備用並加上防快取時間戳記
+            if (!useFallback) {
+                useFallback = true;
+                const now = new Date();
+                const separator = fallbackUrl.includes('?') ? '&' : '?';
+                document.getElementById('monitor-img').src = fallbackUrl + separator + "t=" + now.getTime();
+            } else {
+                document.getElementById('last-update').innerText = "圖片讀取失敗";
+            }
+        }
+
+        function refreshImage() {
+            // 【已修正】每次刷新都先預設嘗試最高畫質的主網址，避免卡在快取的舊縮圖裡
+            useFallback = false; 
+            
+            const now = new Date();
+            const separator = primaryUrl.includes('?') ? '&' : '?';
+            
+            // 加入時間戳記強制瀏覽器不使用快取
+            document.getElementById('monitor-img').src = primaryUrl + separator + "t=" + now.getTime();
+            
+            // 【已修改】顯示文字變更為「網頁同步時間」
+            document.getElementById('last-update').innerText = "網頁同步時間：" + now.toLocaleTimeString('zh-TW', { hour12: false });
+            document.getElementById('last-update').style.color = "#aaaaaa";
+        }
+    </script>
+</body>
+</html>
